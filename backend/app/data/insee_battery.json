@@ -1,0 +1,172 @@
+[
+  {
+    "idbank": "011818470",
+    "title": "Enquête mensuelle de conjoncture auprès des ménages - Indicateur synthétique de climat de l’épargne- Données CVS",
+    "sector": "Ménages"
+  },
+  {
+    "idbank": "001587668",
+    "title": "Enquête mensuelle de conjoncture auprès des ménages - Indicateur synthétique de confiance des ménages (premier facteur des soldes d'opinion de l'enquête) - Données CVS",
+    "sector": "Ménages"
+  },
+  {
+    "idbank": "001786553",
+    "title": "Enquête mensuelle de conjoncture dans les services - Transports et entreposage - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001786554",
+    "title": "Enquête mensuelle de conjoncture dans les services - Hébergement et restauration - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001786555",
+    "title": "Enquête mensuelle de conjoncture dans les services - Information et communication - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001786556",
+    "title": "Enquête mensuelle de conjoncture dans les services - Activités immobilières - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001786557",
+    "title": "Enquête mensuelle de conjoncture dans les services - Activités spécialisées, scientifiques et techniques - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001786558",
+    "title": "Enquête mensuelle de conjoncture dans les services - Activités de services administratifs et de soutien - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001788034",
+    "title": "Enquête de conjoncture dans les services - Indicateur de surprise - CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001788036",
+    "title": "Enquête de conjoncture dans les services - Indicateur de surprise lissé - CVS",
+    "sector": "Services"
+  },
+  {
+    "idbank": "001585934",
+    "title": "Enquête mensuelle de conjoncture dans l'Industrie - Industrie manufacturière - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786503",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de denrées alimentaires, de boissons et de produits à base de tabac - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786507",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de denrées alimentaires, de boissons et de produits à base de tabac - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786504",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication d'équipements électriques, électroniques, informatiques ; fabrication de machines - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786513",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de produits informatiques, électroniques et optiques - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786514",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication d'équipements électriques - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786515",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de machines et équipements n.c.a. - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786505",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de matériels de transport - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786517",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Industrie automobile - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786518",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication d'autres matériels de transport - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786506",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication d'autres produits industriels - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786508",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de textiles, industries de l'habillement, industrie du cuir et de la chaussure - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786509",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Travail du bois, industries du papier et imprimerie - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786510",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Industrie chimique - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786511",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Fabrication de produits en caoutchouc et en plastique ainsi que d'autres produits minéraux non métalliques - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786512",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Métallurgie et fabrication de produits métalliques à l'exception des machines et des équipements - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001786516",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Autres industries manufacturières – Réparation et installation de machines et d’équipement – Indicateur synthétique du climat des affaires – Série CVS ",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001788037",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Industrie manufacturière - Indicateur de surprise - CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001788035",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie - Industrie manufacturière - Indicateur de surprise lissé - CVS",
+    "sector": "Industrie"
+  },
+  {
+    "idbank": "001586891",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie du bâtiment - Indicateur synthétique de retournement - Série CVS",
+    "sector": "Bâtiment"
+  },
+  {
+    "idbank": "001586890",
+    "title": "Enquête mensuelle de conjoncture dans l'industrie du bâtiment - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Bâtiment"
+  },
+  {
+    "idbank": "001580428",
+    "title": "Enquête mensuelle dans le commerce de détail et l'automobile - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Commerce de détail"
+  },
+  {
+    "idbank": "001786559",
+    "title": "Enquête mensuelle de conjoncture dans le commerce de détail et l'automobile - Commerce et réparation automobiles - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Commerce de détail"
+  },
+  {
+    "idbank": "001786560",
+    "title": "Enquête mensuelle de conjoncture dans le commerce de détail et l'automobile - Commerce de détail (y c. pharmacie et carburants depuis 2003) - Indicateur synthétique du climat des affaires - Série CVS",
+    "sector": "Commerce de détail"
+  }
+]

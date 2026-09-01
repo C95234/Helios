@@ -1,0 +1,27 @@
+# Usage local : docker compose up --build
+# Puis ouvrir http://localhost:8080 -- le frontend (nginx) sert les fichiers
+# statiques et relaie /api vers le backend via le reseau interne Docker.
+#
+# Pour un vrai deploiement, la plupart des plateformes (Railway, Render,
+# Fly.io) construisent chaque Dockerfile comme un service separe plutot que
+# de lire ce fichier directement -- il reste utile comme repetition locale
+# et comme reference de la configuration attendue (variables, ports).
+services:
+  backend:
+    build: ./backend
+    environment:
+      HELIOS_ENV: production
+      HELIOS_ALLOWED_ORIGINS: http://localhost:8080
+      HELIOS_RATE_LIMIT: 100/minute
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ""
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
