@@ -22,6 +22,7 @@ export const api = {
   testH1: (phenomenon) => getJson(`/hypotheses/h1?phenomenon=${phenomenon}`),
   testH1Aggregate: () => getJson(`/hypotheses/h1/aggregate?n_surrogates=100`),
   testH2: () => getJson(`/hypotheses/h2`),
+  testH3: (phenomenon) => getJson(`/hypotheses/h3?phenomenon=${phenomenon}`),
   getConnectors: () => getJson(`/connectors`),
   getGuardrails: () => getJson(`/connectors/guardrails`),
 };

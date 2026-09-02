@@ -1,0 +1,189 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis } from "recharts";
+import { api } from "../api.js";
+import MethodNote from "../components/MethodNote.jsx";
+import InterpretationGuide from "../components/InterpretationGuide.jsx";
+import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
+import HistoryPanel from "../components/HistoryPanel.jsx";
+import { saveToHistory, loadHistory, clearHistory } from "../history.js";
+
+const HISTORY_PAGE = "h3";
+const METHOD_KEYS = ["h3_joint"];
+
+function h3Outcome(result) {
+  return result.significant_at_0_05 ? "favorable" : "neutral";
+}
+
+export default function TestH3() {
+  const [phenomena, setPhenomena] = useState([]);
+  const [code, setCode] = useState("");
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [expertMode, setExpertMode] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    api.getPhenomena().then((list) => {
+      setPhenomena(list);
+      if (list.length) setCode(list[0].code);
+    });
+    setHistory(loadHistory(HISTORY_PAGE));
+  }, []);
+
+  const run = () => {
+    if (!code) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    api
+      .testH3(code)
+      .then((r) => {
+        setResult(r);
+        saveToHistory(HISTORY_PAGE, { code, result: r });
+        setHistory(loadHistory(HISTORY_PAGE));
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  };
+
+  const selected = phenomena.find((p) => p.code === code);
+
+  const scatterData = result?.historical_points
+    .filter((p) => p.national_tau !== null && p.spatial_i !== null)
+    .map((p) => ({ x: p.national_tau, y: p.spatial_i, date: p.date })) ?? [];
+  const observedPoint = result
+    ? [{ x: result.observed_national_tau, y: result.observed_spatial_i, date: result.nearest_spatial_quarter }]
+    : [];
+
+  return (
+    <div className="page page-test-h3">
+      <h1>Tester H3 : la combinaison temporel + spatial est-elle plus parlante ?</h1>
+      <p className="lede">
+        H3 : combiner un signal temporel (confiance des ménages, national) et un signal spatial (indice de
+        Moran sur le chômage départemental) réduit-il les faux positifs par rapport à chaque signal pris
+        seul ? On compare le phénomène testé à chacun des trimestres comparables des 26 dernières années.{" "}
+        <Link to="/donnees">Voir comment ces données sont traitées</Link>.
+      </p>
+      <p className="text-muted">
+        Adaptation assumée par rapport au §5.6 : la composante spatiale est un instantané (le chômage
+        départemental n'est publié que trimestriellement, insuffisant pour une vraie tendance sur la fenêtre
+        d'un phénomène), et la loi nulle est calibrée sur l'historique réel plutôt que sur des données de
+        substitution synthétiques.{" "}
+        <Link to="/hypotheses">Voir pourquoi H3 était bloquée avant cette adaptation</Link>.
+      </p>
+
+      <div className="controls">
+        <label>
+          Phénomène
+          <select value={code} onChange={(e) => setCode(e.target.value)}>
+            {phenomena.map((p) => (
+              <option key={p.code} value={p.code}>
+                {p.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button className="cta" onClick={run} disabled={loading || !code}>
+          {loading ? "Calcul en cours…" : "Tester la combinaison"}
+        </button>
+      </div>
+
+      <HistoryPanel
+        entries={history}
+        onSelect={(entry) => {
+          setCode(entry.code);
+          setResult(entry.result);
+        }}
+        onClear={() => {
+          clearHistory(HISTORY_PAGE);
+          setHistory([]);
+        }}
+        renderLabel={(e) => `${e.result.phenomenon_label} · p_joint=${e.result.p_joint?.toFixed(3) ?? "n/a"}`}
+      />
+
+      {selected && !result && <p className="source-note">{selected.description}</p>}
+      {error && <p className="error">{error}</p>}
+
+      {result && (
+        <>
+          <h2>{result.phenomenon_label}</h2>
+          <p className="source-note">{result.phenomenon_description}</p>
+
+          <div className="signal-block">
+            <div className="result-card-header">
+              <h3>Position du phénomène face aux {result.n_historical_windows} trimestres comparables</h3>
+              <button type="button" className="mode-toggle" onClick={() => setExpertMode((v) => !v)} aria-pressed={expertMode}>
+                {expertMode ? "Mode simplifié" : "Mode expert"}
+              </button>
+            </div>
+
+            <ResponsiveContainer width="100%" height={280}>
+              <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                <XAxis type="number" dataKey="x" name="tendance nationale" tick={{ fontSize: 10 }} />
+                <YAxis type="number" dataKey="y" name="indice de Moran" tick={{ fontSize: 10 }} />
+                <ZAxis range={[40, 41]} />
+                <Tooltip cursor={{ strokeDasharray: "3 3" }} formatter={(v) => v.toFixed(3)} />
+                <Scatter name="Historique (2000-2026)" data={scatterData} fill="var(--color-border)" />
+                <Scatter name="Phénomène testé" data={observedPoint} fill="var(--color-warn)" shape="star" />
+              </ScatterChart>
+            </ResponsiveContainer>
+
+            {!expertMode && (
+              <>
+                <p className={result.significant_at_0_05 ? "moran-sig-yes" : "moran-sig-no"}>
+                  {result.significant_at_0_05
+                    ? "Ce phénomène se démarque nettement du nuage historique : les deux signaux sont inhabituels en même temps."
+                    : "Ce phénomène reste dans le nuage habituel de l'historique : rien d'exceptionnel sur la combinaison des deux signaux."}
+                </p>
+                <MethodNote methodKeys={METHOD_KEYS} expertMode={false} />
+              </>
+            )}
+
+            {expertMode && (
+              <>
+                <dl className="signal-stats">
+                  <div>
+                    <dt>tau national</dt>
+                    <dd>{result.observed_national_tau?.toFixed(3)}</dd>
+                  </div>
+                  <div>
+                    <dt>Moran (I)</dt>
+                    <dd>{result.observed_spatial_i?.toFixed(3)}</dd>
+                  </div>
+                  <div>
+                    <dt>p temporel (rang)</dt>
+                    <dd>{result.p_temporal_rank?.toFixed(3)}</dd>
+                  </div>
+                  <div>
+                    <dt>p spatial (rang)</dt>
+                    <dd>{result.p_spatial_rank?.toFixed(3)}</dd>
+                  </div>
+                  <div>
+                    <dt>T (Fisher)</dt>
+                    <dd>{result.t_observed?.toFixed(3)}</dd>
+                  </div>
+                  <div>
+                    <dt>p_joint</dt>
+                    <dd>{result.p_joint?.toFixed(3)}</dd>
+                  </div>
+                </dl>
+                <MethodNote methodKeys={METHOD_KEYS} expertMode={true} />
+              </>
+            )}
+          </div>
+
+          <div className="h1-verdict">
+            <p>{result.verdict_simple}</p>
+          </div>
+
+          <InterpretationGuide hypothesis="h3" outcome={h3Outcome(result)} />
+
+          <MethodDisclaimer nEpisodes={result.n_episodes_tested} />
+        </>
+      )}
+    </div>
+  );
+}

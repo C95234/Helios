@@ -151,6 +151,37 @@ class H1Response(BaseModel):
     )
 
 
+class HistoricalPointOut(BaseModel):
+    date: str
+    national_tau: float | None
+    spatial_i: float | None
+
+
+class H3Response(BaseModel):
+    phenomenon_label: str
+    phenomenon_description: str
+    window_months: int
+    observed_national_tau: float | None
+    observed_spatial_i: float | None
+    nearest_spatial_quarter: str | None
+    p_temporal_rank: float | None
+    p_spatial_rank: float | None
+    t_observed: float | None
+    p_joint: float | None
+    n_historical_windows: int
+    significant_at_0_05: bool
+    historical_points: list[HistoricalPointOut]
+    verdict_simple: str
+    n_episodes_tested: int = 1
+    preliminary_result: bool = True
+    causal_disclaimer: str = (
+        "p_joint est calibré par bootstrap sur l'historique réel 2000-2026, pas par surrogates "
+        "synthétiques -- il mesure si CE phénomène est plus inhabituel (sur les deux axes à la fois) "
+        "que les autres périodes de même longueur dans les 26 dernières années. Ce n'est ni une "
+        "prédiction ni une preuve de cause commune."
+    )
+
+
 class H1AggregateResponse(BaseModel):
     n_phenomena_tested: int
     n_favorable_to_h1: int

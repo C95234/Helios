@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 
-from ..connectors.insee_departments import InseeDepartmentUnemploymentConnector
-from ..geo import department_weight_matrix, load_department_network, regular_grid_weight_matrix
 from ..schemas import (
     DepartmentValueOut,
     H2Response,
@@ -13,12 +10,11 @@ from ..schemas import (
     MoranTestOut,
     TrendTestOut,
 )
-from ..stats.moran import morans_i, permutation_test
+from ..spatial_series import SpatialDataUnavailable, get_real_network_moran_series
+from ..stats.moran import permutation_test
 from ..stats.surrogates import surrogate_trend_test
 
 router = APIRouter(prefix="/api/hypotheses", tags=["hypotheses"])
-
-_connector = InseeDepartmentUnemploymentConnector()
 
 
 def _trend_out(result: dict) -> TrendTestOut:
@@ -70,30 +66,17 @@ async def test_h2(
     n_permutations_snapshot: int = Query(default=300, ge=100, le=1000),
 ):
     try:
-        raw = await _connector.fetch(start_period="2000-Q1")
-        df = _connector.normalize(raw)
-    except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Connecteur INSEE (départements) indisponible : {exc}") from exc
+        spatial = await get_real_network_moran_series()
+    except SpatialDataUnavailable as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
 
-    if df.empty:
-        raise HTTPException(status_code=502, detail="Aucune donnée départementale reçue de l'Insee.")
-
-    network = load_department_network()
-    metro_codes = set(network["adjacency"].keys())
-    df = df[df["territoire"].isin(metro_codes)]
-
-    wide = df.pivot_table(index="date", columns="territoire", values="valeur")
-    wide = wide.dropna(axis=0, how="any")  # ne garder que les trimestres complets pour les 96 departements
-    if wide.shape[1] < 90 or wide.shape[0] < 8:
-        raise HTTPException(status_code=502, detail=f"Couverture insuffisante ({wide.shape[0]} trimestres, {wide.shape[1]} départements).")
-
-    codes = list(wide.columns)
-    w_real = department_weight_matrix(codes, network["adjacency"])
-    w_grid, grid_shape = regular_grid_weight_matrix(len(codes))
-
-    dates = wide.index.strftime("%Y-%m-%d").tolist()
-    i_real = np.array([morans_i(wide.iloc[t].to_numpy(), w_real) for t in range(len(wide))])
-    i_grid = np.array([morans_i(wide.iloc[t].to_numpy(), w_grid) for t in range(len(wide))])
+    wide = spatial["wide"]
+    codes = spatial["codes"]
+    dates = spatial["dates"].strftime("%Y-%m-%d").tolist()
+    i_real = spatial["i_real"]
+    i_grid = spatial["i_grid"]
+    w_real = spatial["w_real"]
+    w_grid = spatial["w_grid"]
 
     real_trend = surrogate_trend_test(i_real, n_surrogates=n_surrogates, seed=100)
     grid_trend = surrogate_trend_test(i_grid, n_surrogates=n_surrogates, seed=101)
@@ -105,7 +88,7 @@ async def test_h2(
     real_trend_out = _trend_out(real_trend)
     grid_trend_out = _trend_out(grid_trend)
 
-    def series_out(values: np.ndarray) -> dict:
+    def series_out(values) -> dict:
         return {"dates": dates, "values": [None if pd.isna(v) else round(float(v), 6) for v in values]}
 
     return H2Response(
@@ -113,7 +96,7 @@ async def test_h2(
         n_quarters=len(wide),
         period_start=dates[0],
         period_end=dates[-1],
-        grid_shape=grid_shape,
+        grid_shape=spatial["grid_shape"],
         n_edges_real_network=int(w_real.sum() / 2),
         real_network=MoranSeriesOut(
             moran_series=series_out(i_real),
@@ -126,7 +109,7 @@ async def test_h2(
             latest_snapshot=_snapshot_out(grid_snapshot),
         ),
         values_latest=[
-            DepartmentValueOut(code=c, name=network["names"].get(c, c), value=float(v))
+            DepartmentValueOut(code=c, name=spatial["network_names"].get(c, c), value=float(v))
             for c, v in zip(codes, latest_values)
         ],
         verdict_simple=_verdict(real_trend_out, grid_trend_out),

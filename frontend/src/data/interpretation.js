@@ -55,14 +55,25 @@ export const INTERPRETATION = {
     ],
   },
   h3: {
-    whyNotTestable: [
-      "H3 a besoin, pour un même phénomène, d'une p-value TEMPORELLE (déjà disponible via H1) ET d'une p-value de TENDANCE SPATIALE de l'indice de Moran -- pas un simple instantané, une vraie évolution dans le temps.",
-      "Les données départementales (chômage) ne sont que trimestrielles. Sur la fenêtre d'un phénomène type gilets jaunes (~9 mois), ça ne fait que 3-4 points -- H2 a eu besoin de 105 trimestres (26 ans) pour qu'un test de tendance spatiale ait un sens statistique.",
-      "Même avec assez de points, §5.6 exige une calibration par « surrogates à phase aléatoire appliqués SIMULTANÉMENT à l'ensemble des séries couplées » -- il faut générer de fausses versions de la série nationale ET du réseau spatial en préservant leur corrélation croisée, pas indicateur par indicateur. Cette calibration jointe n'existe pas encore dans le code : ce n'est pas une simple réutilisation des surrogates de H1 ou H2.",
-    ],
-    whatItWouldMean: {
-      favorable: "Un phénomène montrant À LA FOIS une tendance temporelle significative ET une tendance spatiale significative serait un candidat plus fort qu'un seul indicateur pris isolément -- moins de faux positifs, selon l'intuition de H3.",
-      against: "Si combiner les deux ne réduisait pas les faux positifs par rapport à chaque indicateur seul, H3 serait infirmée -- l'apport de la fusion temporel+spatial ne serait pas démontré.",
+    outcomes: {
+      favorable: {
+        title: "Quand la combinaison est plus inhabituelle que l'historique",
+        text: "Le signal temporel national ET le signal spatial départemental, pris ensemble, sont plus extrêmes que la quasi-totalité des trimestres comparables des 26 dernières années. Ça veut dire : sur CE phénomène, les deux dimensions (quand, où) racontent une histoire cohérente de rupture -- pas que l'une des deux suffirait seule à le dire.",
+      },
+      neutral: {
+        title: "Quand la combinaison reste dans la norme historique",
+        text: "Même si l'un des deux signaux (temporel ou spatial) est notable isolément, leur combinaison ne se distingue pas franchement du reste de l'historique. Ça ne réfute pas H3 en général -- ça dit juste que sur ce cas, la fusion des deux indicateurs n'apporte pas un signal plus net que d'habitude.",
+      },
     },
+    limits: [
+      "La p-value spatiale est un INSTANTANÉ (le trimestre le plus proche du phénomène), pas une vraie tendance spatiale comme le §5.6 le prévoit à l'origine -- adaptation nécessaire car le chômage départemental n'est publié que trimestriellement (3-4 points sur la fenêtre d'un phénomène, insuffisant pour une tendance).",
+      "La loi nulle de la statistique combinée est calibrée par comparaison à l'historique réel 2000-2026 (bootstrap couplé par période), pas par génération de données de substitution synthétiques -- un choix méthodologique différent de H1/H2, documenté comme tel, pas une simple extension de leurs surrogates.",
+      "Le signal national (confiance des ménages) et le signal spatial (chômage départemental) sont deux variables économiques différentes, à deux échelles géographiques différentes -- une corrélation entre elles est plausible mais n'est ni prouvée ni exclue par ce test.",
+      "Un seul phénomène ne prouve rien -- voir §5.7 : au moins 5 épisodes indépendants avant toute conclusion ferme.",
+    ],
+    commonMistakes: [
+      "« p_joint est petit, donc H3 est confirmée » -- faux : un seul cas isolé, jamais un verdict ferme avant 5 épisodes indépendants.",
+      "« Le signal temporel et le signal spatial se sont produits ensemble, donc l'un a causé l'autre » -- faux : la méthode mesure une coïncidence statistique inhabituelle, pas un lien de causalité entre les deux dimensions.",
+    ],
   },
 };

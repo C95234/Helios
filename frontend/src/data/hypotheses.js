@@ -3,8 +3,6 @@
  * Contenu centralisé pour rester cohérent entre la page /hypotheses, la démo
  * et la page d'analyse (§3 : jamais deux formulations différentes du même énoncé).
  */
-import { INTERPRETATION } from "./interpretation.js";
-
 export const HYPOTHESES = [
   {
     code: "H1",
@@ -37,10 +35,10 @@ export const HYPOTHESES = [
       "Est-ce que combiner le signal temporel et le signal géographique donne un résultat plus fiable, avec moins de fausses alertes, que chacun pris isolément ?",
     expert:
       "Combiner une tendance temporelle ET une tendance spatiale significatives, via une statistique de Fisher calibrée empiriquement par données de substitution couplées, réduit les faux positifs par rapport à chaque indicateur pris isolément (§5.6).",
-    status: "non-disponible",
+    status: "testable",
     statusNote:
-      "Pas encore testable : H1 et H2 existent désormais séparément, mais la statistique jointe (Fisher, calibrée par surrogates couplés — §5.6) qui les combine sur un même phénomène n'est pas encore construite. Voir le détail ci-dessous.",
-    detailReasons: INTERPRETATION.h3.whyNotTestable,
+      "Testable dès maintenant, avec une adaptation assumée : la p-value spatiale est un instantané (pas une tendance, faute de données départementales assez fréquentes), et la loi nulle jointe est calibrée par comparaison à l'historique réel 2000-2026 plutôt que par surrogates synthétiques couplés. Voir les détails sur la page de test.",
+    link: { to: "/tester-h3", label: "Tester H3 sur un phénomène réel" },
   },
 ];
 

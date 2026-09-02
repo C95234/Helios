@@ -59,6 +59,15 @@ export const METHODS = {
       "Sous l'hypothèse nulle (aucune structure spatiale réelle), l'espérance théorique de l'indice de Moran vaut −1/(N−1) -- propriété vérifiée dans les tests automatisés d'Hélios.",
     reference: "Méthode standard d'inférence pour l'indice de Moran (voir Cliff & Ord, 1981).",
   },
+  h3_joint: {
+    label: "Statistique jointe H3 (bootstrap couplé par période)",
+    simple:
+      "On combine le signal temporel national et le signal spatial départemental d'un même phénomène en une seule note, puis on compare cette note à celles obtenues sur chaque trimestre des 26 dernières années. Si la note du phénomène dépasse presque toutes les autres, c'est que les deux signaux sont inhabituels EN MÊME TEMPS -- pas juste l'un ou l'autre séparément.",
+    formula: "T = -2·[ln(p_temporel) + ln(p_spatial)] ; p_joint = #{T_historique ≥ T_observé} / nb trimestres",
+    detail:
+      "p_temporel et p_spatial sont des p-values de RANG : la proportion de trimestres historiques (2000-2026) où le signal correspondant était au moins aussi extrême. La loi nulle de T n'est PAS générée par des surrogates synthétiques : elle est calculée sur les VRAIES paires historiques (tendance nationale, indice de Moran) du même trimestre -- ce qui préserve automatiquement toute corrélation réelle entre les deux, sans supposer l'indépendance qu'interdit le §5.6 pour la loi du χ² théorique.",
+    reference: "Fisher, Statistical Methods for Research Workers, 1925 (combinaison) ; calibration empirique par historique réel plutôt que par surrogates -- choix méthodologique propre à Hélios pour H3, documenté comme tel.",
+  },
   moran_trend: {
     label: "Tendance de l'indice de Moran dans le temps",
     simple:

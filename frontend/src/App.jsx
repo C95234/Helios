@@ -5,6 +5,7 @@ import Analyze from "./pages/Analyze.jsx";
 import Hypotheses from "./pages/Hypotheses.jsx";
 import TestH1 from "./pages/TestH1.jsx";
 import TestH2 from "./pages/TestH2.jsx";
+import TestH3 from "./pages/TestH3.jsx";
 import Donnees from "./pages/Donnees.jsx";
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
           <NavLink to="/hypotheses">Les 3 hypothèses</NavLink>
           <NavLink to="/tester-h1">Tester H1</NavLink>
           <NavLink to="/tester-h2">Tester H2</NavLink>
+          <NavLink to="/tester-h3">Tester H3</NavLink>
           <NavLink to="/analyser">Analyser une série INSEE</NavLink>
           <NavLink to="/donnees">Données & méthode</NavLink>
         </nav>
@@ -34,6 +36,7 @@ export default function App() {
           <Route path="/hypotheses" element={<Hypotheses />} />
           <Route path="/tester-h1" element={<TestH1 />} />
           <Route path="/tester-h2" element={<TestH2 />} />
+          <Route path="/tester-h3" element={<TestH3 />} />
           <Route path="/analyser" element={<Analyze />} />
           <Route path="/donnees" element={<Donnees />} />
         </Routes>
