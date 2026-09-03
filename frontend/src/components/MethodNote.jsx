@@ -2,7 +2,7 @@ import { METHODS } from "../data/methods.js";
 import Math from "./Math.jsx";
 
 /** Découpe un texte contenant des segments $...$ et rend chacun en LaTeX inline. */
-function TextWithMath({ text }) {
+export function TextWithMath({ text }) {
   const parts = text.split(/(\$[^$]+\$)/g);
   return (
     <>

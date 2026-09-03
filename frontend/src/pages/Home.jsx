@@ -48,7 +48,19 @@ export default function Home() {
           les réseaux sociaux montrent-ils des signes de tension avant les statistiques officielles ? ».
         </p>
         <Link to="/hypotheses" className="cta secondary">
-          Voir les 3 hypothèses
+          Voir les hypothèses
+        </Link>
+      </section>
+
+      <section className="hypotheses-teaser">
+        <h2>Le raisonnement scientifique, sans rien cacher</h2>
+        <p>
+          Avant de construire l'hypothèse H3, il fallait vérifier un postulat : le signal temporel
+          précède-t-il toujours le signal spatial ? Un premier raisonnement s'est trompé -- le calcul l'a
+          corrigé. Ce cheminement, erreur comprise, est documenté dans le Journal de recherche.
+        </p>
+        <Link to="/journal-recherche" className="cta secondary">
+          Lire le journal de recherche
         </Link>
       </section>
 

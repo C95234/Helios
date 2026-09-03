@@ -129,12 +129,16 @@ export const METHODS = {
       {
         text: "Cette calibration empirique par l'historique réel préserve automatiquement toute corrélation réelle entre les deux composantes, sans supposer l'indépendance -- même objectif que l'étape 4 du §5.6, méthode différente, documentée comme telle.",
       },
+      {
+        text: "Cadrage honnête : la construction générale (combiner des p-values corrélées via une distribution nulle empirique) n'est pas une originalité d'Hélios -- c'est la méthode empirique de Brown (Empirical Brown's Method, Poole et al., 2016), déjà publiée et implémentée. Ce que documente cette page est comment l'appliquer à notre cas (indicateur temporel + indicateur spatial) et pourquoi, faute d'un générateur de surrogates couplés adapté à nos données, la calibration ci-dessus s'appuie sur l'historique réel plutôt que sur des données de substitution synthétiques.",
+      },
     ],
     detail:
       "$p_i$ = p-value de rang empirique (proportion de trimestres historiques au moins aussi extrêmes), pas une p-value de surrogates synthétiques -- voir la page Tester H3 pour le détail complet.",
     references: [
       "Fisher, R. A. (1925). Statistical Methods for Research Workers. Oliver and Boyd.",
       "Brown, M. B. (1975). « A method for combining non-independent, one-sided tests of significance. » Biometrics, 31(4), 987–992.",
+      "Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). « Combining dependent P-values with an empirical adaptation of Brown's method. » Bioinformatics, 32(17), i430–i436.",
     ],
   },
   kuramoto_h4: {
@@ -179,4 +183,6 @@ export const BIBLIOGRAPHY = [
   "Theiler, J., Eubank, S., Longtin, A., Galdrikian, B., & Farmer, J. D. (1992). « Testing for nonlinearity in time series: the method of surrogate data. » Physica D, 58(1-4), 77–94.",
   "Moran, P. A. P. (1950). « Notes on Continuous Stochastic Phenomena. » Biometrika, 37(1/2), 17–23.",
   "Cliff, A. D., & Ord, J. K. (1981). Spatial Processes: Models & Applications. Pion.",
+  "Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). « Combining dependent P-values with an empirical adaptation of Brown's method. » Bioinformatics, 32(17), i430–i436.",
+  "Legault, V., Pu, Y., Weinans, E., & Cohen, A. A. (2024). « Application of early warning signs to physiological contexts: a comparison of multivariate indices in patients on long-term hemodialysis. » Frontiers in Network Physiology, 4, 1299162.",
 ];
