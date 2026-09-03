@@ -1,0 +1,32 @@
+{
+  "chomage_2008_2009": {
+    "label": "Choc de chomage 2008-2009 (crise financiere)",
+    "start": "2007-10-01",
+    "end": "2009-12-01",
+    "n_monthly_points": 27,
+    "n_quarterly_points": 9,
+    "temporal_peak_date": "2007-10-01",
+    "spatial_peak_date": "2008-01-01",
+    "precedence": "temporel"
+  },
+  "gilets_jaunes_2018": {
+    "label": "Mouvement social 2018 (gilets jaunes)",
+    "start": "2018-06-01",
+    "end": "2019-03-01",
+    "n_monthly_points": 10,
+    "n_quarterly_points": 3,
+    "temporal_peak_date": "2018-08-01",
+    "spatial_peak_date": "2018-07-01",
+    "precedence": "spatial"
+  },
+  "confinement_2020": {
+    "label": "Tension sanitaire 2020 (premier confinement)",
+    "start": "2019-10-01",
+    "end": "2020-08-01",
+    "n_monthly_points": 11,
+    "n_quarterly_points": 4,
+    "temporal_peak_date": "2020-06-01",
+    "spatial_peak_date": "2020-07-01",
+    "precedence": "temporel"
+  }
+}

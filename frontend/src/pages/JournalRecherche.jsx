@@ -52,7 +52,7 @@ export default function JournalRecherche() {
       ))}
 
       <section className="journal-section">
-        <h2>7. État d'avancement du protocole de généralisation</h2>
+        <h2>8. État d'avancement du protocole de généralisation</h2>
         <p className="text-muted">
           Ce que ce travail couvre aujourd'hui, et ce qu'il reste à faire avant de pouvoir généraliser ces
           résultats aux données réelles visées par H3.
@@ -71,10 +71,14 @@ export default function JournalRecherche() {
         <h2>Ce que ça implique pour H3</h2>
         <p>
           La valeur ajoutée d'un indicateur joint (§5.6) dépend de l'existence de régimes où les deux
-          signaux sont réellement complémentaires plutôt qu'un simple décalage temporel l'un de l'autre. Ce
-          travail apporte une première réponse, robuste sur plusieurs configurations simulées : dans tous
-          les cas testés, le signal temporel précède le signal spatial -- ce qui n'invalide pas H3, mais
-          en précise le sens attendu. <Link to="/tester-h3">Voir le test H3 sur des phénomènes réels</Link>.
+          signaux sont réellement complémentaires plutôt qu'un simple décalage temporel l'un de l'autre. En
+          simulation, sur toutes les configurations testées (anneau, réseau irrégulier, réseau réel des
+          départements, deux régimes de couplage), le signal temporel précède le signal spatial dans une
+          nette majorité des cas (75% à 90% selon la configuration) -- jamais dans 100% des cas. Sur les 3
+          seuls épisodes historiques réels disponibles, l'exception se manifeste concrètement : 2 précèdent
+          par le temporel, 1 (les gilets jaunes de 2018) par le spatial. Cela n'invalide pas H3, mais en
+          précise le sens attendu -- une tendance dominante, pas une règle absolue.{" "}
+          <Link to="/tester-h3">Voir le test H3 sur des phénomènes réels</Link>.
         </p>
       </section>
 

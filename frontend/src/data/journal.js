@@ -109,15 +109,41 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "extension",
+    title: "7. Extension au réseau réel et aux données historiques réelles",
+    simple:
+      "Ce résultat (le signal temporel qui précède toujours le signal spatial) tient-il encore quand on remplace le réseau simulé en anneau par la vraie carte des 96 départements français -- et quand on regarde ce qui s'est vraiment passé lors de 3 épisodes historiques (crise de 2008-2009, gilets jaunes 2018, confinement 2020) plutôt qu'une simulation ? Réponse : oui sur le réseau réel simulé (3 précédences sur 4 réalisations), plus nuancé sur les données réelles (2 cas sur 3 seulement -- mais l'échantillon est minuscule, 3 épisodes, pas 40 simulations).",
+    expertBlocks: [
+      {
+        text: "Reproduction (test de non-régression) sur l'anneau, avant toute extension : 35/40 réalisations (87,5%) confirment la précédence variance → Moran, pour le couplage diffusif comme pour le couplage de type contagion -- avance moyenne de 217 unités de temps pour la variance contre 167 pour l'indice de Moran. Du même ordre de grandeur que les 80%/90% documentés au point 5 et au point 6, sans reproduire exactement la différenciation fine entre les deux régimes de couplage (probablement parce que le réseau reste largement synchronisé pendant la majeure partie de la trajectoire, régime où le couplage à seuil se comporte comme le couplage diffusif linéarisé). Calibration non spécifiée par le cahier des charges (pas de code fourni, seulement le modèle et le résultat visé) : le bruit $\\sigma$ a dû être réduit empiriquement (de 1 à 0,2) pour retrouver un basculement proche du temps théorique plutôt qu'un basculement prématuré activé par le bruit -- documenté dans le code (`app/lyapunov_precedence.py`).",
+      },
+      {
+        text: "Réseau irrégulier aléatoire (une instance, 40 réalisations, couplage diffusif) : 16/40 (80%) -- cohérent avec le balayage du point 4.",
+      },
+      {
+        text: "Réseau réel des 96 départements de métropole (238 paires de voisins, même carte que H2) : 15/20 réalisations (75%) confirment la précédence, pour le couplage diffusif comme pour le couplage à seuil -- avance moyenne de 222 unités de temps pour la variance contre ~183 pour l'indice de Moran. La précédence tient donc sur le vrai réseau, avec une marge un peu plus faible que sur les réseaux synthétiques (87,5% → 80% → 75% à mesure qu'on se rapproche de la structure réelle). Limite assumée : la force de couplage $\\beta=0{,}6$ n'a pas été réoptimisée pour la connectivité bien plus dense du réseau réel (~5 voisins en moyenne contre 2 pour l'anneau) -- un $\\beta$ recalibré pourrait changer ce chiffre.",
+      },
+      {
+        text: "Confrontation à 3 épisodes historiques réels (§5.7), en réutilisant les données déjà connectées pour H1/H2/H3 (confiance des ménages nationale, chômage départemental) : le choc de chômage 2008-2009 et le confinement de 2020 montrent le signal temporel en avance ; le mouvement des gilets jaunes de 2018 montre l'inverse, le signal spatial légèrement en avance (un mois). Soit 2 précédences temporelles sur 3.",
+      },
+      {
+        text: "Erreur initiale corrigée sur cette confrontation, dans le même esprit que le point 3 : un premier calcul tronquait la série nationale à la fenêtre de l'épisode AVANT de calculer la variance et l'autocorrélation glissantes, privant les premiers points de tout contexte antérieur -- ce qui poussait artificiellement le « pic » vers le tout premier point de la fenêtre observée dans presque tous les cas. Corrigé en calculant les indicateurs glissants sur la série complète (tout l'historique disponible avant l'épisode), puis en ne retenant que la portion de la fenêtre pour chercher le pic -- exactement la méthode déjà utilisée pour H1.",
+      },
+      {
+        text: "Limites de cette confrontation aux données réelles, à ne pas minimiser : seulement 3 épisodes (aucune inférence statistique possible sur un échantillon pareil), le chômage départemental n'est publié qu'au trimestre (résolution grossière pour la composante spatiale, déjà la limite assumée pour H3), et la détection ici est purement descriptive (position du pic), pas un test de significativité formel comme en simulation.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */
 export const PROGRESS_CHECKLIST = [
   { done: true, label: "Bifurcation réellement franchie (pas seulement approchée)" },
   { done: true, label: "Robustesse testée sur un couplage non diffusif" },
-  { done: false, label: "Testé sur un réseau réel irrégulier (communes françaises)" },
+  { done: true, label: "Testé sur un réseau réel irrégulier (communes françaises)" },
   { done: true, label: "Fenêtres finies et bruit d'estimation (déjà inhérent au Monte-Carlo)" },
-  { done: false, label: "Confronté aux épisodes historiques réels" },
+  { done: true, label: "Confronté aux épisodes historiques réels" },
 ];
 
 export const JOURNAL_REFERENCES = [

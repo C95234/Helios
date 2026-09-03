@@ -1,0 +1,53 @@
+{
+  "ring_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 40,
+    "n_tipped": 40,
+    "n_precedence": 35,
+    "n_valid": 40,
+    "precedence_rate": 0.875,
+    "advance_var": 217.4,
+    "advance_moran": 167.1
+  },
+  "ring_contagion": {
+    "coupling": "contagion",
+    "n_reps": 40,
+    "n_tipped": 40,
+    "n_precedence": 35,
+    "n_valid": 40,
+    "precedence_rate": 0.875,
+    "advance_var": 217.1,
+    "advance_moran": 166.7
+  },
+  "irregular_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 20,
+    "n_tipped": 20,
+    "n_precedence": 16,
+    "n_valid": 20,
+    "precedence_rate": 0.8,
+    "advance_var": 224.8,
+    "advance_moran": 171.3
+  },
+  "real_network_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 20,
+    "n_tipped": 20,
+    "n_precedence": 15,
+    "n_valid": 20,
+    "precedence_rate": 0.75,
+    "advance_var": 222.0,
+    "advance_moran": 184.1
+  },
+  "real_network_contagion": {
+    "coupling": "contagion",
+    "n_reps": 20,
+    "n_tipped": 20,
+    "n_precedence": 15,
+    "n_valid": 20,
+    "precedence_rate": 0.75,
+    "advance_var": 221.8,
+    "advance_moran": 182.0
+  },
+  "n_departments": 96
+}
