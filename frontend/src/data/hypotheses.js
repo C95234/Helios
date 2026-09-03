@@ -40,9 +40,22 @@ export const HYPOTHESES = [
       "Testable dès maintenant, avec une adaptation assumée : la p-value spatiale est un instantané (pas une tendance, faute de données départementales assez fréquentes), et la loi nulle jointe est calibrée par comparaison à l'historique réel 2000-2026 plutôt que par surrogates synthétiques couplés. Voir les détails sur la page de test.",
     link: { to: "/tester-h3", label: "Tester H3 sur un phénomène réel" },
   },
+  {
+    code: "H4",
+    title: "Contrôle actif de la synchronisation (inspiré du RCA)",
+    simple:
+      "Peut-on empêcher une bascule collective sans supprimer l'activité individuelle -- en affaiblissant seulement les liens entre les éléments qui sont en train de se synchroniser entre eux, plutôt qu'en réduisant tout le système au silence ?",
+    expert:
+      "Un couplage adaptatif par paire, qui s'affaiblit localement tant qu'une paire d'oscillateurs reste verrouillée en phase, peut maintenir le paramètre d'ordre collectif $r$ sous un seuil $r_c$ malgré les mêmes perturbations qui feraient basculer le système sous couplage fixe (§5.8).",
+    status: "simulation",
+    statusNote:
+      "H4 est d'une autre nature que H1-H3 : une démonstration de principe en simulation (modèle de Kuramoto), jamais un test statistique contre des données réelles. Aucun verdict « confirmée / infirmée » n'est jamais attaché à ses résultats.",
+    link: { to: "/tester-h4", label: "Lancer la simulation H4" },
+  },
 ];
 
 export const STATUS_LABELS = {
   testable: "Testable (préliminaire, un épisode à la fois)",
   "non-disponible": "Pas encore testable",
+  simulation: "Simulation pédagogique (pas un test statistique)",
 };

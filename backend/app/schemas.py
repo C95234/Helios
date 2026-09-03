@@ -189,3 +189,37 @@ class H1AggregateResponse(BaseModel):
     n_neutral: int
     results: list[H1Response]
     errors: list[str]
+
+
+class KuramotoTraceOut(BaseModel):
+    time: list[float]
+    values: list[float]
+
+
+class H4Response(BaseModel):
+    """Simulateur H4 (§5.8) -- PAS un test statistique. Aucun champ ici ne
+    doit jamais etre lu comme "confirme/infirme" : c'est une demonstration
+    de principe, toujours accompagnee de `simulation_disclaimer`.
+    """
+
+    n_oscillators: int
+    coupling_k: float
+    critical_coupling: float
+    r_threshold: float
+    beta: float
+    duration: float
+    dt: float
+    seed: int | None
+    r_uncontrolled: KuramotoTraceOut
+    r_controlled: KuramotoTraceOut
+    mean_coupling_controlled: KuramotoTraceOut
+    r_mean_uncontrolled: float
+    r_mean_controlled: float
+    r_final_uncontrolled: float
+    r_final_controlled: float
+    is_pedagogical_simulation: bool = True
+    simulation_disclaimer: str = (
+        "H4 est une simulation pédagogique de principe (modèle de Kuramoto), pas un test statistique "
+        "contre des données réelles comme H1, H2 ou H3. Elle illustre un mécanisme possible, elle ne le "
+        "prouve pas dans le monde réel. Jamais de verdict « confirmée / infirmée » ici."
+    )

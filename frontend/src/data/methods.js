@@ -137,6 +137,30 @@ export const METHODS = {
       "Brown, M. B. (1975). « A method for combining non-independent, one-sided tests of significance. » Biometrics, 31(4), 987–992.",
     ],
   },
+  kuramoto_h4: {
+    label: "Modèle de Kuramoto et contrôle adaptatif (H4)",
+    simple:
+      "On modélise N oscillateurs -- imaginez N métronomes qui battent chacun à son propre rythme -- reliés entre eux par un couplage K : plus K est fort, plus ils tirent les uns sur les autres pour s'aligner. Au-delà d'un certain seuil de couplage, ils basculent brutalement dans un rythme commun (synchronisation). Une régulation qui affaiblit localement le lien entre les paires en train de se verrouiller peut empêcher cette bascule collective, sans réduire l'activité individuelle à zéro -- ne pas supprimer les turbulences, empêcher seulement leur synchronisation.",
+    formula: "\\dot\\theta_i = \\omega_i + \\frac{K}{N}\\sum_{j=1}^N \\sin(\\theta_j - \\theta_i), \\qquad i=1,\\dots,N",
+    derivationSteps: [
+      { text: "Chaque oscillateur $i$ a une phase $\\theta_i(t)$ et une fréquence propre $\\omega_i$, tirée d'une loi symétrique unimodale $g(\\omega)$ (ici une loi normale centrée). Le degré de synchronisation collective se mesure par le paramètre d'ordre :" },
+      { tex: "r\\,e^{i\\psi} = \\frac{1}{N}\\sum_{j=1}^N e^{i\\theta_j}, \\qquad r \\in [0,1]", block: true },
+      { text: "$r=0$ : phases dispersées sur tout le cercle (incohérence). $r=1$ : toutes les phases confondues (synchronisation totale). En multipliant cette définition par $e^{-i\\theta_i}$ et en prenant la partie imaginaire, le terme de couplage se réécrit exactement en fonction du seul champ moyen $(r,\\psi)$ -- chaque oscillateur ne « voit » plus les $N-1$ autres individuellement, seulement la moyenne collective :" },
+      { tex: "\\dot\\theta_i = \\omega_i + K r \\sin(\\psi - \\theta_i)", block: true },
+      { text: "C'est la réduction en champ moyen (Kuramoto, 1975). Par symétrie de $g(\\omega)$, on peut fixer $\\psi=0$. Un oscillateur reste « verrouillé » (phase constante dans le référentiel tournant) tant que $|\\omega_i| \\le Kr$, avec $\\theta_i = \\arcsin(\\omega_i / Kr)$ ; au-delà, il continue de dériver librement. Seuls les oscillateurs verrouillés contribuent à $r$ à l'équilibre, ce qui donne l'équation d'auto-cohérence (changement de variable $\\omega = Kr\\sin\\theta$) :" },
+      { tex: "r = Kr \\int_{-\\pi/2}^{\\pi/2} \\cos^2(\\theta)\\, g(Kr\\sin\\theta)\\, d\\theta", block: true },
+      { text: "Près du seuil ($r \\to 0^+$), $g(Kr\\sin\\theta) \\approx g(0)$, donc l'intégrale se calcule directement ($\\int_{-\\pi/2}^{\\pi/2}\\cos^2\\theta\\,d\\theta = \\pi/2$) et $r$ se simplifie des deux côtés :" },
+      { tex: "1 = K\\,g(0)\\,\\frac{\\pi}{2} \\quad\\Longrightarrow\\quad K_c = \\frac{2}{\\pi\\,g(0)}", block: true },
+      { text: "En dessous de $K_c$, le système reste incohérent ($r \\approx 0$) ; au-delà, $r$ croît continûment depuis 0 (transition de phase du second ordre, Strogatz 2000) -- c'est la bascule collective que le module H4 illustre." },
+      { text: "Contrôle adaptatif (inspiré du RCA, §5.8) : au lieu d'un $K$ global fixe, chaque paire $(i,j)$ a son propre couplage $K_{ij}(t)$, affaibli tant que la paire reste verrouillée en phase (mesuré par la vitesse angulaire relative $|\\dot\\theta_i - \\dot\\theta_j|$, proche de 0 pour une paire verrouillée), avec une lente relaxation vers $K_{base}$. Adaptation Hélios par rapport au texte du §5.8 (qui propose une règle sur $d|\\theta_i-\\theta_j|/dt$) : cette dérivée s'annule aussi une fois la paire verrouillée, donc une règle prise au pied de la lettre cesse d'agir dès que le verrouillage est atteint. La vitesse angulaire relative reste, elle, un indicateur direct et permanent du verrouillage, ce qui rend la suppression active en régime établi -- même principe, mécanisme rendu effectif." },
+      { text: "Objectif du contrôle : ni $r=0$ (rigidité totale, coûteuse) ni $r=1$ (bascule), mais un maintien de $r$ sous un seuil $r_c$ choisi, malgré les mêmes perturbations que la simulation non contrôlée." },
+    ],
+    references: [
+      "Kuramoto, Y. (1975). « Self-entrainment of a population of coupled non-linear oscillators. » Lecture Notes in Physics, 39, 420–422.",
+      "Strogatz, S. H. (2000). « From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. » Physica D, 143(1-4), 1–20.",
+      "Popovych, O. V., & Tass, P. A. (2012). « Desynchronizing electrical and sensory coordinated reset neuromodulation. » Frontiers in Human Neuroscience, 6, 58.",
+    ],
+  },
 };
 
 /** Bibliographie complète (§12) -- affichée en un seul endroit pour référence croisée. */

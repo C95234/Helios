@@ -3,7 +3,7 @@ import { api } from "../api.js";
 import { BIBLIOGRAPHY } from "../data/methods.js";
 import MethodNote from "../components/MethodNote.jsx";
 
-const METHOD_ORDER = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test", "morans_i", "permutation_test", "moran_trend", "h3_joint"];
+const METHOD_ORDER = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test", "morans_i", "permutation_test", "moran_trend", "h3_joint", "kuramoto_h4"];
 
 export default function Donnees() {
   const [connectors, setConnectors] = useState([]);
