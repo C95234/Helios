@@ -7,13 +7,10 @@ import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
+import { h3Outcome } from "../outcomes.js";
 
 const HISTORY_PAGE = "h3";
 const METHOD_KEYS = ["h3_joint"];
-
-function h3Outcome(result) {
-  return result.significant_at_0_05 ? "favorable" : "neutral";
-}
 
 export default function TestH3() {
   const [phenomena, setPhenomena] = useState([]);

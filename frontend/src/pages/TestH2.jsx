@@ -8,15 +8,10 @@ import MethodNote from "../components/MethodNote.jsx";
 import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
+import { h2Outcome } from "../outcomes.js";
 
 const HISTORY_PAGE = "h2";
 const NETWORK_METHOD_KEYS = ["morans_i", "moran_trend", "permutation_test"];
-
-function h2Outcome(result) {
-  const realSig = result.real_network.trend.significant_at_0_05;
-  const gridSig = result.control_grid.trend.significant_at_0_05;
-  return realSig !== gridSig ? "favorable" : "neutral";
-}
 
 function NetworkBlock({ label, data, note, color }) {
   const [expertMode, setExpertMode] = useState(false);

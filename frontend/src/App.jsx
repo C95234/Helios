@@ -7,6 +7,7 @@ import TestH1 from "./pages/TestH1.jsx";
 import TestH2 from "./pages/TestH2.jsx";
 import TestH3 from "./pages/TestH3.jsx";
 import Donnees from "./pages/Donnees.jsx";
+import Bilan from "./pages/Bilan.jsx";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <NavLink to="/tester-h1">Tester H1</NavLink>
           <NavLink to="/tester-h2">Tester H2</NavLink>
           <NavLink to="/tester-h3">Tester H3</NavLink>
+          <NavLink to="/bilan">Bilan</NavLink>
           <NavLink to="/analyser">Analyser une série INSEE</NavLink>
           <NavLink to="/donnees">Données & méthode</NavLink>
         </nav>
@@ -37,6 +39,7 @@ export default function App() {
           <Route path="/tester-h1" element={<TestH1 />} />
           <Route path="/tester-h2" element={<TestH2 />} />
           <Route path="/tester-h3" element={<TestH3 />} />
+          <Route path="/bilan" element={<Bilan />} />
           <Route path="/analyser" element={<Analyze />} />
           <Route path="/donnees" element={<Donnees />} />
         </Routes>

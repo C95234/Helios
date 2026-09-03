@@ -7,21 +7,12 @@ import MethodNote from "../components/MethodNote.jsx";
 import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
+import { h1Outcome } from "../outcomes.js";
 
 const HISTORY_PAGE = "h1";
 const HISTORY_PAGE_AGGREGATE = "h1_aggregate";
 
 const SIGNAL_METHOD_KEYS = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test"];
-
-function h1Outcome(result) {
-  const peakedBefore = result.decalage_jours !== null && result.decalage_jours > 0;
-  const peakedAfter = result.decalage_jours !== null && result.decalage_jours < 0;
-  const favorable = peakedBefore || (result.n_social_significant > 0 && result.n_official_significant === 0);
-  const against = peakedAfter || (result.n_official_significant > 0 && result.n_social_significant === 0);
-  if (favorable && !against) return "favorable";
-  if (against && !favorable) return "against";
-  return "neutral";
-}
 
 function SignalBlock({ analysis, color }) {
   const [expertMode, setExpertMode] = useState(false);
