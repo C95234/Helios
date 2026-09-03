@@ -8,6 +8,7 @@ import TestH2 from "./pages/TestH2.jsx";
 import TestH3 from "./pages/TestH3.jsx";
 import TestH4 from "./pages/TestH4.jsx";
 import JournalRecherche from "./pages/JournalRecherche.jsx";
+import BilanPublie from "./pages/BilanPublie.jsx";
 import Donnees from "./pages/Donnees.jsx";
 import Bilan from "./pages/Bilan.jsx";
 
@@ -29,7 +30,8 @@ export default function App() {
           <NavLink to="/tester-h3">Tester H3</NavLink>
           <NavLink to="/tester-h4">Simuler H4</NavLink>
           <NavLink to="/journal-recherche">Journal de recherche</NavLink>
-          <NavLink to="/bilan">Bilan</NavLink>
+          <NavLink to="/conclusions">Conclusions publiées</NavLink>
+          <NavLink to="/bilan">Mon historique</NavLink>
           <NavLink to="/analyser">Analyser une série INSEE</NavLink>
           <NavLink to="/donnees">Données & méthode</NavLink>
         </nav>
@@ -45,6 +47,7 @@ export default function App() {
           <Route path="/tester-h3" element={<TestH3 />} />
           <Route path="/tester-h4" element={<TestH4 />} />
           <Route path="/journal-recherche" element={<JournalRecherche />} />
+          <Route path="/conclusions" element={<BilanPublie />} />
           <Route path="/bilan" element={<Bilan />} />
           <Route path="/analyser" element={<Analyze />} />
           <Route path="/donnees" element={<Donnees />} />

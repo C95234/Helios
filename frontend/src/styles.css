@@ -992,6 +992,59 @@ main {
   margin: 1.5rem 0;
 }
 
+.hypothesis-statement {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  border-left: 2px solid var(--color-border);
+  padding-left: 0.9rem;
+  margin: 0.9rem 0 1.4rem;
+}
+
+.verdict-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 100px;
+}
+
+.verdict-badge--favorable {
+  background: #e8f2ec;
+  color: var(--color-calm);
+}
+
+.verdict-badge--against {
+  background: #fbeae5;
+  color: var(--color-warn);
+}
+
+.verdict-badge--neutral {
+  background: #faf1de;
+  color: var(--color-mid);
+}
+
+.verdict-badge--na {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.series-chart-legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.legend-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
 /* Export PDF (§7) : impression navigateur plutot qu'une bibliotheque dediee --
    le rendu KaTeX deja a l'ecran s'imprime fidelement. On ne garde que le
    contenu du rapport : navigation, controles, boutons et historique masques. */

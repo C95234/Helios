@@ -95,11 +95,17 @@ export default function Bilan() {
 
   return (
     <div className="page page-bilan">
-      <h1>Bilan : qu'est-ce que tout ça donne, au total ?</h1>
+      <h1>Mon historique : qu'est-ce que j'ai testé sur cet appareil ?</h1>
       <p className="lede">
-        Regroupe tous les tests lancés <strong>sur cet appareil</strong> (même limite que l'historique par
-        page : rien n'est partagé entre navigateurs ou appareils) et calcule un bilan honnête par hypothèse
-        — jamais un verdict plus catégorique que ce que le nombre d'épisodes testés ne permet (§7).
+        Regroupe les tests lancés <strong>depuis ce navigateur précis</strong> (stocké localement, rien n'est
+        partagé entre appareils ni envoyé à un serveur) et calcule un bilan honnête par hypothèse — jamais un
+        verdict plus catégorique que ce que le nombre d'épisodes testés ne permet (§7). Vide tant que tu n'as
+        rien lancé toi-même ici.
+      </p>
+      <p className="source-note">
+        Tu cherches les résultats officiels du projet (tous les phénomènes déjà testés, publiés une fois pour
+        toutes) ? Va voir les <Link to="/conclusions">Conclusions publiées</Link> — visibles par n'importe
+        quel visiteur, sans rien avoir à relancer.
       </p>
 
       {nothingYet && (

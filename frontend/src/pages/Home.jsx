@@ -53,6 +53,18 @@ export default function Home() {
       </section>
 
       <section className="hypotheses-teaser">
+        <h2>Ce que les tests donnent, une fois lancés à fond</h2>
+        <p>
+          H1, H2 et H3 testées sur un maximum de phénomènes réels disponibles, H4 sur plusieurs
+          configurations de simulation — résultats honnêtes, y compris ce qui ne va pas dans le sens
+          attendu.
+        </p>
+        <Link to="/conclusions" className="cta secondary">
+          Voir les conclusions publiées
+        </Link>
+      </section>
+
+      <section className="hypotheses-teaser">
         <h2>Le raisonnement scientifique, sans rien cacher</h2>
         <p>
           Avant de construire l'hypothèse H3, il fallait vérifier un postulat : le signal temporel
