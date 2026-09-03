@@ -1,9 +1,27 @@
 import { METHODS } from "../data/methods.js";
+import Math from "./Math.jsx";
+
+/** Découpe un texte contenant des segments $...$ et rend chacun en LaTeX inline. */
+function TextWithMath({ text }) {
+  const parts = text.split(/(\$[^$]+\$)/g);
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith("$") && part.endsWith("$") ? (
+          <Math key={i} tex={part.slice(1, -1)} />
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+}
 
 /**
  * Explication de méthode statistique, déclinée en simplifié ou expert -- §3 :
- * jamais un résultat affiché sans son équivalent en langage courant, et jamais
- * un résultat expert sans formule + référence.
+ * jamais un résultat affiché sans son équivalent en langage courant, et le
+ * mode expert doit montrer la DÉMONSTRATION complète (pas seulement la
+ * formule), rendue en LaTeX, avec la référence bibliographique exacte.
  */
 export default function MethodNote({ methodKeys, expertMode }) {
   const keys = Array.isArray(methodKeys) ? methodKeys : [methodKeys];
@@ -32,9 +50,33 @@ export default function MethodNote({ methodKeys, expertMode }) {
         return (
           <div key={key} className="method-note">
             <p className="method-note-label">{m.label}</p>
-            <code className="method-note-formula">{m.formula}</code>
-            <p className="method-note-detail">{m.detail}</p>
-            <p className="method-note-ref">{m.reference}</p>
+            <Math tex={m.formula} block />
+
+            {m.derivationSteps ? (
+              <div className="method-note-derivation">
+                {m.derivationSteps.map((step, i) =>
+                  step.tex ? (
+                    <Math key={i} tex={step.tex} block={step.block} />
+                  ) : (
+                    <p key={i} className="method-note-detail">
+                      <TextWithMath text={step.text} />
+                    </p>
+                  )
+                )}
+              </div>
+            ) : (
+              <p className="method-note-detail">
+                <TextWithMath text={m.detail} />
+              </p>
+            )}
+
+            <ul className="method-note-refs">
+              {m.references.map((ref, i) => (
+                <li key={i} className="method-note-ref">
+                  {ref}
+                </li>
+              ))}
+            </ul>
           </div>
         );
       })}

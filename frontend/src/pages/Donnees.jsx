@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { api } from "../api.js";
-import { METHODS } from "../data/methods.js";
+import { BIBLIOGRAPHY } from "../data/methods.js";
+import MethodNote from "../components/MethodNote.jsx";
 
-const METHOD_ORDER = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test", "morans_i", "permutation_test", "moran_trend"];
+const METHOD_ORDER = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test", "morans_i", "permutation_test", "moran_trend", "h3_joint"];
 
 export default function Donnees() {
   const [connectors, setConnectors] = useState([]);
@@ -74,21 +75,11 @@ export default function Donnees() {
           Une fois les données mises en forme, Hélios leur applique une poignée d'outils statistiques —
           toujours les mêmes, documentés en méthode standard, jamais inventés pour l'occasion. Chaque
           résultat affiché dans l'application montre une explication en langage courant par défaut ; voici
-          la version complète (formule + référence) de chacun.
+          la démonstration complète (pas seulement la formule finale) de chacun, avec sa référence exacte —
+          §3 du cahier des charges.
         </p>
         <div className="method-reference-list">
-          {METHOD_ORDER.map((key) => {
-            const m = METHODS[key];
-            return (
-              <div key={key} className="method-reference-card">
-                <h3>{m.label}</h3>
-                <p className="text-muted">{m.simple}</p>
-                <code className="method-note-formula">{m.formula}</code>
-                <p className="method-note-detail">{m.detail}</p>
-                <p className="method-note-ref">{m.reference}</p>
-              </div>
-            );
-          })}
+          <MethodNote methodKeys={METHOD_ORDER} expertMode={true} />
         </div>
         <p className="text-muted" style={{ marginTop: "1rem" }}>
           <strong>Un revers à connaître :</strong> tester beaucoup de signaux à la fois (Hélios en teste
@@ -128,6 +119,19 @@ export default function Donnees() {
             identifiée — et jamais de verdict « confirmée » sur un seul épisode testé.
           </li>
         </ul>
+      </section>
+
+      <section>
+        <h2>Bibliographie complète</h2>
+        <p className="text-muted">
+          Toute affirmation théorique du §5 est accompagnée de sa référence exacte dans l'interface (mode
+          expert), pas seulement d'un nom d'auteur — §12 du cahier des charges.
+        </p>
+        <ol className="bibliography-list">
+          {BIBLIOGRAPHY.map((ref, i) => (
+            <li key={i}>{ref}</li>
+          ))}
+        </ol>
       </section>
     </div>
   );

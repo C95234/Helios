@@ -1,80 +1,158 @@
 /**
- * Explications des outils statistiques utilisés par Hélios -- cahier des charges §3 :
- * "Mode expert : la formule, la méthode statistique, les valeurs numériques, les
- * références bibliographiques." Contenu centralisé pour rester cohérent partout où
- * un résultat s'appuie sur l'une de ces méthodes (démo, analyse, H1, H2).
+ * Explications des outils statistiques utilisés par Hélios -- cahier des charges §3, §5, §12.
+ *
+ * §3 (version révisée) : le mode expert doit afficher la DÉMONSTRATION complète,
+ * pas seulement la formule finale, rendue en LaTeX (KaTeX) -- et chaque formule
+ * doit citer sa référence exacte (§12), pas juste un nom d'auteur.
+ *
+ * `derivationSteps` (quand présent) reprend le contenu obligatoire fourni par
+ * le cahier des charges lui-même (§5.1bis, §5.6) -- verbatim, pas reformulé.
+ * Les méthodes qui n'ont pas de démonstration imposée par le cahier des
+ * charges (Kendall, Moran, permutation) gardent une explication plus courte,
+ * mais toujours avec la formule en LaTeX et une référence exacte.
  */
 export const METHODS = {
   rolling_variance: {
     label: "Variance glissante",
     simple:
       "On regarde, sur une fenêtre de quelques points qui avance dans le temps, à quel point la série s'écarte de sa propre moyenne récente. Plus cet écart grandit, plus le système « tremble ».",
-    formula: "Var_w(x_t) = variance des points [x_{t-w+1}, ..., x_t]",
+    formula: "\\text{Var}_w(x_t)",
+    derivationSteps: [
+      { text: "Soit un système dynamique au voisinage d'un équilibre stable $x^*$ :" },
+      { tex: "dx = f(x,\\mu)\\,dt + \\sigma\\,dW", block: true },
+      { text: "En linéarisant autour de $x^*$ :" },
+      {
+        tex: "dx \\approx \\lambda(\\mu)(x-x^*)\\,dt + \\sigma\\,dW, \\qquad \\lambda(\\mu) = \\frac{\\partial f}{\\partial x}\\Big|_{x^*} < 0",
+        block: true,
+      },
+      { text: "C'est un processus d'Ornstein-Uhlenbeck. Sa variance stationnaire et son autocorrélation à lag-1 (temps discret, pas $\\Delta t$) ont une forme connue :" },
+      {
+        tex: "\\text{Var}(x) = \\frac{\\sigma^2}{2|\\lambda|}, \\qquad \\text{AC1} = e^{\\lambda \\Delta t} \\approx 1 + \\lambda \\Delta t",
+        block: true,
+      },
+      {
+        text: "Près d'une bifurcation (fold/transcritique), $\\lambda \\to 0^-$ : le dénominateur de la variance s'effondre (variance $\\to \\infty$) et AC1 $\\to 1$. C'est ce mécanisme — pas une corrélation empirique observée a posteriori — qui justifie que ces deux indicateurs montent avant une rupture.",
+      },
+    ],
     detail:
-      "Fenêtre glissante de taille w, variance non biaisée (ddof=1, comme pandas.Series.rolling(w).var()). Une hausse de la variance glissante avant une bascule est le signal précurseur le plus documenté de la littérature sur le ralentissement critique.",
-    reference: "Scheffer et al., Nature 2009 ; Dakos et al., PLOS ONE 2012.",
+      "En pratique : fenêtre glissante de taille w, variance non biaisée (ddof=1, comme pandas.Series.rolling(w).var()) -- estimateur empirique de Var(x) ci-dessus sur une fenêtre finie.",
+    references: ["Ives, A. R. (1995). « Measuring resilience in stochastic systems. » Ecological Monographs, 65(2), 217–233.", "Scheffer, M. et al. (2009). « Early-warning signals for critical transitions. » Nature, 461, 53–59."],
   },
   rolling_ac1: {
     label: "Autocorrélation à lag-1 (AC1)",
     simple:
       "On mesure, sur la même fenêtre glissante, à quel point chaque valeur ressemble à celle qui la précède immédiatement. Si le système « oublie » de plus en plus lentement ses propres à-coups, c'est le signe classique qu'il approche d'un point de bascule.",
-    formula: "AC1_w(x_t) = Corr(x_{t-w+1..t-1}, x_{t-w+2..t})",
+    formula: "\\text{AC1}_w(x_t) = \\text{Corr}(x_t, x_{t-1})",
+    derivationSteps: [
+      { text: "Même dérivation que la variance glissante (processus d'Ornstein-Uhlenbeck linéarisé près de l'équilibre) :" },
+      {
+        tex: "dx \\approx \\lambda(\\mu)(x-x^*)\\,dt + \\sigma\\,dW, \\qquad \\lambda(\\mu) < 0",
+        block: true,
+      },
+      {
+        tex: "\\text{AC1} = e^{\\lambda \\Delta t} \\approx 1 + \\lambda \\Delta t",
+        block: true,
+      },
+      {
+        text: "Près d'une bifurcation, $\\lambda \\to 0^-$ donc AC1 $\\to 1$ : le système « oublie » de plus en plus lentement ses perturbations. Mécanisme dynamique, pas coïncidence statistique.",
+      },
+    ],
     detail:
-      "Calculée avec statsmodels.tsa.stattools.acf (nlags=1) sur chaque fenêtre glissante -- la même fonction de référence utilisée pour valider l'implémentation à ±1e-6 près. Un ralentissement de la dynamique interne du système se traduit mécaniquement par une AC1 plus proche de 1.",
-    reference: "Scheffer et al., Nature 2009 ; Dakos et al., PLOS ONE 2012.",
+      "Calculée avec statsmodels.tsa.stattools.acf (nlags=1) sur chaque fenêtre glissante -- la même fonction de référence utilisée pour valider l'implémentation à ±1e-6 près (§11).",
+    references: ["Ives, A. R. (1995). « Measuring resilience in stochastic systems. » Ecological Monographs, 65(2), 217–233.", "Scheffer, M. et al. (2009). « Early-warning signals for critical transitions. » Nature, 461, 53–59."],
   },
   kendall_tau: {
     label: "Tendance (tau de Kendall)",
     simple:
       "Une fois la variance ou l'AC1 calculée point par point, on se demande si elle a une vraie tendance à la hausse dans le temps, ou si elle monte et descend sans direction claire.",
-    formula: "τ = (paires concordantes − paires discordantes) / [n(n−1)/2]",
+    formula: "\\tau = \\frac{n_c - n_d}{n(n-1)/2}",
     detail:
-      "Corrélation de rang entre l'indicateur et le temps (scipy.stats.kendalltau). τ proche de +1 = tendance à la hausse quasi parfaite ; proche de 0 = pas de tendance. Ce tau seul ne suffit jamais à conclure : voir le test par données de substitution ci-dessous.",
-    reference: "Kendall, Biometrika 1938.",
+      "$n_c$ = paires concordantes, $n_d$ = paires discordantes, entre l'indicateur et le temps (scipy.stats.kendalltau). $\\tau$ proche de $+1$ = tendance à la hausse quasi parfaite ; proche de 0 = pas de tendance. Ce $\\tau$ seul ne suffit jamais à conclure : voir le test par données de substitution (§5.4).",
+    references: ["Kendall, M. G. (1938). « A New Measure of Rank Correlation. » Biometrika, 30(1/2), 81–93."],
   },
   surrogate_test: {
     label: "Test par données de substitution (surrogates)",
     simple:
       "Une tendance à la hausse peut arriver par pur hasard sur une série bruitée. Pour vérifier que ce n'est pas le cas, on fabrique des milliers de fausses versions de la même série -- avec le même « bruit de fond », mais sans tendance -- et on regarde si la vraie tendance dépasse presque toutes les fausses.",
-    formula: "p = #{τ_substitution ≥ τ_observé} / nombre de substitutions",
+    formula: "p = \\frac{\\#\\{\\tau_{\\text{substitution}} \\geq \\tau_{\\text{observé}}\\}}{M}",
     detail:
-      "Les séries de substitution sont générées par randomisation de phase (on garde le spectre de puissance de Fourier -- donc la « couleur » du bruit -- mais on détruit toute tendance ou structure non linéaire en tirant des phases aléatoires). C'est la méthode standard de la littérature EWS, pas une invention propre à Hélios.",
-    reference: "Theiler et al., Physica D 1992 ; méthode de substitution appliquée aux EWS : Dakos et al., PLOS ONE 2012.",
+      "Les séries de substitution sont générées par randomisation de phase (Theiler et al., 1992) : on garde le spectre de puissance de Fourier -- donc la « couleur » du bruit -- mais on détruit toute tendance ou structure non linéaire en tirant des phases aléatoires. C'est la méthode standard de la littérature EWS (§5.4), pas une invention propre à Hélios.",
+    references: ["Theiler, J. et al. (1992). « Testing for nonlinearity in time series: the method of surrogate data. » Physica D, 58(1-4), 77–94.", "Dakos, V. et al. (2012). « Methods for Detecting Early Warnings of Critical Transitions in Time Series. » PLoS ONE, 7(7), e41010."],
   },
   morans_i: {
     label: "Indice de Moran",
     simple:
       "Version géographique de la même idée : est-ce que des territoires voisins se ressemblent plus entre eux que ce que le hasard produirait ? Un indice élevé veut dire que les voisins évoluent ensemble -- une synchronisation spatiale.",
-    formula: "I = (N / S₀) × [Σᵢⱼ wᵢⱼ(xᵢ−x̄)(xⱼ−x̄)] / Σᵢ(xᵢ−x̄)²",
+    formula:
+      "I_t = \\frac{N}{\\sum_{i,j} w_{ij}} \\cdot \\frac{\\sum_{i,j} w_{ij}(x_i-\\bar{x})(x_j-\\bar{x})}{\\sum_i (x_i-\\bar{x})^2}",
     detail:
-      "N = nombre de territoires, wᵢⱼ = 1 si i et j sont voisins (0 sinon), S₀ = somme de tous les wᵢⱼ, x̄ = moyenne. Implémentation vérifiée par un exemple calculé à la main (chaîne de 4 nœuds, I = 1/3 exact) et par des propriétés connues (damier → I très négatif, gradient → I très positif).",
-    reference: "Moran, Biometrika 1950.",
+      "$N$ = nombre de territoires, $w_{ij}=1$ si $i$ et $j$ sont voisins (0 sinon), $\\bar{x}$ = moyenne. Une hausse de $I_t$ dans le temps indique une synchronisation croissante entre territoires voisins (§5.2). Implémentation vérifiée par un exemple calculé à la main (chaîne de 4 nœuds, $I=1/3$ exact) et par des propriétés connues (damier → $I$ très négatif, gradient → $I$ très positif).",
+    references: ["Moran, P. A. P. (1950). « Notes on Continuous Stochastic Phenomena. » Biometrika, 37(1/2), 17–23.", "Dakos, V. et al. (2010). « Spatial correlation as leading indicator of catastrophic shifts. » Theoretical Ecology, 3, 163–174.", "MacLaren, N. G., Aihara, K., & Masuda, N. (2025). « Applicability of spatial early warning signals to complex network dynamics. » Journal of the Royal Society Interface, 22(226), 20240696."],
   },
   permutation_test: {
     label: "Test par permutation (indice de Moran)",
     simple:
       "Équivalent géographique du test par substitution : on redistribue les valeurs au hasard entre les territoires, en gardant le réseau de voisinage fixe, et on regarde si l'indice de Moran observé dépasse presque toutes les versions mélangées.",
-    formula: "p = #{I_permutation ≥ I_observé} / nombre de permutations",
+    formula: "p = \\frac{\\#\\{I_{\\text{permutation}} \\geq I_{\\text{observé}}\\}}{M}",
     detail:
-      "Sous l'hypothèse nulle (aucune structure spatiale réelle), l'espérance théorique de l'indice de Moran vaut −1/(N−1) -- propriété vérifiée dans les tests automatisés d'Hélios.",
-    reference: "Méthode standard d'inférence pour l'indice de Moran (voir Cliff & Ord, 1981).",
-  },
-  h3_joint: {
-    label: "Statistique jointe H3 (bootstrap couplé par période)",
-    simple:
-      "On combine le signal temporel national et le signal spatial départemental d'un même phénomène en une seule note, puis on compare cette note à celles obtenues sur chaque trimestre des 26 dernières années. Si la note du phénomène dépasse presque toutes les autres, c'est que les deux signaux sont inhabituels EN MÊME TEMPS -- pas juste l'un ou l'autre séparément.",
-    formula: "T = -2·[ln(p_temporel) + ln(p_spatial)] ; p_joint = #{T_historique ≥ T_observé} / nb trimestres",
-    detail:
-      "p_temporel et p_spatial sont des p-values de RANG : la proportion de trimestres historiques (2000-2026) où le signal correspondant était au moins aussi extrême. La loi nulle de T n'est PAS générée par des surrogates synthétiques : elle est calculée sur les VRAIES paires historiques (tendance nationale, indice de Moran) du même trimestre -- ce qui préserve automatiquement toute corrélation réelle entre les deux, sans supposer l'indépendance qu'interdit le §5.6 pour la loi du χ² théorique.",
-    reference: "Fisher, Statistical Methods for Research Workers, 1925 (combinaison) ; calibration empirique par historique réel plutôt que par surrogates -- choix méthodologique propre à Hélios pour H3, documenté comme tel.",
+      "Sous l'hypothèse nulle (aucune structure spatiale réelle), l'espérance théorique de l'indice de Moran vaut $-1/(N-1)$ -- propriété vérifiée dans les tests automatisés d'Hélios.",
+    references: ["Cliff, A. D., & Ord, J. K. (1981). Spatial Processes: Models & Applications. Pion."],
   },
   moran_trend: {
     label: "Tendance de l'indice de Moran dans le temps",
     simple:
       "Une fois l'indice de Moran calculé à chaque trimestre, on applique exactement le même test de tendance que pour la variance et l'AC1 (tau de Kendall + substitutions) -- mais sur cette série d'indices spatiaux plutôt que sur la série brute.",
-    formula: "Même méthode que le test par substitution ci-dessus, appliquée à la série (I_t) déjà calculée.",
+    formula: "p = \\frac{\\#\\{\\tau_{\\text{substitution}} \\geq \\tau_{\\text{observé}}\\}}{M} \\quad \\text{appliqué à } (I_t)",
     detail:
-      "Une hausse significative de l'indice de Moran dans le temps indiquerait une synchronisation spatiale croissante -- le signal précurseur spatial décrit au §5.2 du cahier des charges.",
-    reference: "Dakos et al., PLOS ONE 2012 (principe de substitution appliqué à un indicateur dérivé).",
+      "Une hausse significative de l'indice de Moran dans le temps indiquerait une synchronisation spatiale croissante -- le signal précurseur spatial décrit au §5.2.",
+    references: ["Dakos, V. et al. (2012). « Methods for Detecting Early Warnings of Critical Transitions in Time Series. » PLoS ONE, 7(7), e41010."],
+  },
+  h3_joint: {
+    label: "Statistique jointe H3",
+    simple:
+      "On combine le signal temporel national et le signal spatial départemental d'un même phénomène en une seule note, puis on compare cette note à celles obtenues sur chaque trimestre des 26 dernières années. Si la note du phénomène dépasse presque toutes les autres, c'est que les deux signaux sont inhabituels EN MÊME TEMPS -- pas juste l'un ou l'autre séparément.",
+    formula: "T = -2\\sum_{i=1}^{k} \\ln(p_i)",
+    derivationSteps: [
+      {
+        text: "Sous $H_0$, si les $p_i$ sont indépendantes et uniformes sur $[0,1]$, alors :",
+      },
+      { tex: "-2\\ln(p_i) \\sim \\chi^2(2)", block: true },
+      { text: "(transformation standard d'une uniforme). La somme de $k$ variables $\\chi^2(2)$ indépendantes suit une $\\chi^2(2k)$ :" },
+      { tex: "T = \\sum_{i=1}^{k} -2\\ln(p_i) \\sim \\chi^2(2k)", block: true },
+      {
+        text: "C'est la justification de la loi de Fisher (1925). Mais quand les $p_i$ sont corrélées (ce qui est le cas ici : les indicateurs sont calculés sur le même système économique sous-jacent), $\\text{Var}(T)$ diffère de la variance théorique de la $\\chi^2(2k)$ : la covariance entre les termes $-2\\ln(p_i)$ n'est plus nulle, donc utiliser le seuil théorique sous- ou sur-estime le vrai taux de faux positifs selon le signe de cette covariance.",
+      },
+      {
+        text: "Adaptation Hélios : plutôt que de générer des surrogates synthétiques à phase aléatoire couplés (§5.6 étape 4, un problème de recherche ouvert vu les contraintes de données -- voir /hypotheses), $p_{joint}$ est calibré directement contre l'historique réel 2000-2026 :",
+      },
+      { tex: "p_{joint} = \\frac{\\#\\{T_{\\text{historique}} \\geq T_{\\text{observé}}\\}}{n_{\\text{trimestres}}}", block: true },
+      {
+        text: "Cette calibration empirique par l'historique réel préserve automatiquement toute corrélation réelle entre les deux composantes, sans supposer l'indépendance -- même objectif que l'étape 4 du §5.6, méthode différente, documentée comme telle.",
+      },
+    ],
+    detail:
+      "$p_i$ = p-value de rang empirique (proportion de trimestres historiques au moins aussi extrêmes), pas une p-value de surrogates synthétiques -- voir la page Tester H3 pour le détail complet.",
+    references: [
+      "Fisher, R. A. (1925). Statistical Methods for Research Workers. Oliver and Boyd.",
+      "Brown, M. B. (1975). « A method for combining non-independent, one-sided tests of significance. » Biometrics, 31(4), 987–992.",
+    ],
   },
 };
+
+/** Bibliographie complète (§12) -- affichée en un seul endroit pour référence croisée. */
+export const BIBLIOGRAPHY = [
+  "Ives, A. R. (1995). « Measuring resilience in stochastic systems. » Ecological Monographs, 65(2), 217–233.",
+  "Scheffer, M., Bascompte, J., Brock, W. A., Brovkin, V., Carpenter, S. R., Dakos, V., Held, H., van Nes, E. H., Rietkerk, M., & Sugihara, G. (2009). « Early-warning signals for critical transitions. » Nature, 461, 53–59.",
+  "Dakos, V., Carpenter, S. R., Brock, W. A., Ellison, A. M., Guttal, V., Ives, A. R., Kéfi, S., Livina, V., Seekell, D. A., van Nes, E. H., & Scheffer, M. (2012). « Methods for Detecting Early Warnings of Critical Transitions in Time Series Illustrated Using Simulated Ecological Data. » PLoS ONE, 7(7), e41010.",
+  "Fisher, R. A. (1925). Statistical Methods for Research Workers. Oliver and Boyd.",
+  "Brown, M. B. (1975). « A method for combining non-independent, one-sided tests of significance. » Biometrics, 31(4), 987–992.",
+  "Dakos, V., van Nes, E. H., Donangelo, R., Fort, H., & Scheffer, M. (2010). « Spatial correlation as leading indicator of catastrophic shifts. » Theoretical Ecology, 3, 163–174.",
+  "MacLaren, N. G., Aihara, K., & Masuda, N. (2025). « Applicability of spatial early warning signals to complex network dynamics. » Journal of the Royal Society Interface, 22(226), 20240696.",
+  "Kuramoto, Y. (1975). « Self-entrainment of a population of coupled non-linear oscillators. » Lecture Notes in Physics, 39, 420–422.",
+  "Strogatz, S. H. (2000). « From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators. » Physica D, 143(1-4), 1–20.",
+  "Popovych, O. V., & Tass, P. A. (2012). « Desynchronizing electrical and sensory coordinated reset neuromodulation. » Frontiers in Human Neuroscience, 6, 58.",
+  "Kendall, M. G. (1938). « A New Measure of Rank Correlation. » Biometrika, 30(1/2), 81–93.",
+  "Theiler, J., Eubank, S., Longtin, A., Galdrikian, B., & Farmer, J. D. (1992). « Testing for nonlinearity in time series: the method of surrogate data. » Physica D, 58(1-4), 77–94.",
+  "Moran, P. A. P. (1950). « Notes on Continuous Stochastic Phenomena. » Biometrika, 37(1/2), 17–23.",
+  "Cliff, A. D., & Ord, J. K. (1981). Spatial Processes: Models & Applications. Pion.",
+];
