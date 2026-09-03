@@ -6,11 +6,43 @@ import MethodNote from "../components/MethodNote.jsx";
 import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
+import ReportExport from "../components/ReportExport.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
 import { h3Outcome } from "../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../report.js";
 
 const HISTORY_PAGE = "h3";
 const METHOD_KEYS = ["h3_joint"];
+
+function buildH3Markdown(result) {
+  const lines = [
+    `# H3 — Indicateur joint : ${result.phenomenon_label}`,
+    "",
+    `Rapport généré le ${formatGeneratedAt()} par Hélios.`,
+    "",
+    result.phenomenon_description,
+    "",
+    "## Verdict",
+    "",
+    result.verdict_simple,
+    "",
+    "## Statistiques",
+    "",
+    `- tau national : ${result.observed_national_tau?.toFixed(3) ?? "n/a"}`,
+    `- Indice de Moran : ${result.observed_spatial_i?.toFixed(3) ?? "n/a"} (trimestre le plus proche : ${result.nearest_spatial_quarter ?? "n/a"})`,
+    `- p temporel (rang) : ${result.p_temporal_rank?.toFixed(3) ?? "n/a"}`,
+    `- p spatial (rang) : ${result.p_spatial_rank?.toFixed(3) ?? "n/a"}`,
+    `- T (Fisher) : ${result.t_observed?.toFixed(3) ?? "n/a"}`,
+    `- p_joint : ${result.p_joint?.toFixed(3) ?? "n/a"} (sur ${result.n_historical_windows} trimestres comparables, 2000-2026)`,
+    "",
+    "## Méthode",
+    "",
+    methodMarkdown("h3_joint"),
+    interpretationMarkdown("h3", h3Outcome(result)),
+    disclaimerMarkdown(result.n_episodes_tested, result.causal_disclaimer),
+  ];
+  return lines.join("\n");
+}
 
 export default function TestH3() {
   const [phenomena, setPhenomena] = useState([]);
@@ -179,6 +211,8 @@ export default function TestH3() {
           <InterpretationGuide hypothesis="h3" outcome={h3Outcome(result)} />
 
           <MethodDisclaimer nEpisodes={result.n_episodes_tested} />
+
+          <ReportExport buildMarkdown={() => buildH3Markdown(result)} filenameBase={`helios-h3-${slugify(result.phenomenon_label)}`} />
         </>
       )}
     </div>

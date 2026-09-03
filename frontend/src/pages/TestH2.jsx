@@ -7,8 +7,10 @@ import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
 import MethodNote from "../components/MethodNote.jsx";
 import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
+import ReportExport from "../components/ReportExport.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
 import { h2Outcome } from "../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown } from "../report.js";
 
 const HISTORY_PAGE = "h2";
 const NETWORK_METHOD_KEYS = ["morans_i", "moran_trend", "permutation_test"];
@@ -89,6 +91,41 @@ function NetworkBlock({ label, data, note, color }) {
       )}
     </div>
   );
+}
+
+function networkMarkdown(title, data) {
+  return [
+    `## ${title}`,
+    "",
+    `- Tendance sur 26 ans : tau de Kendall = ${data.trend.observed_tau?.toFixed(3) ?? "n/a"}, p = ${data.trend.p_value?.toFixed(3) ?? "n/a"} (${data.trend.significant_at_0_05 ? "significatif" : "non significatif"})`,
+    `- Dernier trimestre (permutation) : I = ${data.latest_snapshot.observed_i?.toFixed(3) ?? "n/a"}, p = ${data.latest_snapshot.p_value?.toFixed(3) ?? "n/a"} (${data.latest_snapshot.significant_at_0_05 ? "significatif" : "non significatif"})`,
+    "",
+  ].join("\n");
+}
+
+function buildH2Markdown(result) {
+  const lines = [
+    `# H2 — Robustesse sur réseau réel`,
+    "",
+    `Rapport généré le ${formatGeneratedAt()} par Hélios.`,
+    "",
+    `Période ${result.period_start} → ${result.period_end}, ${result.n_units} départements, ${result.n_quarters} trimestres, ${result.n_edges_real_network} paires de voisins sur le réseau réel, grille ${result.grid_shape[0]}×${result.grid_shape[1]}.`,
+    "",
+    "## Verdict",
+    "",
+    result.verdict_simple,
+    "",
+  ];
+  lines.push(networkMarkdown("Réseau réel (départements)", result.real_network));
+  lines.push(networkMarkdown("Grille de contrôle (artificielle)", result.control_grid));
+
+  lines.push("## Méthode", "");
+  for (const key of NETWORK_METHOD_KEYS) lines.push(methodMarkdown(key));
+
+  lines.push(interpretationMarkdown("h2", h2Outcome(result)));
+  lines.push(disclaimerMarkdown(result.n_episodes_tested, result.causal_disclaimer));
+
+  return lines.join("\n");
 }
 
 export default function TestH2() {
@@ -197,6 +234,8 @@ export default function TestH2() {
           <InterpretationGuide hypothesis="h2" outcome={h2Outcome(result)} />
 
           <MethodDisclaimer nEpisodes={result.n_episodes_tested} />
+
+          <ReportExport buildMarkdown={() => buildH2Markdown(result)} filenameBase={`helios-h2-${result.period_start}-${result.period_end}`} />
         </>
       )}
     </div>

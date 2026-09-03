@@ -984,3 +984,43 @@ main {
   font-size: 0.85rem;
   margin-top: -0.5rem;
 }
+
+.report-export {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+
+/* Export PDF (§7) : impression navigateur plutot qu'une bibliotheque dediee --
+   le rendu KaTeX deja a l'ecran s'imprime fidelement. On ne garde que le
+   contenu du rapport : navigation, controles, boutons et historique masques. */
+@media print {
+  .topbar,
+  .site-footer,
+  .controls,
+  .history-panel,
+  .mode-toggle,
+  .report-export,
+  .cta {
+    display: none !important;
+  }
+
+  body,
+  .app-shell,
+  main {
+    background: white;
+    color: black;
+  }
+
+  .page {
+    padding: 0;
+  }
+
+  .signal-block,
+  .journal-section,
+  .interpretation-guide,
+  .disclaimer {
+    break-inside: avoid;
+  }
+}

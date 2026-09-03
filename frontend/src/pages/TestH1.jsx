@@ -6,8 +6,10 @@ import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
 import MethodNote from "../components/MethodNote.jsx";
 import InterpretationGuide from "../components/InterpretationGuide.jsx";
 import HistoryPanel from "../components/HistoryPanel.jsx";
+import ReportExport from "../components/ReportExport.jsx";
 import { saveToHistory, loadHistory, clearHistory } from "../history.js";
 import { h1Outcome } from "../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../report.js";
 
 const HISTORY_PAGE = "h1";
 const HISTORY_PAGE_AGGREGATE = "h1_aggregate";
@@ -168,6 +170,51 @@ function AggregateSection() {
   );
 }
 
+function buildH1Markdown(result) {
+  const lines = [
+    `# H1 — Décalage temporel : ${result.phenomenon_label}`,
+    "",
+    `Rapport généré le ${formatGeneratedAt()} par Hélios.`,
+    "",
+    result.phenomenon_description,
+    "",
+    "## Verdict",
+    "",
+    result.verdict_simple,
+    "",
+  ];
+  if (result.decalage_jours !== null) {
+    lines.push(
+      `Écart entre les pics les plus précoces (parmi les signaux significatifs) : ${Math.abs(result.decalage_jours)} jour(s), le signal ${result.decalage_jours > 0 ? "social" : "officiel"} en premier.`,
+      ""
+    );
+  }
+
+  const signalTable = (title, signals) => {
+    const rows = [
+      `## ${title} (${signals.filter((s) => s.variance_significance.significant_at_0_05 || s.ac1_significance.significant_at_0_05).length}/${signals.length} significatifs)`,
+      "",
+      "| Signal | Pic AC1 | p (variance) | p (AC1) |",
+      "|---|---|---|---|",
+    ];
+    for (const s of signals) {
+      rows.push(`| ${s.title} | ${s.peak_date ?? "n/a"} | ${s.variance_significance.p_value?.toFixed(3) ?? "n/a"} | ${s.ac1_significance.p_value?.toFixed(3) ?? "n/a"} |`);
+    }
+    rows.push("");
+    return rows.join("\n");
+  };
+  lines.push(signalTable("Signaux officiels", result.official_signals));
+  lines.push(signalTable("Signaux sociaux", result.social_signals));
+
+  lines.push("## Méthode", "");
+  for (const key of SIGNAL_METHOD_KEYS) lines.push(methodMarkdown(key));
+
+  lines.push(interpretationMarkdown("h1", h1Outcome(result)));
+  lines.push(disclaimerMarkdown(result.n_episodes_tested, result.causal_disclaimer));
+
+  return lines.join("\n");
+}
+
 export default function TestH1() {
   const [phenomena, setPhenomena] = useState([]);
   const [code, setCode] = useState("");
@@ -300,6 +347,8 @@ export default function TestH1() {
           <InterpretationGuide hypothesis="h1" outcome={h1Outcome(result)} />
 
           <MethodDisclaimer nEpisodes={result.n_episodes_tested} />
+
+          <ReportExport buildMarkdown={() => buildH1Markdown(result)} filenameBase={`helios-h1-${slugify(result.phenomenon_label)}`} />
         </>
       )}
 
