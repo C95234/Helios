@@ -13,6 +13,9 @@ import {
   H4_CONFIGS,
   H4_R_THRESHOLD,
   H4_SUMMARY,
+  TRENDS_OBLIQUE_TERMS,
+  TRENDS_RESULTS,
+  TRENDS_SUMMARY,
 } from "../data/bilanPublie.js";
 
 const OUTCOME_LABEL = { favorable: "Favorable", against: "Contre", neutral: "Neutre", na: "Non calculable" };
@@ -113,6 +116,71 @@ export default function BilanPublie() {
           capture pas du tout (le cas des attentats).
         </p>
         <MethodNote methodKeys={["rolling_variance", "rolling_ac1"]} expertMode={true} />
+
+        <h3>Extension : Google Trends comme troisième signal social</h3>
+        <div className="simulation-banner">
+          <strong>Dérogation documentée (§6) :</strong>
+          <span>
+            Google Trends est explicitement mis de côté par le cahier des charges tant que son API
+            officielle (accès alpha restreint) n'est pas obtenue. Ce test utilise à la place un point
+            d'entrée non officiel (même principe que la bibliothèque publique <code>pytrends</code>,
+            utilisée en recherche depuis 2016) -- une violation des conditions d'utilisation de Google, pas
+            un accès à des données privées (ces chiffres sont déjà publics). Décision assumée et documentée
+            dans le code du connecteur (<code>google_trends.py</code>), pas cachée.
+          </span>
+        </div>
+        <p>
+          Pour chaque phénomène testable, un terme direct (« gilets jaunes », « confinement »...) et un
+          panier <strong>fixe</strong> de 5 termes obliques -- {TRENDS_OBLIQUE_TERMS.join(", ")} -- des
+          proxies génériques de tension économique/psychologique, identiques pour tous les phénomènes et
+          choisis avant tout résultat, pour ne pas sélectionner a posteriori un terme qui « marche » sur un
+          cas donné.
+        </p>
+        <p>
+          Google a bloqué (429) les requêtes après ~28 appels réussis, malgré des délais progressifs entre
+          essais : <strong>2 phénomènes sur 6 n'ont pu être testés du tout</strong> (réforme des retraites,
+          attentat de Nice). Sur les {TRENDS_SUMMARY.nTermsTestedTotal} tests menés à bien,{" "}
+          {TRENDS_SUMMARY.nTermsSignificantTotal} seulement ressortent significatifs.
+        </p>
+        <div className="table-scroll">
+          <table className="agg-table">
+            <thead>
+              <tr>
+                <th>Phénomène</th>
+                <th>Termes testés</th>
+                <th>Significatifs</th>
+                <th>Lesquels</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TRENDS_RESULTS.map((r) => (
+                <tr key={r.label}>
+                  <td>{r.label}</td>
+                  <td>{r.status === "blocked" ? <span className="text-muted">bloqué (429)</span> : `${r.nTested}`}</td>
+                  <td>{r.status === "blocked" ? "—" : r.nSig}</td>
+                  <td>{r.sigTerms.length > 0 ? r.sigTerms.join(", ") : "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="moran-sig-no">
+          Résultat honnête, à nouveau négatif dans l'ensemble : les gilets jaunes -- le cas le plus net par
+          ailleurs -- ne montrent aucun signal Google Trends significatif sur les 6 termes testés. Le seul
+          phénomène avec plusieurs termes significatifs (confinement 2020) porte sur des proxies financiers
+          plausibles (vente immobilière, prêt personnel), mais un terme ressort aussi « significatif » sur
+          la fenêtre témoin sans événement -- exactement ce que le seuil de 5% laisse attendre par pur
+          hasard sur ~5 tests, un rappel concret du risque de comparaisons multiples déjà signalé ailleurs
+          dans Hélios. Limite technique supplémentaire, à ne pas passer sous silence : les dates de pic
+          calculées sont identiques pour tous les termes d'un même phénomène (artefact probable de bord sur
+          des séries Google Trends très creuses, beaucoup de jours à zéro) -- non exploitées ici comme
+          indice de calendrier, contrairement au signal Wikipédia.
+        </p>
+        <p className="text-muted">
+          Aucun réseau social n'a pu compléter ce test : Bluesky et Mastodon n'ont pratiquement aucune
+          présence française avant 2022-2024, bien après les phénomènes les plus anciens testés ici (voir
+          la discussion complète dans l'échange qui a précédé ce test).
+        </p>
       </section>
 
       {/* ---------- H2 ---------- */}

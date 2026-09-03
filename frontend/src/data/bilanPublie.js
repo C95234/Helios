@@ -74,3 +74,27 @@ export const H4_CONFIGS = [
 
 export const H4_R_THRESHOLD = 0.5;
 export const H4_SUMMARY = { nConfigs: 8, nUnderThreshold: 8 };
+
+// Extension H1 -- Google Trends comme troisieme signal social, en plus de
+// Wikipedia. Derogation documentee au §6 (acces non officiel, voir
+// backend/app/connectors/google_trends.py) : le sujet direct du phenomene
+// + un panier FIXE de 5 termes "obliques" (proxies de tension economique/
+// psychologique, memes termes pour tous les phenomenes, choisis avant tout
+// resultat pour eviter le biais de selection a posteriori).
+export const TRENDS_OBLIQUE_TERMS = ["recherche emploi", "assurance chômage", "anxiété", "vente maison", "prêt personnel"];
+
+export const TRENDS_RESULTS = [
+  { label: "Mouvement social 2018 (« gilets jaunes »)", nTested: 6, nSig: 0, sigTerms: [], status: "ok" },
+  { label: "Tension sanitaire 2020 (premier confinement)", nTested: 6, nSig: 2, sigTerms: ["vente maison", "prêt personnel"], status: "ok" },
+  { label: "Climat social récent (témoin, sans événement)", nTested: 5, nSig: 1, sigTerms: ["prêt personnel"], status: "ok" },
+  { label: "Attentats du 13 novembre 2015", nTested: 5, nSig: 1, sigTerms: ["assurance chômage"], status: "ok" },
+  { label: "Mouvement social contre la réforme des retraites 2023", nTested: 0, nSig: 0, sigTerms: [], status: "blocked" },
+  { label: "Attentat de Nice, juillet 2016", nTested: 0, nSig: 0, sigTerms: [], status: "blocked" },
+];
+
+export const TRENDS_SUMMARY = {
+  nPhenomenaWithData: 4,
+  nPhenomenaBlocked: 2,
+  nTermsTestedTotal: 22,
+  nTermsSignificantTotal: 3,
+};

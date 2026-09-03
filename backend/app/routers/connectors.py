@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
+from ..connectors.google_trends import TERMS_OF_USE_URL as TRENDS_TERMS
 from ..connectors.insee import TERMS_OF_USE_URL as INSEE_TERMS
 from ..connectors.wikipedia import TERMS_OF_USE_URL as WIKI_TERMS
 from ..connectors.wikipedia_edits import TERMS_OF_USE_URL as WIKI_EDITS_TERMS
@@ -37,9 +38,9 @@ CONNECTORS: list[ConnectorInfo] = [
         label="Wikimedia -- vues quotidiennes d'articles (Pageviews)",
         description=(
             "Nombre de vues par jour d'un article Wikipédia francophone donné -- utilisé comme proxy "
-            "de l'attention publique portée à un sujet, à la place de Google Trends (accès alpha "
-            "restreint, connecteur désactivé -- §6) et de GDELT (API de timeline inaccessible depuis "
-            "cet environnement de développement, fichiers bruts trop volumineux pour une requête interactive)."
+            "de l'attention publique portée à un sujet. Complété depuis par Google Trends (voir plus bas, "
+            "accès non officiel documenté) et non par GDELT (API de timeline rate-limitée depuis cet "
+            "environnement, fichiers bruts trop volumineux pour une requête interactive)."
         ),
         access_type="Ouvert, sans clé, licence CC0 (domaine public)",
         terms_of_use_url=WIKI_TERMS,
@@ -80,6 +81,31 @@ CONNECTORS: list[ConnectorInfo] = [
         ethical_notes=[
             "Données déjà agrégées au niveau départemental par l'Insee -- aucune donnée individuelle.",
             "Aucun scraping : appel direct au service web officiel documenté par l'Insee.",
+        ],
+    ),
+    ConnectorInfo(
+        name="google_trends",
+        label="Google Trends -- intérêt de recherche quotidien (accès non officiel)",
+        description=(
+            "Volume de recherche relatif par jour pour un terme donné, France. Ajouté en complément de "
+            "Wikipédia comme troisième signal social, avec un terme direct par phénomène et un panier "
+            "fixe de 5 termes « obliques » (recherche emploi, assurance chômage, anxiété, vente maison, "
+            "prêt personnel) — identiques pour tous les phénomènes, choisis avant tout résultat pour "
+            "éviter le biais de sélection a posteriori."
+        ),
+        access_type="Point d'entrée interne non documenté (pas l'API officielle, en accès alpha restreint)",
+        terms_of_use_url=TRENDS_TERMS,
+        ethical_notes=[
+            "DÉROGATION ASSUMÉE au §6 du cahier des charges, qui prévoyait Google Trends désactivé « tant "
+            "que l'accès officiel n'est pas obtenu ; pas de contournement ». Ce contournement a été fait, "
+            "en connaissance de cause, après une évaluation explicite : voir le code du connecteur "
+            "(app/connectors/google_trends.py) pour le raisonnement complet.",
+            "Ce n'est pas un accès à des données privées : Google Trends affiche déjà ces chiffres "
+            "publiquement à quiconque visite le site — c'est l'automatisation de la requête qui n'est pas "
+            "couverte par les conditions d'utilisation, pas la donnée elle-même.",
+            "Analyse calculée une fois, hors ligne (comme le Journal de recherche), pas en direct à chaque "
+            "clic dans l'application -- Google limite agressivement les appels automatisés, ce qui rend un "
+            "appel synchrone à chaque test peu fiable.",
         ],
     ),
     ConnectorInfo(

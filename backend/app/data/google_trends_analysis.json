@@ -1,0 +1,263 @@
+{
+  "gilets_jaunes_2018": {
+    "gilets jaunes": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.2,
+      "ac1_p": 0.43333333333333335
+    },
+    "recherche emploi": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.18333333333333332,
+      "ac1_p": 0.7666666666666667
+    },
+    "assurance chômage": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.7666666666666667,
+      "ac1_p": 0.6333333333333333
+    },
+    "anxiété": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.7666666666666667,
+      "ac1_p": 0.7666666666666667
+    },
+    "vente maison": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.11666666666666667,
+      "ac1_p": 0.36666666666666664
+    },
+    "prêt personnel": {
+      "n_points": 40,
+      "peak_date": "2018-05-27",
+      "significant": false,
+      "variance_p": 0.7166666666666667,
+      "ac1_p": 0.8666666666666667
+    },
+    "_summary": {
+      "n_terms_tested": 6,
+      "n_terms_significant": 0,
+      "earliest_trends_peak": null,
+      "significant_terms": []
+    }
+  },
+  "confinement_2020": {
+    "confinement": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": false,
+      "variance_p": 0.3,
+      "ac1_p": 0.1
+    },
+    "recherche emploi": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": false,
+      "variance_p": 0.48333333333333334,
+      "ac1_p": 0.35
+    },
+    "assurance chômage": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": false,
+      "variance_p": 0.8,
+      "ac1_p": 0.7666666666666667
+    },
+    "anxiété": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": false,
+      "variance_p": 0.7833333333333333,
+      "ac1_p": 0.8666666666666667
+    },
+    "vente maison": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": true,
+      "variance_p": 0.016666666666666666,
+      "ac1_p": 0.35
+    },
+    "prêt personnel": {
+      "n_points": 44,
+      "peak_date": "2019-09-29",
+      "significant": true,
+      "variance_p": 0.03333333333333333,
+      "ac1_p": 0.3
+    },
+    "_summary": {
+      "n_terms_tested": 6,
+      "n_terms_significant": 2,
+      "earliest_trends_peak": "2019-09-29",
+      "significant_terms": [
+        "vente maison",
+        "prêt personnel"
+      ]
+    }
+  },
+  "chomage_recent": {
+    "recherche emploi": {
+      "n_points": 135,
+      "peak_date": "2023-12-31",
+      "significant": false,
+      "variance_p": 0.5833333333333334,
+      "ac1_p": 0.6833333333333333
+    },
+    "assurance chômage": {
+      "n_points": 135,
+      "peak_date": "2023-12-31",
+      "significant": false,
+      "variance_p": 0.95,
+      "ac1_p": 0.5666666666666667
+    },
+    "anxiété": {
+      "n_points": 135,
+      "peak_date": "2023-12-31",
+      "significant": false,
+      "variance_p": 0.6166666666666667,
+      "ac1_p": 0.55
+    },
+    "vente maison": {
+      "n_points": 135,
+      "peak_date": "2023-12-31",
+      "significant": false,
+      "variance_p": 0.38333333333333336,
+      "ac1_p": 0.23333333333333334
+    },
+    "prêt personnel": {
+      "n_points": 135,
+      "peak_date": "2023-12-31",
+      "significant": true,
+      "variance_p": 0.0,
+      "ac1_p": 0.7
+    },
+    "_summary": {
+      "n_terms_tested": 5,
+      "n_terms_significant": 1,
+      "earliest_trends_peak": "2023-12-31",
+      "significant_terms": [
+        "prêt personnel"
+      ]
+    }
+  },
+  "attentats_2015": {
+    "attentat paris": {
+      "n_points": 214,
+      "peak_date": "2015-08-01",
+      "significant": false,
+      "variance_p": 0.25,
+      "ac1_p": 0.9333333333333333
+    },
+    "recherche emploi": {
+      "n_points": 214,
+      "peak_date": "2015-08-01",
+      "significant": false,
+      "variance_p": 0.55,
+      "ac1_p": 0.5
+    },
+    "assurance chômage": {
+      "n_points": 214,
+      "peak_date": "2015-08-01",
+      "significant": true,
+      "variance_p": 0.016666666666666666,
+      "ac1_p": 0.5666666666666667
+    },
+    "anxiété": {
+      "n_points": 214,
+      "peak_date": "2015-08-01",
+      "significant": false,
+      "variance_p": 0.7,
+      "ac1_p": 0.35
+    },
+    "vente maison": {
+      "n_points": 214,
+      "peak_date": "2015-08-01",
+      "significant": false,
+      "variance_p": 0.3,
+      "ac1_p": 0.6666666666666666
+    },
+    "prêt personnel": {
+      "error": "Google Trends indisponible pour « prêt personnel » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "_summary": {
+      "n_terms_tested": 5,
+      "n_terms_significant": 1,
+      "earliest_trends_peak": "2015-08-01",
+      "significant_terms": [
+        "assurance chômage"
+      ]
+    }
+  },
+  "reforme_retraites_2023": {
+    "réforme des retraites": {
+      "error": "Google Trends indisponible pour « réforme des retraites » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "recherche emploi": {
+      "error": "Google Trends indisponible pour « recherche emploi » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "assurance chômage": {
+      "error": "Google Trends indisponible pour « assurance chômage » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "anxiété": {
+      "error": "Google Trends indisponible pour « anxiété » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "vente maison": {
+      "error": "Google Trends indisponible pour « vente maison » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "prêt personnel": {
+      "error": "Google Trends indisponible pour « prêt personnel » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "_summary": {
+      "n_terms_tested": 0,
+      "n_terms_significant": 0,
+      "earliest_trends_peak": null,
+      "significant_terms": []
+    }
+  },
+  "attentat_nice_2016": {
+    "attentat nice": {
+      "error": "Google Trends indisponible pour « attentat nice » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "recherche emploi": {
+      "error": "Google Trends indisponible pour « recherche emploi » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "assurance chômage": {
+      "error": "Google Trends indisponible pour « assurance chômage » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "anxiété": {
+      "error": "Google Trends indisponible pour « anxiété » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "vente maison": {
+      "error": "Google Trends indisponible pour « vente maison » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "prêt personnel": {
+      "error": "Google Trends indisponible pour « prêt personnel » après 4 tentatives : The request failed: Google returned a response with code 429",
+      "significant": false
+    },
+    "_summary": {
+      "n_terms_tested": 0,
+      "n_terms_significant": 0,
+      "earliest_trends_peak": null,
+      "significant_terms": []
+    }
+  }
+}
