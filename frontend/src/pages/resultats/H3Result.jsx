@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ZAxis } from "recharts";
-import { api } from "../api.js";
-import MethodNote from "../components/MethodNote.jsx";
-import InterpretationGuide from "../components/InterpretationGuide.jsx";
-import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
-import HistoryPanel from "../components/HistoryPanel.jsx";
-import ReportExport from "../components/ReportExport.jsx";
-import { saveToHistory, loadHistory, clearHistory } from "../history.js";
-import { h3Outcome } from "../outcomes.js";
-import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../report.js";
+import { api } from "../../api.js";
+import MethodNote from "../../components/MethodNote.jsx";
+import InterpretationGuide from "../../components/InterpretationGuide.jsx";
+import MethodDisclaimer from "../../components/MethodDisclaimer.jsx";
+import HistoryPanel from "../../components/HistoryPanel.jsx";
+import ReportExport from "../../components/ReportExport.jsx";
+import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
+import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
+import { h3Outcome } from "../../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../../report.js";
+import { HYPOTHESES } from "../../data/hypotheses.js";
+import { H3_PHENOMENA, H3_UNAVAILABLE, H3_SUMMARY } from "../../data/bilanPublie.js";
+import VerdictBadge from "../../components/VerdictBadge.jsx";
 
 const HISTORY_PAGE = "h3";
 const METHOD_KEYS = ["h3_joint"];
@@ -44,7 +48,9 @@ function buildH3Markdown(result) {
   return lines.join("\n");
 }
 
-export default function TestH3() {
+const H3_DATA = HYPOTHESES.find((h) => h.code === "H3");
+
+export default function H3Result() {
   const [phenomena, setPhenomena] = useState([]);
   const [code, setCode] = useState("");
   const [result, setResult] = useState(null);
@@ -87,20 +93,63 @@ export default function TestH3() {
     : [];
 
   return (
-    <div className="page page-test-h3">
-      <h1>Tester H3 : la combinaison temporel + spatial est-elle plus parlante ?</h1>
+    <ResultPageTemplate
+      code="H3"
+      title="Indicateur joint"
+      verdict="preliminary"
+      nEpisodes={H3_SUMMARY.nCalculable}
+      summary="Combiner un signal temporel (confiance des ménages, national) et un signal spatial (indice de Moran) réduit-il les faux positifs par rapport à chaque signal pris seul ? Calculable sur 4 phénomènes sur 6 -- 1 favorable."
+      postulateSimple={H3_DATA.simple}
+      postulateExpert={H3_DATA.expert}
+      resultText={
+        <>
+          <div className="table-scroll">
+            <table className="agg-table">
+              <thead>
+                <tr>
+                  <th>Phénomène</th>
+                  <th>τ national</th>
+                  <th>Moran</th>
+                  <th>p_joint</th>
+                  <th>Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                {H3_PHENOMENA.map((p) => (
+                  <tr key={p.label}>
+                    <td>{p.label}</td>
+                    <td>{p.tau.toFixed(3)}</td>
+                    <td>{p.moran.toFixed(3)}</td>
+                    <td>{p.pJoint.toFixed(3)}</td>
+                    <td><VerdictBadge outcome={p.sig ? "favorable" : "neutral"} /></td>
+                  </tr>
+                ))}
+                {H3_UNAVAILABLE.map((p) => (
+                  <tr key={p.label}>
+                    <td>{p.label}</td>
+                    <td colSpan={3} className="text-muted" style={{ fontSize: "0.82rem" }}>{p.reason}</td>
+                    <td><VerdictBadge outcome="na" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-muted">On compare le phénomène testé à chacun des trimestres comparables des 26 dernières années.</p>
+        </>
+      }
+      methodLink={{ to: "/methode/cours-statistiques#fisher", label: "Voir la démonstration (méthode de Fisher/Brown)" }}
+      limits={[
+        "4 phénomènes calculables reste sous le seuil de 5 épisodes du §5.7 : résultat préliminaire.",
+        "La composante spatiale est un instantané (le trimestre le plus proche), pas une tendance -- le chômage départemental n'est publié qu'au trimestre.",
+        "La loi nulle jointe est calibrée par comparaison à l'historique réel 2000-2026 plutôt que par surrogates synthétiques couplés -- adaptation documentée.",
+      ]}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (postulat testé en amont de H3)" }}
+    >
       <p className="lede">
-        H3 : combiner un signal temporel (confiance des ménages, national) et un signal spatial (indice de
-        Moran sur le chômage départemental) réduit-il les faux positifs par rapport à chaque signal pris
-        seul ? On compare le phénomène testé à chacun des trimestres comparables des 26 dernières années.{" "}
-        <Link to="/donnees">Voir comment ces données sont traitées</Link>.
-      </p>
-      <p className="text-muted">
         Adaptation assumée par rapport au §5.6 : la composante spatiale est un instantané (le chômage
         départemental n'est publié que trimestriellement, insuffisant pour une vraie tendance sur la fenêtre
         d'un phénomène), et la loi nulle est calibrée sur l'historique réel plutôt que sur des données de
-        substitution synthétiques.{" "}
-        <Link to="/hypotheses">Voir pourquoi H3 était bloquée avant cette adaptation</Link>.
+        substitution synthétiques.
       </p>
 
       <div className="controls">
@@ -215,6 +264,6 @@ export default function TestH3() {
           <ReportExport buildMarkdown={() => buildH3Markdown(result)} filenameBase={`helios-h3-${slugify(result.phenomenon_label)}`} />
         </>
       )}
-    </div>
+    </ResultPageTemplate>
   );
 }

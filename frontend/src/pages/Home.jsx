@@ -10,16 +10,16 @@ export default function Home() {
           statistiques, qu'elle devient plus fébrile avant une rupture visible. Hélios apprend à repérer ces
           signes — et à vérifier, honnêtement, s'ils se confirment.
         </p>
-        <Link to="/demo" className="cta">
+        <Link to="/comprendre" className="cta">
           Voir un exemple
         </Link>
       </section>
 
       <section className="origin">
         <p>
-          Le projet est né d'un roman dans lequel deux chercheurs, <strong>Moussa et Louise</strong>, imaginent
-          un outil pour détecter des signes de bascule sociale avant qu'ils ne deviennent visibles. Hélios en
-          reprend l'intuition et la transforme en démarche scientifique testable.
+          Le projet est né d'un roman dans lequel deux chercheurs imaginent un outil pour détecter des signes
+          de bascule sociale avant qu'ils ne deviennent visibles. Hélios en reprend l'intuition et la
+          transforme en démarche scientifique testable -- <Link to="/roman">découvrir le roman</Link>.
         </p>
       </section>
 
@@ -47,8 +47,8 @@ export default function Home() {
           Au-delà des indicateurs, Hélios teste trois hypothèses de recherche originales — par exemple, «
           les réseaux sociaux montrent-ils des signes de tension avant les statistiques officielles ? ».
         </p>
-        <Link to="/hypotheses" className="cta secondary">
-          Voir les hypothèses
+        <Link to="/resultats" className="cta secondary">
+          Voir les résultats
         </Link>
       </section>
 
@@ -59,8 +59,8 @@ export default function Home() {
           configurations de simulation — résultats honnêtes, y compris ce qui ne va pas dans le sens
           attendu.
         </p>
-        <Link to="/conclusions" className="cta secondary">
-          Voir les conclusions publiées
+        <Link to="/bilan" className="cta secondary">
+          Voir le bilan du projet
         </Link>
       </section>
 
@@ -71,7 +71,7 @@ export default function Home() {
           précède-t-il toujours le signal spatial ? Un premier raisonnement s'est trompé -- le calcul l'a
           corrigé. Ce cheminement, erreur comprise, est documenté dans le Journal de recherche.
         </p>
-        <Link to="/journal-recherche" className="cta secondary">
+        <Link to="/journal" className="cta secondary">
           Lire le journal de recherche
         </Link>
       </section>

@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { api } from "../api.js";
-import MethodNote from "../components/MethodNote.jsx";
-import HistoryPanel from "../components/HistoryPanel.jsx";
-import { saveToHistory, loadHistory, clearHistory } from "../history.js";
+import { api } from "../../api.js";
+import MethodNote from "../../components/MethodNote.jsx";
+import HistoryPanel from "../../components/HistoryPanel.jsx";
+import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
+import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
+import { HYPOTHESES } from "../../data/hypotheses.js";
+import { H4_CONFIGS, H4_R_THRESHOLD } from "../../data/bilanPublie.js";
+import VerdictBadge from "../../components/VerdictBadge.jsx";
 
 const HISTORY_PAGE = "h4";
 const METHOD_KEYS = ["kuramoto_h4"];
@@ -30,7 +34,9 @@ function RChart({ label, trace, refValue, refLabel, color, yDomain = [0, 1] }) {
   );
 }
 
-export default function TestH4() {
+const H4_DATA = HYPOTHESES.find((h) => h.code === "H4");
+
+export default function H4Result() {
   const [params, setParams] = useState({ n_oscillators: 40, coupling_k: 3.0, r_threshold: 0.5, beta: 2.0, duration: 30 });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -60,9 +66,56 @@ export default function TestH4() {
   };
 
   return (
-    <div className="page page-test-h4">
-      <h1>H4 : contrôle actif de la synchronisation (inspiré du RCA)</h1>
-
+    <ResultPageTemplate
+      code="H4"
+      title="Contrôle actif de la synchronisation (inspiré du RCA)"
+      verdict="simulation"
+      summary="Un couplage adaptatif, qui s'affaiblit localement quand une paire d'oscillateurs se verrouille en phase, peut-il empêcher une bascule collective sans réduire l'activité individuelle à zéro ? Sur 8 configurations testées, le contrôle reste robuste dans les 8 cas."
+      postulateSimple={H4_DATA.simple}
+      postulateExpert={H4_DATA.expert}
+      resultText={
+        <>
+          <div className="table-scroll">
+            <table className="agg-table">
+              <thead>
+                <tr>
+                  <th>Configuration</th>
+                  <th>N</th>
+                  <th>K/K_c</th>
+                  <th>β</th>
+                  <th>r sans contrôle</th>
+                  <th>r avec contrôle</th>
+                  <th>Sous r_c={H4_R_THRESHOLD}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {H4_CONFIGS.map((c) => (
+                  <tr key={c.name}>
+                    <td>{c.name}</td>
+                    <td>{c.n}</td>
+                    <td>{c.kOverKc.toFixed(1)}×</td>
+                    <td>{c.beta}</td>
+                    <td>{c.rUncontrolled.toFixed(3)}</td>
+                    <td>{c.rControlled.toFixed(3)}</td>
+                    <td><VerdictBadge outcome={c.rControlled < H4_R_THRESHOLD ? "favorable" : "against"} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-muted">
+            Le contrôle adaptatif maintient r sous le seuil dans les 8 configurations sur 8, y compris à
+            K=5×K_c. Détail sur <Link to="/bilan">la page Bilan</Link>.
+          </p>
+        </>
+      }
+      methodLink={{ to: "/methode/cours-statistiques", label: "Voir le cours de statistiques (méthodes communes à H1-H3)" }}
+      limits={[
+        "H4 n'est jamais testée contre des données réelles -- une démonstration de principe en simulation, pas un verdict statistique.",
+        "La relation entre β et l'efficacité du contrôle n'est pas monotone sur les configurations testées -- probablement un effet de la graine unique utilisée, à vérifier sur plusieurs graines.",
+      ]}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
+    >
       <div className="simulation-banner">
         <strong>Simulation pédagogique — pas un test statistique.</strong>
         <span>
@@ -75,10 +128,7 @@ export default function TestH4() {
       <p className="lede">
         N oscillateurs de phase, chacun avec son propre rythme naturel, couplés entre eux avec une force K.
         Au-delà d'un seuil critique K_c, ils basculent brutalement dans un rythme commun (paramètre d'ordre{" "}
-        <em>r</em> → 1). Un couplage adaptatif par paire, qui s'affaiblit localement quand une paire se
-        verrouille en phase, peut-il empêcher cette bascule sans réduire l'activité individuelle à zéro
-        (<em>r</em> maintenu sous un seuil r_c) ?{" "}
-        <Link to="/donnees">Voir la démonstration complète</Link>.
+        <em>r</em> → 1).
       </p>
 
       <div className="controls">
@@ -212,6 +262,6 @@ export default function TestH4() {
           </div>
         </>
       )}
-    </div>
+    </ResultPageTemplate>
   );
 }

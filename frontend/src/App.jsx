@@ -1,65 +1,58 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
-import Demo from "./pages/Demo.jsx";
-import Analyze from "./pages/Analyze.jsx";
-import Hypotheses from "./pages/Hypotheses.jsx";
-import TestH1 from "./pages/TestH1.jsx";
-import TestH2 from "./pages/TestH2.jsx";
-import TestH3 from "./pages/TestH3.jsx";
-import TestH4 from "./pages/TestH4.jsx";
+import Comprendre from "./pages/Comprendre.jsx";
+import Resultats from "./pages/Resultats.jsx";
+import H1Result from "./pages/resultats/H1Result.jsx";
+import H2Result from "./pages/resultats/H2Result.jsx";
+import H3Result from "./pages/resultats/H3Result.jsx";
+import H4Result from "./pages/resultats/H4Result.jsx";
+import Methode from "./pages/Methode.jsx";
+import CoursStatistiques from "./pages/CoursStatistiques.jsx";
+import SuitesRalentissement from "./pages/SuitesRalentissement.jsx";
+import Bibliographie from "./pages/Bibliographie.jsx";
 import JournalRecherche from "./pages/JournalRecherche.jsx";
-import BilanPublie from "./pages/BilanPublie.jsx";
-import Donnees from "./pages/Donnees.jsx";
 import Bilan from "./pages/Bilan.jsx";
+import Roman from "./pages/Roman.jsx";
+import GardeFous from "./pages/GardeFous.jsx";
+import MonHistorique from "./pages/MonHistorique.jsx";
+import Analyze from "./pages/Analyze.jsx";
+import CahierDesCharges from "./pages/CahierDesCharges.jsx";
 
 export default function App() {
   return (
-    <div className="app-shell">
-      <header className="topbar">
-        <NavLink to="/" className="brand">
-          Hélios
-        </NavLink>
-        <nav>
-          <NavLink to="/" end>
-            Accueil
-          </NavLink>
-          <NavLink to="/demo">Démo</NavLink>
-          <NavLink to="/hypotheses">Les hypothèses</NavLink>
-          <NavLink to="/tester-h1">Tester H1</NavLink>
-          <NavLink to="/tester-h2">Tester H2</NavLink>
-          <NavLink to="/tester-h3">Tester H3</NavLink>
-          <NavLink to="/tester-h4">Simuler H4</NavLink>
-          <NavLink to="/journal-recherche">Journal de recherche</NavLink>
-          <NavLink to="/conclusions">Conclusions publiées</NavLink>
-          <NavLink to="/bilan">Mon historique</NavLink>
-          <NavLink to="/analyser">Analyser une série INSEE</NavLink>
-          <NavLink to="/donnees">Données & méthode</NavLink>
-        </nav>
-      </header>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/comprendre" element={<Comprendre />} />
+        <Route path="/resultats" element={<Resultats />} />
+        <Route path="/resultats/h1" element={<H1Result />} />
+        <Route path="/resultats/h2" element={<H2Result />} />
+        <Route path="/resultats/h3" element={<H3Result />} />
+        <Route path="/resultats/h4" element={<H4Result />} />
+        <Route path="/methode" element={<Methode />} />
+        <Route path="/methode/cours-statistiques" element={<CoursStatistiques />} />
+        <Route path="/methode/suites-ralentissement-critique" element={<SuitesRalentissement />} />
+        <Route path="/methode/bibliographie" element={<Bibliographie />} />
+        <Route path="/journal" element={<JournalRecherche />} />
+        <Route path="/bilan" element={<Bilan />} />
+        <Route path="/roman" element={<Roman />} />
+        <Route path="/garde-fous" element={<GardeFous />} />
+        <Route path="/mon-historique" element={<MonHistorique />} />
+        <Route path="/analyser" element={<Analyze />} />
+        <Route path="/dev/cahier-des-charges" element={<CahierDesCharges />} />
 
-      <main>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/demo" element={<Demo />} />
-          <Route path="/hypotheses" element={<Hypotheses />} />
-          <Route path="/tester-h1" element={<TestH1 />} />
-          <Route path="/tester-h2" element={<TestH2 />} />
-          <Route path="/tester-h3" element={<TestH3 />} />
-          <Route path="/tester-h4" element={<TestH4 />} />
-          <Route path="/journal-recherche" element={<JournalRecherche />} />
-          <Route path="/conclusions" element={<BilanPublie />} />
-          <Route path="/bilan" element={<Bilan />} />
-          <Route path="/analyser" element={<Analyze />} />
-          <Route path="/donnees" element={<Donnees />} />
-        </Routes>
-      </main>
-
-      <footer className="site-footer">
-        <p>
-          Hélios est un outil de recherche et de vulgarisation. Il ne surveille ni ne profile personne :
-          il travaille exclusivement sur des données agrégées.
-        </p>
-      </footer>
-    </div>
+        {/* Redirections depuis les anciennes routes -- ne jamais casser un lien déjà partagé */}
+        <Route path="/demo" element={<Navigate to="/comprendre" replace />} />
+        <Route path="/hypotheses" element={<Navigate to="/resultats" replace />} />
+        <Route path="/tester-h1" element={<Navigate to="/resultats/h1" replace />} />
+        <Route path="/tester-h2" element={<Navigate to="/resultats/h2" replace />} />
+        <Route path="/tester-h3" element={<Navigate to="/resultats/h3" replace />} />
+        <Route path="/tester-h4" element={<Navigate to="/resultats/h4" replace />} />
+        <Route path="/journal-recherche" element={<Navigate to="/journal" replace />} />
+        <Route path="/conclusions" element={<Navigate to="/bilan" replace />} />
+        <Route path="/donnees" element={<Navigate to="/methode" replace />} />
+      </Route>
+    </Routes>
   );
 }

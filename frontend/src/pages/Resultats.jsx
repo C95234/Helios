@@ -1,15 +1,16 @@
 import { HYPOTHESES } from "../data/hypotheses.js";
 import HypothesisCard from "../components/HypothesisCard.jsx";
 
-export default function Hypotheses() {
+export default function Resultats() {
   return (
     <div className="page page-hypotheses">
-      <h1>Les hypothèses qu'Hélios explore</h1>
+      <h1>Résultats</h1>
       <p className="lede">
-        Hélios n'est pas qu'un calculateur d'indicateurs : le projet teste trois hypothèses de recherche
-        originales sur des données réelles, et en tire une conclusion honnête — jamais un verdict plus
-        catégorique que ce que le test statistique permet. Une quatrième (H4) est d'une autre nature : une
-        simulation pédagogique, pas un test statistique — voir sa mention distincte ci-dessous.
+        Hélios teste trois hypothèses de recherche originales sur des données réelles, et en tire une
+        conclusion honnête — jamais un verdict plus catégorique que ce que le test statistique permet. Une
+        quatrième (H4) est d'une autre nature : une simulation pédagogique, pas un test statistique — voir
+        sa mention distincte ci-dessous. Chaque page de résultat suit le même gabarit : verdict, postulat,
+        résultat obtenu, limites, puis l'outil pour le tester soi-même en direct.
       </p>
 
       <div className="hypotheses-list">

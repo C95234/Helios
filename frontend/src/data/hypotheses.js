@@ -13,8 +13,8 @@ export const HYPOTHESES = [
       "Les indicateurs précurseurs calculés sur les signaux sociaux se déclenchent statistiquement avant ceux calculés sur les statistiques officielles, pour un même événement de rupture territoriale réel (§5.5).",
     status: "testable",
     statusNote:
-      "Testable dès maintenant sur quelques phénomènes réels curatés (confiance des ménages INSEE vs attention Wikipédia) — mais sur un seul épisode à la fois, donc toujours préliminaire. GDELT (nommé au §6) reste hors d'atteinte depuis cet environnement ; Wikipédia sert de substitut pour le signal social.",
-    link: { to: "/tester-h1", label: "Tester H1 sur un phénomène réel" },
+      "Testable dès maintenant sur quelques phénomènes réels curatés (confiance des ménages INSEE vs attention Wikipédia, complétée par Google Trends) — mais sur un seul épisode à la fois, donc toujours préliminaire.",
+    link: { to: "/resultats/h1", label: "Voir le résultat H1" },
   },
   {
     code: "H2",
@@ -26,7 +26,7 @@ export const HYPOTHESES = [
     status: "testable",
     statusNote:
       "Testable dès maintenant : réseau réel des 96 départements de métropole (contours IGN) contre une grille régulière de contrôle, sur le taux de chômage départemental (Insee). Toujours une seule coupe temporelle — préliminaire.",
-    link: { to: "/tester-h2", label: "Tester H2 sur les départements français" },
+    link: { to: "/resultats/h2", label: "Voir le résultat H2" },
   },
   {
     code: "H3",
@@ -38,7 +38,7 @@ export const HYPOTHESES = [
     status: "testable",
     statusNote:
       "Testable dès maintenant, avec une adaptation assumée : la p-value spatiale est un instantané (pas une tendance, faute de données départementales assez fréquentes), et la loi nulle jointe est calibrée par comparaison à l'historique réel 2000-2026 plutôt que par surrogates synthétiques couplés. Voir les détails sur la page de test.",
-    link: { to: "/tester-h3", label: "Tester H3 sur un phénomène réel" },
+    link: { to: "/resultats/h3", label: "Voir le résultat H3" },
   },
   {
     code: "H4",
@@ -50,7 +50,7 @@ export const HYPOTHESES = [
     status: "simulation",
     statusNote:
       "H4 est d'une autre nature que H1-H3 : une démonstration de principe en simulation (modèle de Kuramoto), jamais un test statistique contre des données réelles. Aucun verdict « confirmée / infirmée » n'est jamais attaché à ses résultats.",
-    link: { to: "/tester-h4", label: "Lancer la simulation H4" },
+    link: { to: "/resultats/h4", label: "Voir le résultat H4" },
   },
 ];
 

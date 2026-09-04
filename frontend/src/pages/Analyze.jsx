@@ -168,7 +168,7 @@ export default function Analyze() {
           </div>
 
           <p className="hypothesis-link-note">
-            {h1Reformulation(result)} <Link to="/hypotheses">Voir les 3 hypothèses</Link>.
+            {h1Reformulation(result)} <Link to="/resultats">Voir les résultats</Link>.
           </p>
 
           <MethodDisclaimer nEpisodes={result.n_episodes_tested} />

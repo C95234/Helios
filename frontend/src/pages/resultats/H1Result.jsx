@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api.js";
-import SeriesChart from "../components/SeriesChart.jsx";
-import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
-import MethodNote from "../components/MethodNote.jsx";
-import InterpretationGuide from "../components/InterpretationGuide.jsx";
-import HistoryPanel from "../components/HistoryPanel.jsx";
-import ReportExport from "../components/ReportExport.jsx";
-import { saveToHistory, loadHistory, clearHistory } from "../history.js";
-import { h1Outcome } from "../outcomes.js";
-import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../report.js";
+import { api } from "../../api.js";
+import SeriesChart from "../../components/SeriesChart.jsx";
+import MethodDisclaimer from "../../components/MethodDisclaimer.jsx";
+import MethodNote from "../../components/MethodNote.jsx";
+import InterpretationGuide from "../../components/InterpretationGuide.jsx";
+import HistoryPanel from "../../components/HistoryPanel.jsx";
+import ReportExport from "../../components/ReportExport.jsx";
+import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
+import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
+import { h1Outcome } from "../../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../../report.js";
+import { HYPOTHESES } from "../../data/hypotheses.js";
+import { H1_PHENOMENA, H1_SUMMARY } from "../../data/bilanPublie.js";
+import VerdictBadge from "../../components/VerdictBadge.jsx";
 
 const HISTORY_PAGE = "h1";
 const HISTORY_PAGE_AGGREGATE = "h1_aggregate";
@@ -215,7 +219,9 @@ function buildH1Markdown(result) {
   return lines.join("\n");
 }
 
-export default function TestH1() {
+const H1_DATA = HYPOTHESES.find((h) => h.code === "H1");
+
+export default function H1Result() {
   const [phenomena, setPhenomena] = useState([]);
   const [code, setCode] = useState("");
   const [result, setResult] = useState(null);
@@ -256,29 +262,70 @@ export default function TestH1() {
   const selected = phenomena.find((p) => p.code === code);
 
   return (
-    <div className="page page-test-h1">
-      <h1>Tester H1 sur un phénomène réel</h1>
+    <ResultPageTemplate
+      code="H1"
+      title="Décalage temporel"
+      verdict="against"
+      nEpisodes={H1_SUMMARY.nPhenomena}
+      summary="Les signaux sociaux se déclenchent-ils avant les statistiques officielles, pour un même événement de rupture ? Sur les 6 phénomènes testés, 1 seul va dans ce sens -- 5 vont à l'encontre."
+      postulateSimple={H1_DATA.simple}
+      postulateExpert={H1_DATA.expert}
+      resultText={
+        <>
+          <p>
+            Sur les 6 phénomènes testés, chaque fois qu'un écart de timing était mesurable, c'est le signal{" "}
+            <strong>officiel</strong> qui a précédé le signal social -- seul le choc sécuritaire pur
+            (attentats 2015, aucune série économique officielle significative) va dans le sens de H1.
+          </p>
+          <div className="table-scroll">
+            <table className="agg-table">
+              <thead>
+                <tr>
+                  <th>Phénomène</th>
+                  <th>Officiels sig.</th>
+                  <th>Sociaux sig.</th>
+                  <th>Écart</th>
+                  <th>Verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                {H1_PHENOMENA.map((p) => (
+                  <tr key={p.label}>
+                    <td>{p.label}</td>
+                    <td>{p.nOffSig}/{p.nOff}</td>
+                    <td>{p.nSocSig}/{p.nSoc}</td>
+                    <td>{p.decalageJours !== null ? `officiel ${p.decalageJours} j` : "—"}</td>
+                    <td><VerdictBadge outcome={p.outcome} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-muted">
+            <strong>Nuance importante :</strong> Wikipédia (et Google Trends, ajouté en complément) sont des
+            proxies structurellement réactifs -- ce résultat défavorable peut refléter cette limite plutôt
+            qu'une réfutation de l'hypothèse elle-même. Voir le détail complet sur{" "}
+            <Link to="/bilan">la page Bilan</Link>.
+          </p>
+        </>
+      }
+      methodLink={{ to: "/methode/cours-statistiques#autocorrelation", label: "Voir la démonstration (autocorrélation, tests par substitution)" }}
+      limits={[
+        "6 phénomènes choisis à la main (ruptures documentées et datées), pas tirés au hasard -- jamais un échantillon statistiquement représentatif.",
+        "La comparaison de timing repose sur la date du pic d'un indicateur, un indice descriptif, pas un test statistique formel de décalage.",
+        "Wikipédia (et Google Trends, ajouté en complément) sont des proxies structurellement réactifs -- le résultat défavorable peut refléter cette limite plutôt qu'une réfutation de l'hypothèse elle-même.",
+      ]}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
+    >
       <p className="lede">
-        H1 : les signaux sociaux se déclenchent-ils avant les statistiques officielles, pour un même
-        événement ? Jusqu'à 39 séries officielles (Insee — ménages, industrie, services, bâtiment,
-        commerce) sont comparées à 3 signaux sociaux (attention Wikipédia, éditions, contributeurs
-        distincts), chacun testé indépendamment.{" "}
-        <Link to="/donnees">Voir comment ces données sont traitées</Link>.
+        Jusqu'à 39 séries officielles (Insee — ménages, industrie, services, bâtiment, commerce) sont
+        comparées à 3 signaux sociaux (attention Wikipédia, éditions, contributeurs distincts), chacun
+        testé indépendamment.
       </p>
       <p className="text-muted">
         Ces {phenomena.length || 6} phénomènes sont choisis parce qu'ils sont des ruptures sociales
         documentées et datées (pas des dates arbitraires), et parce que Wikipédia ne couvre que juillet 2015
         et après — c'est pourquoi aucun épisode plus ancien (ex. crise de 2008) n'y figure.
-      </p>
-      <p className="text-muted">
-        <strong>Pourquoi pas encore plus de sources ?</strong> Multiplier les signaux au-delà de ce qui
-        existe réellement voudrait dire ajouter des séries redondantes ou peu pertinentes — ça ne rendrait
-        rien plus fiable. Et tester beaucoup de signaux à la fois a un vrai coût statistique : sur 39
-        séries testées au seuil de 5 %, environ 2 peuvent ressortir « significatives » par pur hasard,
-        même sans aucun lien réel avec l'événement. C'est pour ça que le compte (X/39) est toujours
-        affiché en entier, jamais un seul signal isolé présenté comme preuve — et que plus de signaux par
-        phénomène ne remplace pas les 5 épisodes <em>indépendants</em> qu'exige le protocole complet
-        (§5.7).
       </p>
 
       <div className="controls">
@@ -353,6 +400,6 @@ export default function TestH1() {
       )}
 
       <AggregateSection />
-    </div>
+    </ResultPageTemplate>
   );
 }

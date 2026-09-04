@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://helios-hazel-one.vercel.app/</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/demo</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/hypotheses</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/tester-h1</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/tester-h2</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/tester-h3</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/tester-h4</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/journal-recherche</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/conclusions</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/comprendre</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats/h1</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats/h2</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats/h3</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats/h4</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/methode</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/methode/cours-statistiques</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/methode/suites-ralentissement-critique</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/methode/bibliographie</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/journal</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/bilan</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/roman</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/garde-fous</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/mon-historique</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/analyser</loc></url>
-  <url><loc>https://helios-hazel-one.vercel.app/donnees</loc></url>
 </urlset>

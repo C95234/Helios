@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { api } from "../api.js";
-import SeriesChart from "../components/SeriesChart.jsx";
-import MethodDisclaimer from "../components/MethodDisclaimer.jsx";
-import MethodNote from "../components/MethodNote.jsx";
-import InterpretationGuide from "../components/InterpretationGuide.jsx";
-import HistoryPanel from "../components/HistoryPanel.jsx";
-import ReportExport from "../components/ReportExport.jsx";
-import { saveToHistory, loadHistory, clearHistory } from "../history.js";
-import { h2Outcome } from "../outcomes.js";
-import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown } from "../report.js";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { api } from "../../api.js";
+import SeriesChart from "../../components/SeriesChart.jsx";
+import MethodDisclaimer from "../../components/MethodDisclaimer.jsx";
+import MethodNote from "../../components/MethodNote.jsx";
+import InterpretationGuide from "../../components/InterpretationGuide.jsx";
+import HistoryPanel from "../../components/HistoryPanel.jsx";
+import ReportExport from "../../components/ReportExport.jsx";
+import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
+import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
+import { h2Outcome } from "../../outcomes.js";
+import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown } from "../../report.js";
+import { HYPOTHESES } from "../../data/hypotheses.js";
+import { H2_RESULT, H2_MORAN_SERIES } from "../../data/bilanPublie.js";
+
+const h2ChartData = H2_MORAN_SERIES.dates.map((date, i) => ({
+  date,
+  reel: H2_MORAN_SERIES.real[i],
+  grille: H2_MORAN_SERIES.grid[i],
+}));
 
 const HISTORY_PAGE = "h2";
 const NETWORK_METHOD_KEYS = ["morans_i", "moran_trend", "permutation_test"];
@@ -128,7 +137,9 @@ function buildH2Markdown(result) {
   return lines.join("\n");
 }
 
-export default function TestH2() {
+const H2_DATA = HYPOTHESES.find((h) => h.code === "H2");
+
+export default function H2Result() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -156,15 +167,54 @@ export default function TestH2() {
   const barData = result?.values_latest.map((v) => ({ name: v.code, value: v.value })) ?? [];
 
   return (
-    <div className="page page-test-h2">
-      <h1>Tester H2 : le réseau réel se comporte-t-il différemment d'une grille ?</h1>
+    <ResultPageTemplate
+      code="H2"
+      title="Robustesse sur réseau réel"
+      verdict="neutral"
+      nEpisodes={1}
+      summary="L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Sur la tendance (la question formelle de H2), ni l'un ni l'autre n'est significatif -- mais le niveau distingue nettement les deux réseaux."
+      postulateSimple={H2_DATA.simple}
+      postulateExpert={H2_DATA.expert}
+      resultText={
+        <>
+          <dl className="signal-stats">
+            <div>
+              <dt>Réel — tendance (τ)</dt>
+              <dd>{H2_RESULT.realNetwork.trendTau} (p={H2_RESULT.realNetwork.trendP})</dd>
+            </div>
+            <div>
+              <dt>Grille — tendance (τ)</dt>
+              <dd>{H2_RESULT.controlGrid.trendTau} (p={H2_RESULT.controlGrid.trendP})</dd>
+            </div>
+          </dl>
+          <div className="chart-box">
+            <p className="series-chart-label">Indice de Moran par trimestre, 2000-2026 (réel vs grille)</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={h2ChartData} margin={{ top: 8, right: 16, bottom: 0, left: -16 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+                <XAxis dataKey="date" tick={{ fontSize: 9 }} minTickGap={60} />
+                <YAxis tick={{ fontSize: 10 }} width={40} domain={["auto", "auto"]} />
+                <Tooltip formatter={(v) => v.toFixed(3)} />
+                <Line type="monotone" dataKey="reel" name="Réseau réel" stroke="var(--color-accent)" dot={false} strokeWidth={2} connectNulls />
+                <Line type="monotone" dataKey="grille" name="Grille de contrôle" stroke="var(--color-mid)" dot={false} strokeWidth={1.5} connectNulls />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="moran-sig-yes">
+            Le réseau réel est au-dessus de la grille de contrôle sur les {H2_RESULT.nRealAboveGrid}{" "}
+            trimestres, sans une seule exception -- pas ce que H2 teste formellement (la tendance), mais une
+            différence structurelle systématique. Voir le détail sur <Link to="/bilan">la page Bilan</Link>.
+          </p>
+        </>
+      }
+      methodLink={{ to: "/methode/cours-statistiques#moran", label: "Voir la démonstration (indice de Moran)" }}
+      limits={[
+        "Une seule variable testée (chômage départemental) -- H2 pourrait se comporter différemment avec un autre indicateur territorial.",
+        "La grille de contrôle replace les mêmes valeurs dans un ordre arbitraire, pas selon une géographie fictive alternative construite exprès.",
+      ]}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
+    >
       <p className="lede">
-        H2 : l'indice de Moran (§5.2) — qui mesure si des territoires voisins se ressemblent plus que le
-        hasard — se comporte-t-il différemment sur la vraie carte des 96 départements de métropole que sur
-        une grille régulière artificielle de même taille, avec les mêmes valeurs ?{" "}
-        <Link to="/donnees">Voir comment ce réseau est construit</Link>.
-      </p>
-      <p className="text-muted">
         Calculé sur les 105 trimestres disponibles (2000-2026) plutôt que sur un seul instantané — un
         indicateur sur une seule date n'aurait rien de significatif statistiquement.
       </p>
@@ -238,6 +288,6 @@ export default function TestH2() {
           <ReportExport buildMarkdown={() => buildH2Markdown(result)} filenameBase={`helios-h2-${result.period_start}-${result.period_end}`} />
         </>
       )}
-    </div>
+    </ResultPageTemplate>
   );
 }

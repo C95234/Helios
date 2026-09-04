@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { api } from "../api.js";
-import { BIBLIOGRAPHY } from "../data/methods.js";
-import MethodNote from "../components/MethodNote.jsx";
 
-const METHOD_ORDER = ["rolling_variance", "rolling_ac1", "kendall_tau", "surrogate_test", "morans_i", "permutation_test", "moran_trend", "h3_joint", "kuramoto_h4"];
-
-export default function Donnees() {
+export default function GardeFous() {
   const [connectors, setConnectors] = useState([]);
   const [guardrails, setGuardrails] = useState(null);
 
@@ -15,8 +12,8 @@ export default function Donnees() {
   }, []);
 
   return (
-    <div className="page page-donnees">
-      <h1>D'où viennent les données, et comment sont-elles traitées ?</h1>
+    <div className="page page-garde-fous">
+      <h1>Garde-fous techniques et éthiques</h1>
       <p className="lede">
         Hélios ne travaille que sur des sources ouvertes, accédées dans le respect de leurs propres
         conditions d'utilisation — jamais par scraping. Chaque source alimente le même schéma commun avant
@@ -63,32 +60,6 @@ export default function Donnees() {
           personne · <strong>date</strong> et <strong>valeur</strong> portent le point de mesure ·{" "}
           <strong>métadonnées</strong> garde le contexte (titre de la série, langue...).
         </p>
-        <p className="text-muted">
-          Cette mise en forme rend les sources comparables entre elles (même colonnes, mêmes types), mais ne
-          dit rien de leur signification statistique — c'est le rôle des outils ci-dessous.
-        </p>
-      </section>
-
-      <section>
-        <h2>Les outils mathématiques utilisés</h2>
-        <p>
-          Une fois les données mises en forme, Hélios leur applique une poignée d'outils statistiques —
-          toujours les mêmes, documentés en méthode standard, jamais inventés pour l'occasion. Chaque
-          résultat affiché dans l'application montre une explication en langage courant par défaut ; voici
-          la démonstration complète (pas seulement la formule finale) de chacun, avec sa référence exacte —
-          §3 du cahier des charges.
-        </p>
-        <div className="method-reference-list">
-          <MethodNote methodKeys={METHOD_ORDER} expertMode={true} />
-        </div>
-        <p className="text-muted" style={{ marginTop: "1rem" }}>
-          <strong>Un revers à connaître :</strong> tester beaucoup de signaux à la fois (Hélios en teste
-          jusqu'à une quarantaine par phénomène pour H1) augmente mécaniquement le risque qu'un signal
-          ressorte « significatif » par pur hasard, même sans lien réel avec l'événement — c'est le problème
-          classique des comparaisons multiples. Hélios ne corrige pas ce seuil automatiquement : il affiche
-          toujours le compte complet (ex. « 4/38 signaux significatifs »), jamais un seul résultat isolé
-          présenté comme une preuve.
-        </p>
       </section>
 
       <section>
@@ -108,10 +79,11 @@ export default function Donnees() {
             .
           </li>
           <li>
-            <strong>Aucune source non conforme.</strong> Si une source n'offre pas d'accès conforme à ses
-            propres conditions d'utilisation, elle est exclue — même si elle serait techniquement
-            récupérable (c'est pour cela que Google Trends reste désactivé, et que GDELT n'est pas encore
-            intégré : voir la note du connecteur Wikipédia ci-dessus).
+            <strong>Conformité des sources, et dérogations toujours documentées.</strong> Si une source
+            n'offre pas d'accès conforme à ses propres conditions d'utilisation, elle est en principe
+            exclue. La seule exception assumée est Google Trends (accès non officiel, voir sa fiche
+            ci-dessus) : une dérogation délibérée, évaluée et documentée dans le code du connecteur — jamais
+            un contournement silencieux.
           </li>
           <li>
             <strong>Jamais de surinterprétation.</strong> Chaque résultat rappelle qu'un signal précurseur
@@ -122,17 +94,20 @@ export default function Donnees() {
       </section>
 
       <section>
-        <h2>Bibliographie complète</h2>
-        <p className="text-muted">
-          Toute affirmation théorique du §5 est accompagnée de sa référence exacte dans l'interface (mode
-          expert), pas seulement d'un nom d'auteur — §12 du cahier des charges.
+        <h2>Comparaisons multiples : un revers à connaître</h2>
+        <p>
+          Tester beaucoup de signaux à la fois (Hélios en teste jusqu'à une quarantaine par phénomène pour
+          H1) augmente mécaniquement le risque qu'un signal ressorte « significatif » par pur hasard, même
+          sans lien réel avec l'événement — c'est le problème classique des comparaisons multiples. Hélios
+          ne corrige pas ce seuil automatiquement : il affiche toujours le compte complet (ex. « 4/38
+          signaux significatifs »), jamais un seul résultat isolé présenté comme une preuve.
         </p>
-        <ol className="bibliography-list">
-          {BIBLIOGRAPHY.map((ref, i) => (
-            <li key={i}>{ref}</li>
-          ))}
-        </ol>
       </section>
+
+      <p className="text-muted">
+        Les démonstrations mathématiques des outils cités ici (test par permutation, tau de Kendall, indice
+        de Moran, méthode de Fisher...) sont dans la section <Link to="/methode">Méthode</Link>.
+      </p>
     </div>
   );
 }

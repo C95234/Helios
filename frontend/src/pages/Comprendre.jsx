@@ -15,7 +15,7 @@ function trendGauge(values) {
   return Math.max(0, Math.min(1, growth / 2));
 }
 
-export default function Demo() {
+export default function Comprendre() {
   const [seed, setSeed] = useState(42);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export default function Demo() {
 
   return (
     <div className="page page-demo">
-      <h1>Démo pédagogique : un système simulé qui bascule</h1>
+      <h1>Comprendre : un système simulé qui bascule</h1>
       <p className="lede">
         Aucune donnée réelle ici : une série est simulée pour illustrer le principe. Sa capacité à
         « récupérer » après une perturbation ralentit peu à peu — jusqu'à une bascule (ligne pointillée).
@@ -91,15 +91,26 @@ export default function Demo() {
 
           <p className="hypothesis-link-note">
             Cette série est <strong>simulée</strong>, pas réelle : elle illustre uniquement la brique
-            temporelle qui contribuerait à <strong>l'hypothèse H1</strong> (décalage temporel). Dans H1, ce
-            même calcul serait fait à la fois sur un signal social et un signal officiel, pour voir lequel
-            des deux réagit en premier — étape pas encore disponible dans Hélios.{" "}
-            <Link to="/hypotheses">Voir les 3 hypothèses</Link>.
+            temporelle utilisée par <strong>H1</strong> (décalage temporel), <strong>H2</strong> (via
+            l'indice de Moran) et <strong>H3</strong> (leur combinaison) sur des données réelles.{" "}
+            <Link to="/resultats">Voir les résultats obtenus sur des cas réels</Link>.
           </p>
 
           <MethodDisclaimer nEpisodes={1} />
         </>
       )}
+
+      <section style={{ marginTop: "2.5rem" }}>
+        <h2>Explorer H4 : contrôle actif de la synchronisation</h2>
+        <p>
+          Un modèle différent : au lieu de détecter un signal précurseur, on simule directement une bascule
+          collective (modèle de Kuramoto) et un mécanisme pour l'empêcher sans réduire l'activité
+          individuelle à zéro. Purement pédagogique -- jamais un test statistique.
+        </p>
+        <Link to="/resultats/h4" className="cta secondary">
+          Explorer la simulation H4 →
+        </Link>
+      </section>
     </div>
   );
 }
