@@ -12,7 +12,7 @@ import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
 import { h3Outcome } from "../../outcomes.js";
 import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../../report.js";
 import { HYPOTHESES } from "../../data/hypotheses.js";
-import { H3_PHENOMENA, H3_UNAVAILABLE, H3_SUMMARY } from "../../data/bilanPublie.js";
+import { H3_PHENOMENA, H3_UNAVAILABLE, H3_SUMMARY, H3_REFRESHED_AT } from "../../data/bilanPublie.js";
 import VerdictBadge from "../../components/VerdictBadge.jsx";
 
 const HISTORY_PAGE = "h3";
@@ -103,6 +103,7 @@ export default function H3Result() {
       postulateExpert={H3_DATA.expert}
       resultText={
         <>
+          <p className="text-muted">Rafraîchi automatiquement le {H3_REFRESHED_AT} (Insee, dernier trimestre disponible).</p>
           <div className="table-scroll">
             <table className="agg-table">
               <thead>

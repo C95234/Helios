@@ -1,0 +1,231 @@
+{
+  "refreshedAt": "2026-09-04",
+  "nShots": 20,
+  "nDisrupted": 10,
+  "nStable": 10,
+  "nDisruptedWithPrecursor": 8,
+  "nStableFalsePositive": 3,
+  "verdict": "favorable",
+  "shots": [
+    {
+      "shotId": 28461,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 0.5124996900558472,
+      "peakCurrentKa": 13.5,
+      "varianceSig": false,
+      "ac1Sig": true,
+      "moranSig": false,
+      "precursor": true
+    },
+    {
+      "shotId": 28463,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 0.513299822807312,
+      "peakCurrentKa": 24.0,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28465,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 0.5130997896194458,
+      "peakCurrentKa": 24.9,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28467,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 0.5136996507644653,
+      "peakCurrentKa": 22.7,
+      "varianceSig": true,
+      "ac1Sig": true,
+      "moranSig": false,
+      "precursor": true
+    },
+    {
+      "shotId": 28542,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 3.9990997314453125,
+      "peakCurrentKa": 22.9,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 28544,
+      "campaign": "M9",
+      "disrupted": true,
+      "tQuench": 0.5140997171401978,
+      "peakCurrentKa": 19.8,
+      "varianceSig": true,
+      "ac1Sig": true,
+      "moranSig": false,
+      "precursor": true
+    },
+    {
+      "shotId": 19045,
+      "campaign": "M7",
+      "disrupted": true,
+      "tQuench": 0.521399974822998,
+      "peakCurrentKa": 19.9,
+      "varianceSig": true,
+      "ac1Sig": true,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 19054,
+      "campaign": "M7",
+      "disrupted": true,
+      "tQuench": 0.5217999219894409,
+      "peakCurrentKa": 17.2,
+      "varianceSig": true,
+      "ac1Sig": true,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 19056,
+      "campaign": "M7",
+      "disrupted": true,
+      "tQuench": 0.5069999694824219,
+      "peakCurrentKa": 22.0,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 19061,
+      "campaign": "M7",
+      "disrupted": true,
+      "tQuench": 0.5069999694824219,
+      "peakCurrentKa": 27.7,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 28476,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 18.5,
+      "varianceSig": true,
+      "ac1Sig": false,
+      "moranSig": true,
+      "precursor": true
+    },
+    {
+      "shotId": 28478,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 45.2,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28484,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 10.5,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28486,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 19.4,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28488,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 29.0,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28492,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 11.9,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 28553,
+      "campaign": "M9",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 25.8,
+      "varianceSig": true,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": true
+    },
+    {
+      "shotId": 25414,
+      "campaign": "M8",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 195.0,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 19039,
+      "campaign": "M7",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 12.9,
+      "varianceSig": false,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": false
+    },
+    {
+      "shotId": 19043,
+      "campaign": "M7",
+      "disrupted": false,
+      "tQuench": null,
+      "peakCurrentKa": 13.7,
+      "varianceSig": true,
+      "ac1Sig": false,
+      "moranSig": false,
+      "precursor": true
+    }
+  ]
+}

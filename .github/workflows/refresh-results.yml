@@ -1,0 +1,50 @@
+# Rafraichissement automatique des resultats H1/H2/H3/H5/Fusion (sur la
+# batterie MAST deja curatee) sur les sources deja connectees -- pas de
+# decouverte de nouvelles sources ici (garde-fou explicite, voir
+# frontend/src/data/bilanPublie.js et backend/scripts/refresh_results.py).
+#
+# Google Trends (acces non officiel) et H4 (simulation pure, aucune donnee
+# externe) restent HORS de ce workflow -- decision utilisateur.
+#
+# Calcule les resultats dans le runner lui-meme (pas besoin d'un backend
+# deploye) et les fige dans le depot -- un push sur main declenche le
+# redeploiement Vercel deja en place pour le frontend.
+name: Rafraîchir les résultats publiés
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # chaque lundi 06:00 UTC -- l'Insee ne publie qu'au trimestre, pas besoin de plus frequent
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dependances backend
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Rafraîchir H1/H2/H3/H5/Fusion
+        working-directory: backend
+        run: python -m scripts.refresh_results
+
+      - name: Committer si les resultats ont change
+        run: |
+          git config user.name "helios-bot"
+          git config user.email "helios-bot@users.noreply.github.com"
+          git add frontend/src/data/results/
+          if git diff --cached --quiet; then
+            echo "Aucun changement -- pas de commit."
+          else
+            git commit -m "Rafraîchissement automatique des résultats (H1/H2/H3/H5/Fusion)"
+            git push
+          fi

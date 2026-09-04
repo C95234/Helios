@@ -1,0 +1,25 @@
+{
+  "refreshedAt": "2026-09-04",
+  "alpha": 5.9081,
+  "xmin": 1.6,
+  "ksStatistic": 0.1533,
+  "nTail": 41,
+  "nTotal": 8323,
+  "nDepartments": 96,
+  "nQuarters": 105,
+  "periodStart": "2000-01-01",
+  "periodEnd": "2026-01-01",
+  "pPlausibility": 0.01,
+  "nSynthetic": 200,
+  "lognormal": {
+    "r": -2.0677,
+    "pValue": 0.2405712833321778,
+    "favorsPowerLaw": false
+  },
+  "exponential": {
+    "r": -1.4936,
+    "pValue": 0.036452354110120384,
+    "favorsPowerLaw": false
+  },
+  "verdict": "against"
+}

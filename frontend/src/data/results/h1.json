@@ -1,0 +1,65 @@
+{
+  "refreshedAt": "2026-09-04",
+  "phenomena": [
+    {
+      "label": "Mouvement social 2018 (« gilets jaunes »)",
+      "nOffSig": 4,
+      "nOff": 38,
+      "nSocSig": 3,
+      "nSoc": 3,
+      "decalageJours": -56,
+      "outcome": "against"
+    },
+    {
+      "label": "Tension sanitaire 2020 (premier confinement)",
+      "nOffSig": 11,
+      "nOff": 38,
+      "nSocSig": 0,
+      "nSoc": 3,
+      "decalageJours": null,
+      "outcome": "against"
+    },
+    {
+      "label": "Climat social recent (fenetre glissante la plus recente)",
+      "nOffSig": 7,
+      "nOff": 39,
+      "nSocSig": 1,
+      "nSoc": 3,
+      "decalageJours": -201,
+      "outcome": "against"
+    },
+    {
+      "label": "Attentats du 13 novembre 2015",
+      "nOffSig": 1,
+      "nOff": 38,
+      "nSocSig": 2,
+      "nSoc": 3,
+      "decalageJours": 89,
+      "outcome": "favorable"
+    },
+    {
+      "label": "Mouvement social contre la réforme des retraites 2023",
+      "nOffSig": 7,
+      "nOff": 38,
+      "nSocSig": 2,
+      "nSoc": 3,
+      "decalageJours": -52,
+      "outcome": "against"
+    },
+    {
+      "label": "Attentat de Nice, juillet 2016",
+      "nOffSig": 4,
+      "nOff": 38,
+      "nSocSig": 2,
+      "nSoc": 3,
+      "decalageJours": -13,
+      "outcome": "against"
+    }
+  ],
+  "summary": {
+    "favorable": 1,
+    "against": 5,
+    "neutral": 0,
+    "nPhenomena": 6
+  }
+}

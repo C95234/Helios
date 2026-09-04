@@ -76,6 +76,7 @@ export default function H5Result() {
       postulateExpert={H5_DATA.expert}
       resultText={
         <>
+          <p className="text-muted">Rafraîchi automatiquement le {H5_RESULT.refreshedAt} (Insee, dernier trimestre disponible).</p>
           <dl className="signal-stats">
             <div>
               <dt>α̂ (exposant)</dt>

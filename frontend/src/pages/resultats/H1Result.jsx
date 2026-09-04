@@ -12,7 +12,7 @@ import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
 import { h1Outcome } from "../../outcomes.js";
 import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown, slugify } from "../../report.js";
 import { HYPOTHESES } from "../../data/hypotheses.js";
-import { H1_PHENOMENA, H1_SUMMARY } from "../../data/bilanPublie.js";
+import { H1_PHENOMENA, H1_SUMMARY, H1_REFRESHED_AT } from "../../data/bilanPublie.js";
 import VerdictBadge from "../../components/VerdictBadge.jsx";
 
 const HISTORY_PAGE = "h1";
@@ -219,6 +219,15 @@ function buildH1Markdown(result) {
   return lines.join("\n");
 }
 
+// decalageJours > 0 : le signal social a culmine EN AVANCE sur l'officiel (favorable a H1) --
+// decalageJours < 0 : l'inverse. Le signe seul ne suffit pas a l'affichage, il faut dire lequel a mene.
+function ecartLabel(decalageJours) {
+  if (decalageJours === null) return "—";
+  if (decalageJours > 0) return `social ${decalageJours} j`;
+  if (decalageJours < 0) return `officiel ${-decalageJours} j`;
+  return "simultané";
+}
+
 const H1_DATA = HYPOTHESES.find((h) => h.code === "H1");
 
 export default function H1Result() {
@@ -272,6 +281,7 @@ export default function H1Result() {
       postulateExpert={H1_DATA.expert}
       resultText={
         <>
+          <p className="text-muted">Rafraîchi automatiquement le {H1_REFRESHED_AT} (Wikipédia + Insee).</p>
           <p>
             Sur les 6 phénomènes testés, chaque fois qu'un écart de timing était mesurable, c'est le signal{" "}
             <strong>officiel</strong> qui a précédé le signal social -- seul le choc sécuritaire pur
@@ -294,7 +304,7 @@ export default function H1Result() {
                     <td>{p.label}</td>
                     <td>{p.nOffSig}/{p.nOff}</td>
                     <td>{p.nSocSig}/{p.nSoc}</td>
-                    <td>{p.decalageJours !== null ? `officiel ${p.decalageJours} j` : "—"}</td>
+                    <td>{ecartLabel(p.decalageJours)}</td>
                     <td><VerdictBadge outcome={p.outcome} /></td>
                   </tr>
                 ))}

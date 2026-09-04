@@ -105,6 +105,7 @@ export default function FusionResult() {
       postulateExpert="Réplication du pipeline H1 (variance/AC1 glissantes + test par données de substitution) et H2 (indice de Moran + test par données de substitution) sur le courant plasma et le réseau des sondes magnétiques d'un tokamak réel (MAST), sans aucune branche de calcul spécifique -- même moteur, deux domaines de données (§7ter)."
       resultText={
         <>
+          <p className="text-muted">Rafraîchi automatiquement le {FUSION_RESULT.refreshedAt} (sur la batterie de tirs MAST déjà curatée).</p>
           <dl className="signal-stats">
             <div>
               <dt>Tirs disruptés avec précurseur</dt>

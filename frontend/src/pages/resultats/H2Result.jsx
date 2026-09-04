@@ -13,7 +13,7 @@ import { saveToHistory, loadHistory, clearHistory } from "../../history.js";
 import { h2Outcome } from "../../outcomes.js";
 import { formatGeneratedAt, methodMarkdown, interpretationMarkdown, disclaimerMarkdown } from "../../report.js";
 import { HYPOTHESES } from "../../data/hypotheses.js";
-import { H2_RESULT, H2_MORAN_SERIES } from "../../data/bilanPublie.js";
+import { H2_RESULT, H2_MORAN_SERIES, H2_REFRESHED_AT } from "../../data/bilanPublie.js";
 
 const h2ChartData = H2_MORAN_SERIES.dates.map((date, i) => ({
   date,
@@ -177,6 +177,7 @@ export default function H2Result() {
       postulateExpert={H2_DATA.expert}
       resultText={
         <>
+          <p className="text-muted">Rafraîchi automatiquement le {H2_REFRESHED_AT} (Insee, dernier trimestre disponible).</p>
           <dl className="signal-stats">
             <div>
               <dt>Réel — tendance (τ)</dt>

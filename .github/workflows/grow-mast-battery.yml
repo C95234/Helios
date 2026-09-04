@@ -1,0 +1,55 @@
+# Elargit periodiquement la batterie de tirs MAST curatee (§7ter) --
+# cadence separee et plus rare que refresh-results.yml : la curation scanne
+# des centaines de tirs candidats sur le reseau (bien plus lent que rejouer
+# la batterie deja curatee). MAST est une archive d'experiences terminees,
+# pas une source qui produit de nouvelles donnees en continu -- l'interet
+# ici est surtout de trouver, avec le temps, des tirs deja existants mais
+# pas encore verifies plutot que d'attendre de vraies nouvelles donnees.
+name: Élargir la batterie de tirs MAST (Fusion)
+
+on:
+  schedule:
+    - cron: "0 6 1 * *" # le 1er de chaque mois, 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  grow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dependances backend
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Curer de nouveaux tirs MAST
+        working-directory: backend
+        run: python -m scripts.curate_mast_shots
+
+      - name: Regénérer fusion.json si la batterie a changé
+        working-directory: backend
+        run: |
+          if ! git diff --quiet -- app/data/mast_shots.json; then
+            python -m scripts.refresh_results --only fusion
+          else
+            echo "Batterie MAST inchangée -- fusion.json non régénéré."
+          fi
+
+      - name: Committer si quelque chose a changé
+        run: |
+          git config user.name "helios-bot"
+          git config user.email "helios-bot@users.noreply.github.com"
+          git add backend/app/data/mast_shots.json frontend/src/data/results/fusion.json
+          if git diff --cached --quiet; then
+            echo "Aucun changement -- pas de commit."
+          else
+            git commit -m "Élargit la batterie de tirs MAST curatée (Fusion)"
+            git push
+          fi
