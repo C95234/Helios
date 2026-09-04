@@ -37,7 +37,14 @@ function RChart({ label, trace, refValue, refLabel, color, yDomain = [0, 1] }) {
 const H4_DATA = HYPOTHESES.find((h) => h.code === "H4");
 
 export default function H4Result() {
-  const [params, setParams] = useState({ n_oscillators: 40, coupling_k: 3.0, r_threshold: 0.5, beta: 2.0, duration: 30 });
+  const [params, setParams] = useState({
+    n_oscillators: 40,
+    coupling_k: 3.0,
+    r_threshold: 0.5,
+    beta: 2.0,
+    duration: 30,
+    network: "synthetic",
+  });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -49,6 +56,7 @@ export default function H4Result() {
   }, []);
 
   const setParam = (key) => (e) => setParams((p) => ({ ...p, [key]: Number(e.target.value) }));
+  const setNetwork = (e) => setParams((p) => ({ ...p, network: e.target.value }));
 
   const run = () => {
     setLoading(true);
@@ -112,6 +120,7 @@ export default function H4Result() {
       methodLink={{ to: "/methode/cours-statistiques", label: "Voir le cours de statistiques (méthodes communes à H1-H3)" }}
       limits={[
         "H4 n'est jamais testée contre des données réelles -- une démonstration de principe en simulation, pas un verdict statistique.",
+        "Le mode « réseau réel » calibre la topologie du réseau (qui est voisin de qui) sur les 96 départements français, mais pas le reste : les fréquences propres et l'intensité de synchronisation restent simulées, pas mesurées sur un vrai signal social. Ça ne transforme donc pas H4 en test empirique.",
         "La relation entre β et l'efficacité du contrôle n'est pas monotone sur les configurations testées -- probablement un effet de la graine unique utilisée, à vérifier sur plusieurs graines.",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
@@ -128,13 +137,31 @@ export default function H4Result() {
       <p className="lede">
         N oscillateurs de phase, chacun avec son propre rythme naturel, couplés entre eux avec une force K.
         Au-delà d'un seuil critique K_c, ils basculent brutalement dans un rythme commun (paramètre d'ordre{" "}
-        <em>r</em> → 1).
+        <em>r</em> → 1). Par défaut, chaque oscillateur est couplé à tous les autres (réseau synthétique) ;
+        le mode « réseau réel » restreint le couplage à la vraie carte de voisinage des 96 départements
+        français (la même adjacence que <Link to="/resultats/h2">H2</Link>), pour une topologie moins
+        arbitraire -- toujours une simulation, jamais un test contre des données réelles.
       </p>
 
       <div className="controls">
         <label>
+          Réseau
+          <select value={params.network} onChange={setNetwork}>
+            <option value="synthetic">Synthétique (tous connectés)</option>
+            <option value="real">Réel (96 départements français, comme H2)</option>
+          </select>
+        </label>
+        <label>
           N oscillateurs
-          <input type="number" min={10} max={100} value={params.n_oscillators} onChange={setParam("n_oscillators")} />
+          <input
+            type="number"
+            min={10}
+            max={100}
+            value={params.network === "real" ? 96 : params.n_oscillators}
+            onChange={setParam("n_oscillators")}
+            disabled={params.network === "real"}
+            title={params.network === "real" ? "Imposé par le réseau réel (96 départements)" : undefined}
+          />
         </label>
         <label>
           Couplage K
@@ -167,7 +194,7 @@ export default function H4Result() {
           clearHistory(HISTORY_PAGE);
           setHistory([]);
         }}
-        renderLabel={(e) => `N=${e.params.n_oscillators}, K=${e.params.coupling_k}, β=${e.params.beta}`}
+        renderLabel={(e) => `N=${e.result?.n_oscillators ?? e.params.n_oscillators}, K=${e.params.coupling_k}, β=${e.params.beta}, réseau=${e.params.network === "real" ? "réel" : "synthétique"}`}
       />
 
       {error && <p className="error">{error}</p>}
@@ -180,6 +207,11 @@ export default function H4Result() {
               {expertMode ? "Mode simplifié" : "Mode expert"}
             </button>
           </div>
+          <p className="source-note">
+            {result.network === "real"
+              ? `Réseau réel : ${result.n_oscillators} départements français, ${result.n_edges} liens de voisinage (même adjacence que H2) -- couplage restreint aux voisins réels, pas à tous les oscillateurs.`
+              : "Réseau synthétique : chaque oscillateur est couplé à tous les autres."}
+          </p>
           <p className="source-note">
             {result.coupling_k > result.critical_coupling
               ? "K est au-dessus du seuil critique : sans contrôle, le système bascule vers la synchronisation."
@@ -237,6 +269,10 @@ export default function H4Result() {
                 <div>
                   <dt>N oscillateurs</dt>
                   <dd>{result.n_oscillators}</dd>
+                </div>
+                <div>
+                  <dt>Réseau</dt>
+                  <dd>{result.network === "real" ? `Réel (${result.n_edges} liens)` : "Synthétique (complet)"}</dd>
                 </div>
                 <div>
                   <dt>β</dt>

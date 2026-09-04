@@ -53,18 +53,33 @@ def simulate_uncontrolled(
     dt: float,
     sigma: float = 1.0,
     seed: int | None = None,
+    adjacency: np.ndarray | None = None,
 ) -> dict:
-    """Kuramoto standard, couplage global K fixe -- pas de controle."""
+    """Kuramoto standard, couplage global K fixe -- pas de controle.
+
+    `adjacency` (N x N, 0/1, diagonale nulle) restreint le couplage aux
+    paires reellement voisines, avec normalisation par le degre plutot que
+    par N -- modele Kuramoto sur reseau, cf. `simulate_h4(network="real")`
+    qui y passe le reseau reel des departements (§5.8, adaptation). Laisse a
+    None : comportement inchange (champ moyen, tous connectes).
+    """
     rng = np.random.default_rng(seed)
     omega = rng.normal(0, sigma, size=n)
     theta = rng.uniform(0, 2 * np.pi, size=n)
+
+    if adjacency is not None:
+        degree = adjacency.sum(axis=1)
+        degree_safe = np.where(degree > 0, degree, 1.0)
 
     n_steps = int(duration / dt)
     r_series = np.empty(n_steps)
 
     for step in range(n_steps):
         diffs = theta[None, :] - theta[:, None]  # theta_j - theta_i, shape (i, j)
-        coupling = (k / n) * np.sum(np.sin(diffs), axis=1)
+        if adjacency is None:
+            coupling = (k / n) * np.sum(np.sin(diffs), axis=1)
+        else:
+            coupling = (k / degree_safe) * np.sum(adjacency * np.sin(diffs), axis=1)
         theta = theta + dt * (omega + coupling)
         r_series[step] = order_parameter(theta)
 
@@ -81,6 +96,7 @@ def simulate_adaptive_control(
     sigma: float = 1.0,
     recovery_rate: float | None = None,
     seed: int | None = None,
+    adjacency: np.ndarray | None = None,
 ) -> dict:
     """Couplage adaptatif par paire : K_ij decroit (multiplicativement) tant
     que la paire (i,j) reste verrouillee en phase, avec relaxation lente vers
@@ -91,6 +107,11 @@ def simulate_adaptive_control(
     la regle locale -- c'est le RESULTAT emergent vise, pas un seuil dans
     l'equation. beta controle la force de la suppression locale ; plus beta
     est grand, plus une paire verrouillee est decouplee vite.
+
+    `adjacency` (N x N, 0/1, diagonale nulle), si fourni, restreint le
+    couplage adaptatif aux paires reellement voisines (les autres restent a
+    K_ij=0 en permanence) et normalise par le degre plutot que par N --
+    meme reseau reel que celui passe a `simulate_uncontrolled`.
     """
     if recovery_rate is None:
         recovery_rate = beta / 10.0
@@ -100,6 +121,10 @@ def simulate_adaptive_control(
     theta = rng.uniform(0, 2 * np.pi, size=n)
     K = np.full((n, n), k_base, dtype=float)
     np.fill_diagonal(K, 0.0)
+    if adjacency is not None:
+        K = K * adjacency
+        degree = adjacency.sum(axis=1)
+        degree_safe = np.where(degree > 0, degree, 1.0)
 
     n_steps = int(duration / dt)
     r_series = np.empty(n_steps)
@@ -107,7 +132,10 @@ def simulate_adaptive_control(
 
     for step in range(n_steps):
         diffs = theta[None, :] - theta[:, None]  # theta_j - theta_i
-        coupling = (1.0 / n) * np.sum(K * np.sin(diffs), axis=1)
+        if adjacency is None:
+            coupling = (1.0 / n) * np.sum(K * np.sin(diffs), axis=1)
+        else:
+            coupling = (1.0 / degree_safe) * np.sum(K * np.sin(diffs), axis=1)
         theta_dot = omega + coupling
         theta = theta + dt * theta_dot
 
@@ -118,8 +146,14 @@ def simulate_adaptive_control(
         K = K * (1.0 - beta * lock_strength * dt) + recovery_rate * dt * (k_base - K)
         np.clip(K, 0.0, k_base, out=K)
         np.fill_diagonal(K, 0.0)
+        if adjacency is not None:
+            K = K * adjacency  # les paires non voisines restent decouplees en permanence
 
         r_series[step] = order_parameter(theta)
-        mean_k_series[step] = float(np.mean(K[~np.eye(n, dtype=bool)]))
+        if adjacency is None:
+            mean_k_series[step] = float(np.mean(K[~np.eye(n, dtype=bool)]))
+        else:
+            n_edges = adjacency.sum()
+            mean_k_series[step] = float(np.sum(K) / n_edges) if n_edges > 0 else 0.0
 
     return {"r": r_series, "mean_k": mean_k_series, "omega": omega}

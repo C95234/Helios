@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from typing import Literal
+
 import numpy as np
 from fastapi import APIRouter, Query
 
+from ..geo import department_weight_matrix, load_department_network
 from ..kuramoto import critical_coupling, simulate_adaptive_control, simulate_uncontrolled
 from ..schemas import H4Response, KuramotoTraceOut
 
@@ -30,10 +33,29 @@ def simulate_h4(
     duration: float = Query(default=30.0, gt=1, le=100),
     dt: float = Query(default=0.02, gt=0.001, le=0.1),
     seed: int | None = Query(default=None),
+    network: Literal["synthetic", "real"] = Query(
+        default="synthetic",
+        description=(
+            "'synthetic' : reseau complet (tous connectes), N configurable. "
+            "'real' : reseau reel des departements francais (meme adjacence que H2) -- "
+            "N est alors impose par le nombre de departements, n_oscillators est ignore."
+        ),
+    ),
 ):
     k_c = critical_coupling(sigma=1.0)
 
-    uncontrolled = simulate_uncontrolled(n=n_oscillators, k=coupling_k, duration=duration, dt=dt, seed=seed)
+    adjacency = None
+    n_edges = None
+    if network == "real":
+        real_network = load_department_network()
+        codes = sorted(real_network["adjacency"].keys())
+        adjacency = department_weight_matrix(codes, real_network["adjacency"])
+        n_oscillators = len(codes)
+        n_edges = int(adjacency.sum() / 2)
+
+    uncontrolled = simulate_uncontrolled(
+        n=n_oscillators, k=coupling_k, duration=duration, dt=dt, seed=seed, adjacency=adjacency
+    )
     controlled = simulate_adaptive_control(
         n=n_oscillators,
         k_base=coupling_k,
@@ -42,6 +64,7 @@ def simulate_h4(
         duration=duration,
         dt=dt,
         seed=seed,
+        adjacency=adjacency,
     )
 
     time = np.arange(len(uncontrolled["r"])) * dt
@@ -58,6 +81,8 @@ def simulate_h4(
         duration=duration,
         dt=dt,
         seed=seed,
+        network=network,
+        n_edges=n_edges,
         r_uncontrolled=_downsample(time, r_unc),
         r_controlled=_downsample(time, r_ctl),
         mean_coupling_controlled=_downsample(time, controlled["mean_k"]),

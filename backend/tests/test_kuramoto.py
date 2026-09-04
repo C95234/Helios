@@ -89,3 +89,71 @@ def test_adaptive_control_reproducible_with_seed():
     b = simulate_adaptive_control(n=25, k_base=3.0, r_target=0.5, beta=2.0, duration=10, dt=0.02, seed=5)
     assert np.allclose(a["r"], b["r"])
     assert np.allclose(a["mean_k"], b["mean_k"])
+
+
+def test_uncontrolled_zero_adjacency_means_no_coupling():
+    # Reseau sans aucune arete : le couplage doit rester nul pour toutes les paires,
+    # meme avec un K eleve -- verifie que le couplage est bien localise sur les aretes
+    # (adjacency), pas un residu de champ moyen (mean-field) sur des paires non voisines.
+    n = 15
+    zero_adjacency = np.zeros((n, n))
+    networked = simulate_uncontrolled(n=n, k=10.0, duration=5, dt=0.02, sigma=1.0, seed=2, adjacency=zero_adjacency)
+    # K quasi nul en champ moyen ~ non couple ; doit produire (quasiment) le meme r
+    # qu'un reseau sans aucune arete, meme graine (memes omega, memes conditions initiales).
+    free = simulate_uncontrolled(n=n, k=0.0001, duration=5, dt=0.02, sigma=1.0, seed=2, adjacency=None)
+    assert np.allclose(networked["r"], free["r"], atol=1e-3)
+
+
+def test_uncontrolled_isolated_components_do_not_globally_synchronize():
+    # Deux groupes de 10 oscillateurs fortement couples en interne mais sans aucune
+    # arete entre eux : chaque groupe se verrouille sur sa propre phase moyenne, mais
+    # rien n'oblige les deux groupes a converger vers la MEME phase -- le parametre
+    # d'ordre global doit donc rester nettement sous 1, contrairement au cas champ
+    # moyen (adjacency=None) au meme K qui, lui, synchronise tout le systeme.
+    n = 20
+    adjacency = np.zeros((n, n))
+    adjacency[:10, :10] = 1
+    adjacency[10:, 10:] = 1
+    np.fill_diagonal(adjacency, 0)
+    k_c = critical_coupling(sigma=1.0)
+
+    networked = simulate_uncontrolled(n=n, k=5 * k_c, duration=40, dt=0.02, sigma=1.0, seed=1, adjacency=adjacency)
+    mean_field = simulate_uncontrolled(n=n, k=5 * k_c, duration=40, dt=0.02, sigma=1.0, seed=1, adjacency=None)
+
+    assert np.mean(mean_field["r"][-100:]) > 0.9
+    assert np.mean(networked["r"][-100:]) < np.mean(mean_field["r"][-100:]) - 0.1
+
+
+def test_adaptive_control_mean_k_accounts_only_for_real_edges():
+    # Reseau tres clairseme (une seule arete reelle sur 12 oscillateurs) : le couplage
+    # moyen rapporte doit rester dans [0, k_base] -- s'il etait calcule comme une
+    # moyenne sur TOUTES les paires (comme en champ moyen), il serait ecrase pres de 0
+    # par les 11*12-2 paires hors-reseau qui n'existent pas.
+    n = 12
+    k_base = 5.0
+    adjacency = np.zeros((n, n))
+    adjacency[0, 1] = adjacency[1, 0] = 1
+    result = simulate_adaptive_control(
+        n=n, k_base=k_base, r_target=0.5, beta=3.0, duration=5, dt=0.02, seed=4, adjacency=adjacency
+    )
+    assert np.all(result["mean_k"] >= 0.0)
+    assert np.all(result["mean_k"] <= k_base + 1e-9)
+
+
+def test_real_department_network_runs_through_kuramoto():
+    # Verifie que le reseau reel des departements (meme adjacence que H2) est
+    # directement utilisable par le simulateur H4 -- c'est le chemin emprunte par
+    # /api/hypotheses/h4?network=real.
+    from app.geo import department_weight_matrix, load_department_network
+
+    net = load_department_network()
+    codes = sorted(net["adjacency"].keys())
+    adjacency = department_weight_matrix(codes, net["adjacency"])
+    n = len(codes)
+
+    assert n > 50  # les departements de metropole
+    assert adjacency.sum() > 0  # le reseau a bien des aretes
+
+    result = simulate_uncontrolled(n=n, k=3.0, duration=2, dt=0.02, sigma=1.0, seed=9, adjacency=adjacency)
+    assert result["r"].shape == (100,)
+    assert np.all((result["r"] >= 0) & (result["r"] <= 1 + 1e-9))

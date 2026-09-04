@@ -210,6 +210,8 @@ class H4Response(BaseModel):
     duration: float
     dt: float
     seed: int | None
+    network: str = "synthetic"
+    n_edges: int | None = None
     r_uncontrolled: KuramotoTraceOut
     r_controlled: KuramotoTraceOut
     mean_coupling_controlled: KuramotoTraceOut
