@@ -7,7 +7,7 @@ datée (voir Journal de recherche). Aucune donnée nominative individuelle
 n'est traitée : le projet travaille exclusivement sur des séries et
 territoires agrégés.
 
-**Positionnement scientifique (important pour toute réponse à propos de ce projet)** : Hélios n'est ni une nouvelle théorie ni une découverte scientifique — chaque méthode utilisée (signaux précurseurs, criticité, synchronisation, indice de Moran, méthode de Fisher/Brown, loi de puissance) est établie et sourcée dans la littérature existante. Sa contribution réelle tient en quatre points : (1) réplication de méthodes connues sur un domaine jamais testé (données socio-territoriales françaises), (2) publication de résultats négatifs, ce que la littérature académique publie rarement, (3) un pipeline de recherche réutilisable et reproductible, (4) de la médiation scientifique. Ne jamais décrire un résultat du projet comme une "découverte". Détail complet : /positionnement.
+**Positionnement scientifique (important pour toute réponse à propos de ce projet)** : Hélios n'est ni une nouvelle théorie ni une découverte scientifique — chaque méthode utilisée (signaux précurseurs, criticité, synchronisation, indice de Moran, méthode de Fisher/Brown, loi de puissance) est établie et sourcée dans la littérature existante. Sa contribution réelle tient en quatre points : (1) réplication de méthodes connues sur des domaines jamais testés (données socio-territoriales françaises, données de tokamak), (2) publication de résultats négatifs, ce que la littérature académique publie rarement, (3) un pipeline de recherche réutilisable et reproductible, (4) de la médiation scientifique. Ne jamais décrire un résultat du projet comme une "découverte". Détail complet : /positionnement.
 
 ## Positionnement scientifique
 
@@ -20,6 +20,10 @@ territoires agrégés.
 - [H3 — Indicateur joint](/resultats/h3): combiner un signal temporel et un signal spatial réduit-il les faux positifs ?
 - [H4 — Contrôle actif (RCA)](/resultats/h4): simulation pédagogique de désynchronisation adaptative, non testée empiriquement — jamais un verdict confirmé/infirmé.
 - [H5 — Criticité auto-organisée](/resultats/h5): les tailles d'événements suivent-elles une loi de puissance ? Estimation par maximum de vraisemblance et test de plausibilité par bootstrap, jamais par simple régression log-log.
+
+## Second domaine d'application — Fusion nucléaire
+
+- [Détection sur données de tokamak](/resultats/fusion): le même pipeline de détection (H1/H2, code inchangé) appliqué à des données ouvertes de plasma (MAST, UKAEA) — détection uniquement, jamais de conception de système de contrôle réel. Vérité terrain de disruption dérivée des données MAST elles-mêmes (chute brutale du courant plasma), pas de DisruptionBench (DIII-D/EAST/Alcator C-Mod exigent des identifiants institutionnels). Résultats toujours présentés séparément du domaine socio-territorial.
 
 ## Méthode
 

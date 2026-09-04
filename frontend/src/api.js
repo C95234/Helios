@@ -25,6 +25,8 @@ export const api = {
   testH3: (phenomenon) => getJson(`/hypotheses/h3?phenomenon=${phenomenon}`),
   simulateH4: (params) => getJson(`/hypotheses/h4?${new URLSearchParams(params).toString()}`),
   testH5: () => getJson(`/hypotheses/h5`),
+  testFusionShot: (shotId) => getJson(`/hypotheses/fusion?shot_id=${shotId}`),
+  testFusionAggregate: () => getJson(`/hypotheses/fusion/aggregate`),
   getConnectors: () => getJson(`/connectors`),
   getGuardrails: () => getJson(`/connectors/guardrails`),
 };

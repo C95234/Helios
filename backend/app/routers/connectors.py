@@ -12,6 +12,8 @@ from ..connectors.google_trends import TERMS_OF_USE_URL as TRENDS_TERMS
 from ..connectors.insee import TERMS_OF_USE_URL as INSEE_TERMS
 from ..connectors.wikipedia import TERMS_OF_USE_URL as WIKI_TERMS
 from ..connectors.wikipedia_edits import TERMS_OF_USE_URL as WIKI_EDITS_TERMS
+
+MAST_TERMS = "https://github.com/ukaea/fair-mast"
 from ..guardrails import MIN_COMMUNE_POPULATION, MIN_K_ANONYMITY
 from ..schemas import ConnectorInfo
 
@@ -122,6 +124,27 @@ CONNECTORS: list[ConnectorInfo] = [
         ethical_notes=[
             "Données purement géographiques (contours administratifs) -- aucune donnée personnelle.",
             "Calcul de voisinage fait une fois par un script versionné (scripts/build_department_adjacency.py), pas à chaque requête.",
+        ],
+    ),
+    ConnectorInfo(
+        name="mast",
+        label="MAST (FAIR MAST, UKAEA) -- diagnostics de tokamak",
+        description=(
+            "Métadonnées de tirs (API REST JSON) et signaux bruts (courant plasma, sondes magnétiques) "
+            "au format Zarr sur S3, en accès HTTPS anonyme -- second domaine d'application (§7ter, "
+            "détection sur données de fusion), même moteur de calcul que H1/H2, code inchangé."
+        ),
+        access_type="Ouvert, sans identifiants (REST JSON pour la metadata, Zarr v2 sur S3 en HTTPS anonyme pour les signaux)",
+        terms_of_use_url=MAST_TERMS,
+        ethical_notes=[
+            "Données physiques de plasma, aucune donnée personnelle d'aucune sorte.",
+            "DisruptionBench (cité au §7ter comme source de vérité terrain) n'est PAS accessible sans "
+            "identifiants institutionnels pour les machines qu'il référence (DIII-D, EAST, Alcator "
+            "C-Mod) -- vérifié en direct, contrairement à ce qu'indique le tableau du cahier des "
+            "charges. La vérité terrain de disruption est donc dérivée des données MAST elles-mêmes "
+            "(détection de quench sur le courant plasma, voir /resultats/fusion), pas d'un jeu de "
+            "données externe.",
+            "Détection uniquement : aucun système de contrôle réel de plasma n'est simulé ni conçu.",
         ],
     ),
 ]

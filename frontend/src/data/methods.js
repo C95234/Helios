@@ -207,4 +207,6 @@ export const BIBLIOGRAPHY = [
   "Bak, P., Tang, C., & Wiesenfeld, K. (1987). « Self-organized criticality: An explanation of the 1/f noise. » Physical Review Letters, 59(4), 381–384.",
   "Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). « Power-Law Distributions in Empirical Data. » SIAM Review, 51(4), 661–703.",
   "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
+  "Jackson, S., Khan, S., Cummings, N. et al. (2025). « An Open Data Service for Supporting Research in Machine Learning on Tokamak Data. » IEEE Transactions on Plasma Science.",
+  "Zheng, W., Xue, F., Chen, Z. et al. (2023). « Disruption prediction for future tokamaks using parameter-based transfer learning. » Communications Physics, 6, 181.",
 ];

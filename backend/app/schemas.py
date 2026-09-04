@@ -227,6 +227,50 @@ class H4Response(BaseModel):
     )
 
 
+class FusionShotResult(BaseModel):
+    """Un tir MAST analyse par le pipeline H1/H2 (variance/AC1 + indice de
+    Moran, code inchange) -- §7ter. `precursor_before_quench` est le verdict
+    par tir : le signal temporel ET/OU spatial devient-il significatif AVANT
+    le quench (memes logique de precedence que H1), pas un nouveau type de
+    verdict."""
+
+    shot_id: int
+    campaign: str | None
+    disrupted: bool
+    t_quench: float | None
+    t_peak: float | None
+    peak_current_ka: float
+    n_current_points_analyzed: int
+    variance_significance: SignificanceOut
+    ac1_significance: SignificanceOut
+    n_probes: int
+    moran_trend: TrendTestOut
+    precursor_before_quench: bool
+    verdict_simple: str
+
+
+class FusionAggregateResponse(BaseModel):
+    n_shots: int
+    n_disrupted: int
+    n_stable: int
+    n_disrupted_with_precursor: int
+    n_stable_false_positive: int
+    shots: list[FusionShotResult]
+    verdict_simple: str
+    quench_disclaimer: str = (
+        "La verite terrain de disruption est derivee des donnees MAST elles-memes (chute brutale du courant "
+        "plasma, critere simple documente) plutot que d'un jeu de donnees externe -- DisruptionBench "
+        "(DIII-D/EAST/Alcator C-Mod) exige des identifiants institutionnels non disponibles. Ce n'est pas un "
+        "detecteur de disruption valide cliniquement."
+    )
+    scope_disclaimer: str = (
+        "Détection uniquement -- ce module ne simule, ne conçoit ni ne propose aucun système de contrôle réel "
+        "de plasma. Toute mention du RCA (H4) reste une note conceptuelle hors périmètre, jamais une "
+        "conception fonctionnelle applicable à un vrai tokamak. Résultats présentés séparément du domaine "
+        "socio-territorial, jamais combinés en un verdict unique."
+    )
+
+
 class ModelComparisonOut(BaseModel):
     """Test du rapport de vraisemblance de Vuong entre la loi de puissance et
     un modèle alternatif (§5.9.2 étape 5). `mu`/`sigma` pour la log-normale,

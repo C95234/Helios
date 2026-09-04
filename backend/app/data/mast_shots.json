@@ -1,0 +1,55 @@
+{
+  "shots": [
+    {
+      "shot_id": 28461,
+      "disrupted": true,
+      "peak_current_ka": 13.5,
+      "t_quench": 0.5124996900558472,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28464,
+      "disrupted": true,
+      "peak_current_ka": 21.9,
+      "t_quench": 0.5126997232437134,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28467,
+      "disrupted": true,
+      "peak_current_ka": 22.7,
+      "t_quench": 0.5136996507644653,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 19045,
+      "disrupted": true,
+      "peak_current_ka": 19.9,
+      "t_quench": 0.521399974822998,
+      "campaign": "M7"
+    },
+    {
+      "shot_id": 28473,
+      "disrupted": false,
+      "peak_current_ka": 14.7,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28476,
+      "disrupted": false,
+      "peak_current_ka": 18.5,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28486,
+      "disrupted": false,
+      "peak_current_ka": 19.4,
+      "t_quench": null,
+      "campaign": "M9"
+    }
+  ],
+  "source": "https://mastapp.site",
+  "note": "Curation verifiee en direct, voir curate_mast_shots.py"
+}

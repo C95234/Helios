@@ -37,6 +37,27 @@ def department_weight_matrix(codes: list[str], adjacency: dict[str, list[str]]) 
     return w
 
 
+def knn_weight_matrix(x: np.ndarray, y: np.ndarray, k: int) -> np.ndarray:
+    """Matrice de poids par k plus proches voisins geometriques -- utilisee
+    pour un reseau de capteurs physiques (ex. sondes magnetiques MAST, §7ter)
+    plutot qu'un decoupage administratif : pas de notion de "frontiere
+    commune", seulement une position (x, y) par noeud. w_ij=1 si j est parmi
+    les k plus proches voisins de i (relation non symetrique en general,
+    symetrisee ici par OU logique -- w_ij=1 si i voisin de j OU j voisin de
+    i -- pour rester une matrice de poids utilisable telle quelle par
+    `stats/moran.py`, qui ne suppose pas la symetrie mais s'attend a une
+    matrice coherente avec S0 = somme des poids)."""
+    coords = np.column_stack([x, y])
+    n = len(coords)
+    dist = np.linalg.norm(coords[:, None, :] - coords[None, :, :], axis=-1)
+    np.fill_diagonal(dist, np.inf)
+    w = np.zeros((n, n))
+    nearest = np.argsort(dist, axis=1)[:, :k]
+    for i in range(n):
+        w[i, nearest[i]] = 1
+    return np.maximum(w, w.T)
+
+
 def regular_grid_weight_matrix(n: int) -> tuple[np.ndarray, tuple[int, int]]:
     """Grille reguliere rectangulaire la plus carree possible pour n cellules, contiguite rook."""
     rows = int(math.floor(math.sqrt(n)))

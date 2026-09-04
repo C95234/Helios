@@ -672,6 +672,57 @@ internet)** :
 
 ---
 
+## 7ter. Second domaine d'application — détection sur données de fusion nucléaire
+
+**Objectif** : démontrer que le pipeline de détection (H1/H2/H3, code
+inchangé) généralise à un domaine physique réel totalement différent du
+socio-territorial — sans construire de nouvelle méthode, en réutilisant
+exactement l'existant sur de nouvelles données.
+
+**Sources de données (ouvertes, sans accréditation institutionnelle)** :
+
+| Source | Ce qu'elle apporte | Accès |
+|---|---|---|
+| MAST (FAIR MAST) | Données de diagnostic plasma en accès libre complet | API REST + bucket S3 (Zarr/xarray), aucune clé requise |
+| DisruptionBench | Jeu de données standardisé, ~30 000 décharges (DIII-D, EAST, Alcator C-Mod) | Public |
+| Diagnostic ECEi (DIII-D) | Grille spatiale de température, 20×8 capteurs | Via DisruptionPy/UDA |
+
+**Méthode** : la grille ECEi (20×8) est un réseau spatial régulier —
+elle remplace directement le réseau territorial du §6 dans le calcul de
+l'indice de Moran (§5.2), sans modification de la formule. Le signal
+temporel d'un capteur (ou de la moyenne des capteurs) remplace la série
+Insee du §5.1. Les épisodes de disruption connus (répertoriés dans
+DisruptionBench) servent de vérité terrain, au même titre que les
+épisodes historiques du §5.7.
+
+**Cadrage honnête** : la quasi-totalité des travaux publiés sur la
+prédiction de disruption utilisent des modèles d'apprentissage profond
+(CNN, réseaux hybrides) — puissants mais peu interprétables. Appliquer
+ici une méthode statistique interprétable, avec test de significativité
+formel (§5.4), comble un manque d'interprétabilité identifié dans ce
+champ — c'est une application originale au même titre que le domaine
+socio-territorial, pas une nouvelle découverte en physique des plasmas.
+
+**Limite stricte du domaine (garde-fou de portée, non négociable)** :
+ce module fait de la **détection uniquement**. Il ne simule, ne
+conçoit, ni ne propose aucun système de contrôle réel de plasma —
+contrairement à H4 (Kuramoto), qui reste une analogie pédagogique
+abstraite, jamais présentée comme applicable à un vrai tokamak. Concevoir
+un vrai système de contrôle (l'équivalent réel du RCA) demanderait une
+expertise en magnétohydrodynamique (équations MHD, modes de paroi
+résistive, profils de facteur de sécurité $q(r)$) hors du périmètre de
+ce projet. Toute mention du RCA dans ce module reste une note
+conceptuelle, explicitement marquée comme telle, jamais une conception
+fonctionnelle.
+
+**Sortie attendue** : un verdict par le même gabarit que H1-H3,
+présenté comme un second domaine de test dans le module "Résultats" —
+jamais fusionné avec les résultats socio-territoriaux, pour ne pas
+laisser croire à une validation croisée entre deux domaines aussi
+différents.
+
+---
+
 ## 8. Architecture technique
 
 - **Backend** : Python (FastAPI), pandas/numpy/statsmodels/scipy pour les
@@ -751,7 +802,10 @@ pas seulement documentés :
 - **V5** : module H5 (§5.9) — estimation par maximum de vraisemblance,
   test de plausibilité par bootstrap (§5.9.2), comparaison de modèles
   (loi de puissance vs log-normale vs exponentielle) avant tout verdict.
-- **V6 (conditionnelle)** : connecteurs marchés financiers et Trends,
+- **V6** : second domaine d'application (§7ter) — connecteur MAST/
+  DisruptionBench, rejeu du pipeline H1/H2/H3 inchangé sur la grille
+  ECEi, verdict présenté séparément des résultats socio-territoriaux.
+- **V7 (conditionnelle)** : connecteurs marchés financiers et Trends,
   uniquement si accès API officiel obtenu dans le respect du §6 et §9.3.
 
 ---
@@ -800,6 +854,16 @@ pas seulement documentés :
 - [ ] La page d'accueil et la page Bilan contiennent chacune une
       reformulation explicite du positionnement scientifique du §1bis
       (réplication, résultats négatifs, outil réutilisable, médiation).
+- [ ] Le module de détection sur données de fusion (§7ter) réutilise le
+      code des modules H1/H2/H3 sans branche spécifique dupliquée —
+      vérifié par relecture : un seul moteur de calcul, deux jeux de
+      connecteurs de données.
+- [ ] Aucune page ni aucun rapport du module fusion ne présente de
+      système de contrôle de plasma réel — toute mention du RCA y est
+      explicitement labellisée "note conceptuelle, hors périmètre du
+      projet", jamais formulée comme une conception fonctionnelle.
+- [ ] Les résultats du domaine fusion et du domaine socio-territorial
+      sont affichés séparément, jamais combinés en un verdict unique.
 
 ---
 
@@ -818,6 +882,8 @@ exacte dans l'interface (mode expert), pas seulement d'un nom d'auteur :
 - Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality: An explanation of the 1/f noise." *Physical Review Letters*, 59(4), 381–384. — fondement théorique de H5.
 - Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). "Power-Law Distributions in Empirical Data." *SIAM Review*, 51(4), 661–703. — méthode d'estimation et de test utilisée pour H5 (§5.9.1-5.9.2).
 - Touboul, J., & Destexhe, A. (2010). "Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics?" *PLoS ONE*, 5(2), e9448. — mise en garde méthodologique citée au §5.9 (cadrage honnête).
+- Jackson, S., Khan, S., Cummings, N. et al. (2025). "An Open Data Service for Supporting Research in Machine Learning on Tokamak Data." *IEEE Transactions on Plasma Science*. — source du connecteur MAST/FAIR MAST cité au §7ter.
+- Zheng, W., Xue, F., Chen, Z. et al. (2023). "Disruption prediction for future tokamaks using parameter-based transfer learning." *Communications Physics*, 6, 181. — contexte du domaine (approches par apprentissage profond, cadrage honnête du §7ter).
 - Dakos, V., van Nes, E. H., Donangelo, R., Fort, H., & Scheffer, M. (2010). "Spatial correlation as leading indicator of catastrophic shifts." *Theoretical Ecology*, 3, 163–174.
 - MacLaren, N. G., Aihara, K., & Masuda, N. (2025). "Applicability of spatial early warning signals to complex network dynamics." *Journal of the Royal Society Interface*, 22(226), 20240696. — source du créneau identifié pour H2 (les EWS spatiaux sont validés presque exclusivement sur des grilles régulières, pas sur des réseaux réels irréguliers).
 - Kuramoto, Y. (1975). "Self-entrainment of a population of coupled non-linear oscillators." In *International Symposium on Mathematical Problems in Theoretical Physics*, Lecture Notes in Physics, 39, 420–422.

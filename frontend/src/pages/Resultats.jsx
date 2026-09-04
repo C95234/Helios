@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { HYPOTHESES } from "../data/hypotheses.js";
 import HypothesisCard from "../components/HypothesisCard.jsx";
 
@@ -27,6 +28,19 @@ export default function Resultats() {
         d'exécutions. H5 non plus : son verdict repose sur un test de plausibilité par bootstrap et une
         comparaison à des modèles alternatifs (§5.9.2), pas sur un décompte d'épisodes.
       </p>
+
+      <section className="hypotheses-teaser" style={{ marginTop: "2.5rem" }}>
+        <h2>Second domaine d'application — Fusion nucléaire</h2>
+        <p>
+          Le même pipeline de détection (variance, autocorrélation, indice de Moran — code inchangé) appliqué
+          à des données réelles et ouvertes de tokamak (MAST, UKAEA), pour démontrer que la méthode généralise
+          au-delà du socio-territorial. Détection uniquement -- jamais un système de contrôle réel, jamais
+          combiné aux résultats H1-H5 dans un même verdict.
+        </p>
+        <Link to="/resultats/fusion" className="cta secondary">
+          Voir la détection sur données de fusion
+        </Link>
+      </section>
     </div>
   );
 }
