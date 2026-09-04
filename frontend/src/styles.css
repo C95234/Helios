@@ -412,7 +412,8 @@ main {
   color: var(--color-warn);
 }
 
-.hypothesis-status--testable .hypothesis-status-label {
+.hypothesis-status--testable .hypothesis-status-label,
+.hypothesis-status--distribution .hypothesis-status-label {
   color: var(--color-calm);
 }
 

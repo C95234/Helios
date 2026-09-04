@@ -409,6 +409,64 @@ export const COURS_SECTIONS = [
       },
     ],
   },
+  {
+    id: "loi-de-puissance",
+    number: 9,
+    title: "Loi de puissance et criticité auto-organisée",
+    blocks: [
+      {
+        type: "definition",
+        title: "Densité d'une loi de puissance continue",
+        body: [
+          { text: "Une variable aléatoire continue $X \\ge x_{\\min}$ suit une loi de puissance de paramètre $\\alpha>1$ si sa densité est :" },
+          { tex: "p(x) = \\frac{\\alpha-1}{x_{\\min}}\\left(\\frac{x}{x_{\\min}}\\right)^{-\\alpha}", block: true },
+          { text: "Contrairement à une loi normale (une échelle typique autour de la moyenne), une loi de puissance n'a pas d'échelle caractéristique : des événements bien plus grands que la moyenne restent, en proportion, beaucoup plus probables qu'avec une loi normale ou exponentielle -- c'est la signature recherchée d'un système en criticité auto-organisée (Bak, Tang & Wiesenfeld, 1987) : pas une seule bascule, mais des événements de toutes tailles." },
+        ],
+      },
+      {
+        type: "theoreme",
+        title: "Estimateur du maximum de vraisemblance de α",
+        body: [
+          { text: "Pour $n$ observations $x_1,\\dots,x_n \\ge x_{\\min}$ indépendantes, l'estimateur du maximum de vraisemblance de $\\alpha$ est :" },
+          { tex: "\\hat\\alpha = 1 + \\frac{n}{\\displaystyle\\sum_{i=1}^n \\ln(x_i/x_{\\min})}", block: true },
+        ],
+        proof: [
+          { text: "La log-vraisemblance de l'échantillon, pour $x_{\\min}$ fixé, vaut :" },
+          { tex: "\\ln L(\\alpha) = n\\ln(\\alpha-1) - n\\ln(x_{\\min}) - \\alpha\\sum_{i=1}^n \\ln\\!\\left(\\frac{x_i}{x_{\\min}}\\right)", block: true },
+          { text: "En dérivant par rapport à $\\alpha$ et en annulant la dérivée :" },
+          { tex: "\\frac{d\\ln L}{d\\alpha} = \\frac{n}{\\alpha-1} - \\sum_i \\ln\\!\\left(\\frac{x_i}{x_{\\min}}\\right) = 0 \\ \\Longrightarrow\\ \\hat\\alpha = 1 + \\frac{n}{\\sum_i \\ln(x_i/x_{\\min})}", block: true },
+          { text: "C'est l'estimateur de Clauset, Shalizi & Newman (2009) -- un simple calcul de dérivée, jamais un ajustement graphique sur un graphe log-log." },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Pourquoi pas un simple ajustement log-log ?",
+        body: [
+          { text: "Un ajustement qui « a l'air droit » sur un graphe log-log ne prouve rien : Touboul & Destexhe (2010) montrent que de purs processus stochastiques sans aucune criticité produisent régulièrement des courbes log-log trompeusement rectilignes. La méthode correcte réutilise exactement la logique du test par permutation (§5 de ce cours) : générer des jeux de données synthétiques à partir du modèle ajusté lui-même, et comparer la qualité d'ajustement observée à celle de ces jeux synthétiques (test de Kolmogorov-Smirnov par bootstrap). Une p-value élevée (par convention $>0{,}1$) rend le modèle plausible ; une p-value faible le rejette." },
+          { text: "Même une loi de puissance jugée plausible ne suffit pas : il faut encore la comparer à des modèles alternatifs (log-normale, exponentielle) par un test du rapport de vraisemblance -- un ajustement « acceptable » ne veut rien dire si une alternative s'ajuste aussi bien ou mieux (module H5 d'Hélios)." },
+        ],
+      },
+      {
+        type: "exemple",
+        title: "Effet de x_min sur l'exposant estimé",
+        body: [
+          { text: "Sur un échantillon simulé de vraie loi de puissance ($\\alpha=2{,}5$, $x_{\\min}=1$), la formule ci-dessus appliquée à tout l'échantillon retrouve $\\hat\\alpha \\approx 2{,}5$. Si on l'applique à tort en fixant $x_{\\min}$ beaucoup plus haut que le vrai seuil, la queue restante (moins de points) donne une estimation beaucoup plus bruitée et $\\hat\\alpha$ s'écarte facilement de la vraie valeur -- d'où l'importance de choisir $x_{\\min}$ par une procédure elle-même rigoureuse (minimiser la distance de Kolmogorov-Smirnov entre le modèle et les données), pas arbitrairement." },
+        ],
+      },
+      {
+        type: "exercice",
+        title: "Calcul direct de α̂",
+        body: [
+          { text: "Sur 4 observations $x_{\\min}=1$ et $x = \\{1, 2, 2, 4\\}$, calculer $\\hat\\alpha$." },
+        ],
+        correction: [
+          { tex: "\\sum_i \\ln(x_i/x_{\\min}) = \\ln(1)+\\ln(2)+\\ln(2)+\\ln(4) = 0+0{,}693+0{,}693+1{,}386 = 2{,}773", block: true },
+          { tex: "\\hat\\alpha = 1 + \\frac{4}{2{,}773} \\approx 2{,}44", block: true },
+          { text: "Sur un échantillon aussi petit, cette estimation reste très instable (voir la mise en garde ci-dessus) -- c'est pourquoi le module H5 exige un grand nombre d'événements avant tout verdict." },
+        ],
+      },
+    ],
+  },
 ];
 
 export const COURS_BILAN = [
@@ -420,6 +478,7 @@ export const COURS_BILAN = [
   { notion: "Tau de Kendall", role: "Détecter une tendance monotone (module H1/H3)" },
   { notion: "Indice de Moran", role: "Indicateur précurseur spatial (module H2)" },
   { notion: "Méthode de Fisher / Brown", role: "Combiner plusieurs indicateurs (module H3)" },
+  { notion: "Loi de puissance (MLE, test de plausibilité)", role: "Criticité auto-organisée (module H5)" },
 ];
 
 export const COURS_REFERENCES = [
@@ -429,4 +488,7 @@ export const COURS_REFERENCES = [
   "Moran, P. A. P. (1950). « Notes on continuous stochastic phenomena. » Biometrika, 37.",
   "Kendall, M. G. (1938). « A new measure of rank correlation. » Biometrika, 30(1-2).",
   "Dakos, V. et al. (2012). « Methods for Detecting Early Warnings of Critical Transitions in Time Series. » PLoS ONE, 7(7).",
+  "Bak, P., Tang, C., & Wiesenfeld, K. (1987). « Self-organized criticality: An explanation of the 1/f noise. » Physical Review Letters, 59(4).",
+  "Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). « Power-Law Distributions in Empirical Data. » SIAM Review, 51(4), 661–703.",
+  "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
 ];

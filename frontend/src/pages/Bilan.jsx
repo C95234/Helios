@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { SCORECARD, STRENGTHS, WEAKNESSES, CONCLUSION } from "../data/bilanProjet.js";
-import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY } from "../data/bilanPublie.js";
+import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT } from "../data/bilanPublie.js";
+import { POSITIONING_SHORT } from "../data/positionnement.js";
 
 export default function Bilan() {
   return (
@@ -8,8 +9,11 @@ export default function Bilan() {
       <h1>Bilan : points forts, points faibles</h1>
       <p className="lede">
         Synthèse honnête du projet, mise à jour à chaque round de tests -- pas plus catégorique que ce que
-        les données permettent. Aucune des trois hypothèses empiriques (H1, H2, H3) n'est présentée comme
+        les données permettent. Aucune des hypothèses empiriques (H1, H2, H3, H5) n'est présentée comme
         confirmée sans réserve ; H4 reste une démonstration en simulation, jamais un verdict statistique.
+      </p>
+      <p className="text-muted">
+        {POSITIONING_SHORT} <Link to="/positionnement">Le détail →</Link>
       </p>
 
       <div className="scorecard">
@@ -40,6 +44,10 @@ export default function Bilan() {
           <div className="agg-stat">
             <span className="agg-number">{H4_SUMMARY.nUnderThreshold}/{H4_SUMMARY.nConfigs}</span>
             <span>H4 configs sous r_c</span>
+          </div>
+          <div className="agg-stat">
+            <span className="agg-number">{H5_RESULT.verdict === "against" ? "rejetée" : H5_RESULT.verdict}</span>
+            <span>H5 loi de puissance (p={H5_RESULT.pPlausibility})</span>
           </div>
         </div>
         <p className="text-muted">

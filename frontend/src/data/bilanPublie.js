@@ -98,3 +98,26 @@ export const TRENDS_SUMMARY = {
   nTermsTestedTotal: 22,
   nTermsSignificantTotal: 3,
 };
+
+// H5 -- criticite auto-organisee (§5.9). Source reelle : amplitude des chocs
+// trimestriels de chomage departemental (Insee), seule source disponible
+// parmi celles envisagees au §5.9.3 (GDELT rate-limite, Reddit/SNAP jamais
+// connecte). Resultat fige d'un appel a /api/hypotheses/h5 (graine par
+// defaut = 42, reproductible) -- l'outil interactif ci-dessous relance le
+// meme calcul en direct.
+export const H5_RESULT = {
+  alpha: 5.9081,
+  xmin: 1.6,
+  ksStatistic: 0.1533,
+  nTail: 41,
+  nTotal: 8323,
+  nDepartments: 96,
+  nQuarters: 105,
+  periodStart: "2000-01-01",
+  periodEnd: "2026-01-01",
+  pPlausibility: 0.01,
+  nSynthetic: 200,
+  lognormal: { r: -2.0677, pValue: 0.2406, favorsPowerLaw: false },
+  exponential: { r: -1.4936, pValue: 0.0365, favorsPowerLaw: false },
+  verdict: "against",
+};

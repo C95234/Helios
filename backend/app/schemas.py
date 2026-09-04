@@ -225,3 +225,47 @@ class H4Response(BaseModel):
         "contre des données réelles comme H1, H2 ou H3. Elle illustre un mécanisme possible, elle ne le "
         "prouve pas dans le monde réel. Jamais de verdict « confirmée / infirmée » ici."
     )
+
+
+class ModelComparisonOut(BaseModel):
+    """Test du rapport de vraisemblance de Vuong entre la loi de puissance et
+    un modèle alternatif (§5.9.2 étape 5). `mu`/`sigma` pour la log-normale,
+    `rate` pour l'exponentielle -- l'autre champ reste vide selon le modèle."""
+
+    r: float
+    z: float | None = None
+    p_value: float | None = None
+    favors_power_law: bool | None = None
+    mu: float | None = None
+    sigma: float | None = None
+    rate: float | None = None
+
+
+class H5Response(BaseModel):
+    """Loi de puissance / criticité auto-organisée (§5.9) -- hypothèse
+    empirique et falsifiable, mais de nature différente de H1-H3 : pas un
+    test épisode par épisode, une distribution testée sur un grand nombre de
+    chocs. Jamais de verdict fondé sur le seul ajustement visuel (§5.9,
+    cadrage honnête) -- toujours accompagné du test de plausibilité ET de la
+    comparaison aux modèles alternatifs."""
+
+    alpha: float
+    xmin: float
+    ks_statistic: float
+    n_tail: int
+    n_total: int
+    n_departments: int
+    n_quarters: int
+    period_start: str
+    period_end: str
+    p_plausibility: float | None
+    n_synthetic: int
+    tail_values: list[float]
+    lognormal: ModelComparisonOut
+    exponential: ModelComparisonOut
+    verdict: str
+    data_source_disclaimer: str = (
+        "Source réelle : amplitude des chocs trimestriels de chômage départemental (Insee), seule source "
+        "disponible parmi celles envisagées au §5.9.3 -- GDELT (rate-limité de façon persistante) et "
+        "Reddit/SNAP (aucun connecteur construit) restent indisponibles."
+    )

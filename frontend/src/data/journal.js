@@ -67,7 +67,7 @@ export const JOURNAL_SECTIONS = [
     id: "montecarlo",
     title: "5. Validation Monte-Carlo sur un vrai basculement",
     simple:
-      "Le test précédent approchait l'instabilité sans jamais vraiment basculer. Ici, le système bascule pour de vrai (40 simulations indépendantes). Résultat : la variance annonce la bascule avant l'indice de Moran dans 8 cas sur 10, et nettement plus tôt. Découverte imprévue : l'autocorrélation, pourtant l'indicateur de référence utilisé ailleurs dans Hélios (H1), se révèle être un détecteur nettement plus faible que la variance.",
+      "Le test précédent approchait l'instabilité sans jamais vraiment basculer. Ici, le système bascule pour de vrai (40 simulations indépendantes). Résultat : la variance annonce la bascule avant l'indice de Moran dans 8 cas sur 10, et nettement plus tôt. Constat secondaire, non planifié : l'autocorrélation, pourtant l'indicateur de référence utilisé ailleurs dans Hélios (H1), se révèle être un détecteur nettement plus faible que la variance.",
     expertBlocks: [
       {
         text: "Limite du résultat précédent : les points 4 (§5.6bis/ter) reposaient sur un système linéaire qui s'approche de l'instabilité sans jamais réellement basculer (l'équation de Lyapunov n'est définie que pour un système stable). Il fallait vérifier si la précédence tenait sur un vrai basculement.",
@@ -81,7 +81,7 @@ export const JOURNAL_SECTIONS = [
         text: "Résultat : les 40 réalisations basculent réellement, au voisinage du point critique attendu ($t\\approx406$ contre $t_{\\text{théorique}}=400$). Détection par franchissement de seuil (3 écarts-types au-dessus de la ligne de base) : la variance précède l'indice de Moran dans 32/40 cas (80%), avec une avance moyenne nettement supérieure (≈284 unités de temps contre ≈152). Ce résultat confirme, dans un régime de basculement réel, la conclusion préliminaire des points 4.",
       },
       {
-        text: "Découverte secondaire, non planifiée : l'autocorrélation (AC1), utilisée comme indicateur temporel de référence pour H1 (§5.1), se révèle ici un détecteur nettement plus faible que la variance — seules 11/40 réalisations franchissent son seuil de détection avant la bascule, avec une avance moyenne bien plus courte. Cette faiblesse relative de l'AC1 par rapport à la variance sur données bruitées est cohérente avec un résultat déjà documenté dans la littérature clinique (Legault et al., 2024, indicateurs EWS multivariés en hémodialyse).",
+        text: "Constat secondaire, non planifié : l'autocorrélation (AC1), utilisée comme indicateur temporel de référence pour H1 (§5.1), se révèle ici un détecteur nettement plus faible que la variance — seules 11/40 réalisations franchissent son seuil de détection avant la bascule, avec une avance moyenne bien plus courte. Cette faiblesse relative de l'AC1 par rapport à la variance sur données bruitées est cohérente avec un résultat déjà documenté dans la littérature clinique (Legault et al., 2024, indicateurs EWS multivariés en hémodialyse).",
       },
       {
         text: "Limites encore ouvertes : ce test ne couvre que le couplage diffusif et la topologie en anneau ; le couplage non diffusif (point 6) et le réseau réel irrégulier restent à mener avant toute conclusion définitive.",

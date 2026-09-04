@@ -165,6 +165,25 @@ export const METHODS = {
       "Popovych, O. V., & Tass, P. A. (2012). « Desynchronizing electrical and sensory coordinated reset neuromodulation. » Frontiers in Human Neuroscience, 6, 58.",
     ],
   },
+  power_law_h5: {
+    label: "Loi de puissance et criticité auto-organisée (H5)",
+    simple:
+      "Au lieu de chercher une seule bascule à venir, on regarde si les tailles des chocs déjà observés (petits, moyens, très grands) suivent une loi de puissance -- un motif où des événements bien plus grands que la moyenne restent, en proportion, beaucoup plus probables qu'avec une distribution habituelle. C'est la signature d'un système qui vit en permanence à la limite de la stabilité plutôt que d'approcher un seul point de rupture.",
+    formula: "\\hat\\alpha = 1 + \\frac{n}{\\sum_{i=1}^n \\ln(x_i/x_{\\min})}",
+    derivationSteps: [
+      { text: "Une loi de puissance continue de support $x \\ge x_{\\min}$ a pour densité $p(x) = \\frac{\\alpha-1}{x_{\\min}}(x/x_{\\min})^{-\\alpha}$. La log-vraisemblance de $n$ observations indépendantes, pour $x_{\\min}$ fixé, vaut :" },
+      { tex: "\\ln L(\\alpha) = n\\ln(\\alpha-1) - n\\ln(x_{\\min}) - \\alpha\\sum_{i=1}^n \\ln(x_i/x_{\\min})", block: true },
+      { text: "En dérivant par rapport à $\\alpha$ et en annulant :" },
+      { tex: "\\frac{n}{\\alpha-1} - \\sum_i \\ln(x_i/x_{\\min}) = 0 \\ \\Longrightarrow\\ \\hat\\alpha = 1 + \\frac{n}{\\sum_i \\ln(x_i/x_{\\min})}", block: true },
+      { text: "$x_{\\min}$ lui-même est choisi comme la valeur qui minimise la distance de Kolmogorov-Smirnov entre le modèle et les données (Clauset, Shalizi & Newman, 2009), pas fixé arbitrairement." },
+      { text: "Un ajustement plausible ne suffit pas (mise en garde de Touboul & Destexhe, 2010, contre le simple ajustement visuel log-log) : un test de plausibilité par bootstrap semi-paramétrique (générer des jeux de données à partir du modèle ajusté lui-même, comparer leur propre distance de Kolmogorov-Smirnov à celle observée) et une comparaison à des modèles alternatifs (log-normale, exponentielle, par un test du rapport de vraisemblance de Vuong) sont exigés avant tout verdict." },
+    ],
+    references: [
+      "Bak, P., Tang, C., & Wiesenfeld, K. (1987). « Self-organized criticality: An explanation of the 1/f noise. » Physical Review Letters, 59(4), 381–384.",
+      "Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). « Power-Law Distributions in Empirical Data. » SIAM Review, 51(4), 661–703.",
+      "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
+    ],
+  },
 };
 
 /** Bibliographie complète (§12) -- affichée en un seul endroit pour référence croisée. */
@@ -185,4 +204,7 @@ export const BIBLIOGRAPHY = [
   "Cliff, A. D., & Ord, J. K. (1981). Spatial Processes: Models & Applications. Pion.",
   "Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). « Combining dependent P-values with an empirical adaptation of Brown's method. » Bioinformatics, 32(17), i430–i436.",
   "Legault, V., Pu, Y., Weinans, E., & Cohen, A. A. (2024). « Application of early warning signs to physiological contexts: a comparison of multivariate indices in patients on long-term hemodialysis. » Frontiers in Network Physiology, 4, 1299162.",
+  "Bak, P., Tang, C., & Wiesenfeld, K. (1987). « Self-organized criticality: An explanation of the 1/f noise. » Physical Review Letters, 59(4), 381–384.",
+  "Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). « Power-Law Distributions in Empirical Data. » SIAM Review, 51(4), 661–703.",
+  "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
 ];

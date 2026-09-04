@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://helios-hazel-one.vercel.app/</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/positionnement</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/comprendre</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/resultats</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/resultats/h1</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/resultats/h2</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/resultats/h3</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/resultats/h4</loc></url>
+  <url><loc>https://helios-hazel-one.vercel.app/resultats/h5</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/methode</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/methode/cours-statistiques</loc></url>
   <url><loc>https://helios-hazel-one.vercel.app/methode/suites-ralentissement-critique</loc></url>

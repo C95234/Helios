@@ -52,10 +52,23 @@ export const HYPOTHESES = [
       "H4 est d'une autre nature que H1-H3 : une démonstration de principe en simulation (modèle de Kuramoto), jamais un test statistique contre des données réelles. Aucun verdict « confirmée / infirmée » n'est jamais attaché à ses résultats.",
     link: { to: "/resultats/h4", label: "Voir le résultat H4" },
   },
+  {
+    code: "H5",
+    title: "Criticité auto-organisée",
+    simple:
+      "Est-ce que les tailles des chocs observés (au lieu d'une seule bascule ponctuelle) suivent une loi de puissance -- signe que le système vit en permanence à la limite de la stabilité, plutôt que d'approcher un seul point de rupture ?",
+    expert:
+      "Les tailles d'événements du système observé suivent une loi de puissance (Bak, Tang & Wiesenfeld, 1987), estimée par maximum de vraisemblance (Clauset, Shalizi & Newman, 2009) et validée par un test de plausibilité par bootstrap -- jamais par simple ajustement visuel sur un graphe log-log (§5.9).",
+    status: "distribution",
+    statusNote:
+      "Nature différente de H1-H4 : pas un épisode testé à la fois, mais une distribution testée sur un grand nombre de chocs (amplitude des variations trimestrielles du chômage départemental, Insee -- GDELT et Reddit/SNAP restent indisponibles). Empirique et falsifiable, mais pas comparable épisode par épisode à H1-H3.",
+    link: { to: "/resultats/h5", label: "Voir le résultat H5" },
+  },
 ];
 
 export const STATUS_LABELS = {
   testable: "Testable (préliminaire, un épisode à la fois)",
   "non-disponible": "Pas encore testable",
   simulation: "Simulation pédagogique (pas un test statistique)",
+  distribution: "Testable (test de distribution, pas un épisode)",
 };

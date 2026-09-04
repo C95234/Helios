@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { POSITIONING_SHORT } from "../data/positionnement.js";
 
 export default function Home() {
   return (
@@ -42,10 +43,12 @@ export default function Home() {
       </section>
 
       <section className="hypotheses-teaser">
-        <h2>Trois questions précises, testées sur des données réelles</h2>
+        <h2>Des questions précises, testées sur des données réelles</h2>
         <p>
-          Au-delà des indicateurs, Hélios teste trois hypothèses de recherche originales — par exemple, «
-          les réseaux sociaux montrent-ils des signes de tension avant les statistiques officielles ? ».
+          Au-delà des indicateurs, Hélios teste plusieurs hypothèses de recherche originales — par exemple, «
+          les réseaux sociaux montrent-ils des signes de tension avant les statistiques officielles ? » ou «
+          les chocs observés suivent-ils une loi de puissance, signe d'un système à la limite permanente de la
+          stabilité ? ».
         </p>
         <Link to="/resultats" className="cta secondary">
           Voir les résultats
@@ -80,6 +83,12 @@ export default function Home() {
         <p>
           Hélios n'identifie et ne surveille aucune personne. L'outil ne travaille que sur des données
           agrégées — des comptages, des indices, des séries officielles.
+        </p>
+      </section>
+
+      <section className="not-this">
+        <p>
+          {POSITIONING_SHORT} <Link to="/positionnement">Le détail →</Link>
         </p>
       </section>
     </div>

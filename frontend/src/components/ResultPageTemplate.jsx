@@ -19,6 +19,7 @@ export default function ResultPageTemplate({
   title,
   verdict,
   nEpisodes,
+  episodesLabel,
   summary,
   postulateSimple,
   postulateExpert,
@@ -34,7 +35,11 @@ export default function ResultPageTemplate({
         <span className="verdict-banner-code">{code}</span>
         <span className="verdict-banner-label">{VERDICT_LABEL[verdict]}</span>
         <span className="verdict-banner-episodes">
-          {verdict === "simulation" ? "simulation, jamais un verdict statistique" : `${nEpisodes} épisode${nEpisodes > 1 ? "s" : ""} testé${nEpisodes > 1 ? "s" : ""}`}
+          {episodesLabel
+            ? episodesLabel
+            : verdict === "simulation"
+              ? "simulation, jamais un verdict statistique"
+              : `${nEpisodes} épisode${nEpisodes > 1 ? "s" : ""} testé${nEpisodes > 1 ? "s" : ""}`}
         </span>
       </div>
 

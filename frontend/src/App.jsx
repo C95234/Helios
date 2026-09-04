@@ -1,12 +1,14 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
+import Positionnement from "./pages/Positionnement.jsx";
 import Comprendre from "./pages/Comprendre.jsx";
 import Resultats from "./pages/Resultats.jsx";
 import H1Result from "./pages/resultats/H1Result.jsx";
 import H2Result from "./pages/resultats/H2Result.jsx";
 import H3Result from "./pages/resultats/H3Result.jsx";
 import H4Result from "./pages/resultats/H4Result.jsx";
+import H5Result from "./pages/resultats/H5Result.jsx";
 import Methode from "./pages/Methode.jsx";
 import CoursStatistiques from "./pages/CoursStatistiques.jsx";
 import SuitesRalentissement from "./pages/SuitesRalentissement.jsx";
@@ -24,12 +26,14 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/positionnement" element={<Positionnement />} />
         <Route path="/comprendre" element={<Comprendre />} />
         <Route path="/resultats" element={<Resultats />} />
         <Route path="/resultats/h1" element={<H1Result />} />
         <Route path="/resultats/h2" element={<H2Result />} />
         <Route path="/resultats/h3" element={<H3Result />} />
         <Route path="/resultats/h4" element={<H4Result />} />
+        <Route path="/resultats/h5" element={<H5Result />} />
         <Route path="/methode" element={<Methode />} />
         <Route path="/methode/cours-statistiques" element={<CoursStatistiques />} />
         <Route path="/methode/suites-ralentissement-critique" element={<SuitesRalentissement />} />

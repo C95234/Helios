@@ -21,6 +21,7 @@ export default function Layout() {
             <NavLink to="/" end>
               Accueil
             </NavLink>
+            <NavLink to="/positionnement">Positionnement</NavLink>
             <NavLink to="/comprendre">Comprendre</NavLink>
             <NavLink to="/resultats">Résultats</NavLink>
             <NavLink to="/methode">Méthode</NavLink>

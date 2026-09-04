@@ -66,3 +66,24 @@ async def get_real_network_moran_series() -> dict:
         "i_grid": i_grid,
         "network_names": network["names"],
     }
+
+
+async def get_unemployment_shock_sizes() -> dict:
+    """Amplitude des chocs trimestriels de chomage departemental -- |delta|
+    d'un trimestre au suivant, pour chaque departement -- source reelle pour
+    H5 (§5.9.3, "tailles d'evenements") : GDELT (rate limite de facon
+    persistante, cf. connecteur Google Trends/tests) et Reddit/SNAP (aucun
+    connecteur construit) restent indisponibles ; cette serie, deja connectee
+    pour H2/H4, est l'alternative explicitement citee par le cahier des
+    charges."""
+    wide = await get_department_unemployment_wide()
+    shocks = wide.diff().abs().to_numpy().flatten()
+    shocks = shocks[~np.isnan(shocks)]
+    shocks = shocks[shocks > 0]
+    return {
+        "shocks": shocks,
+        "n_departments": wide.shape[1],
+        "n_quarters": wide.shape[0],
+        "period_start": wide.index[0].strftime("%Y-%m-%d"),
+        "period_end": wide.index[-1].strftime("%Y-%m-%d"),
+    }
