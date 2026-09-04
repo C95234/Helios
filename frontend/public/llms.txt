@@ -1,0 +1,33 @@
+# Hélios
+
+> Plateforme de recherche et de vulgarisation qui teste, sur des données réelles ouvertes (Insee, Wikipédia, Google Trends), quatre hypothèses de recherche sur les signaux précurseurs de bascules collectives (ralentissement critique statistique avant une rupture sociale). Projet inspiré d'un roman où deux chercheurs construisent un outil de détection de tension sociale ; transformé ici en démarche scientifique testable, avec des verdicts honnêtes -- y compris négatifs.
+
+Chaque résultat existe à deux niveaux : un mode simplifié en langage courant, et un mode expert avec la démonstration mathématique complète (rendue en LaTeX/KaTeX) et la référence bibliographique exacte de chaque méthode. Aucune donnée nominative n'est jamais traitée ; aucun verdict "confirmée" n'est émis sur un seul épisode testé (protocole : au moins 5 épisodes indépendants requis, cf. /donnees).
+
+Stack : backend FastAPI (Python) + frontend React (Vite), sans base de données ni comptes utilisateurs (application sans état, résultats calculés à la demande ou publiés en contenu figé après vérification).
+
+## Pages principales
+
+- [Accueil](/) : présentation du projet, accroche pédagogique en 3 étapes
+- [Démo](/demo) : démonstration interactive sur données simulées
+- [Les hypothèses](/hypotheses) : présentation des 4 hypothèses de recherche (H1 à H4)
+- [Tester H1](/tester-h1) : décalage temporel signal social vs officiel, testable sur 6 phénomènes réels curatés
+- [Tester H2](/tester-h2) : robustesse de l'indice de Moran sur le réseau réel des 96 départements français vs une grille de contrôle artificielle
+- [Tester H3](/tester-h3) : indicateur joint temporel + spatial, calibré par bootstrap sur l'historique réel 2000-2026
+- [Simuler H4](/tester-h4) : simulation du modèle de Kuramoto et d'un contrôle adaptatif de la synchronisation -- démonstration pédagogique, jamais un test statistique
+- [Journal de recherche](/journal-recherche) : raisonnement scientifique complet mené en amont de H3 (dont une erreur de raisonnement corrigée par le calcul, gardée visible plutôt qu'effacée), étendu au réseau réel et à des données historiques réelles
+- [Conclusions publiées](/conclusions) : résultats figés de tous les tests menés à fond sur H1-H4, verdicts honnêtes et limites assumées -- contenu stable, visible par tout visiteur
+- [Mon historique](/bilan) : bilan personnel des tests lancés depuis le navigateur du visiteur (stocké en localStorage, vide par défaut, jamais partagé)
+- [Analyser une série Insee](/analyser) : outil libre d'analyse de signaux précurseurs sur n'importe quelle série du catalogue Insee
+- [Données & méthode](/donnees) : connecteurs de données utilisés, garde-fous éthiques (anonymisation, rejet des données nominatives), bibliographie complète
+
+## Résultats actuels (résumé -- détail complet sur /conclusions)
+
+- H1 (décalage temporel) : 1 phénomène favorable sur 6 testés, va globalement à l'encontre du sens attendu -- avec une nuance méthodologique importante sur la nature réactive (pas temps réel) des proxies sociaux disponibles (Wikipédia, Google Trends)
+- H2 (réseau réel vs grille) : tendance non significative sur 26 ans, mais le niveau de synchronisation spatiale est structurellement différent entre réseau réel et grille sur 105 trimestres consécutifs sans exception
+- H3 (indicateur joint) : 1 phénomène favorable sur 4 calculables (2 phénomènes non calculables faute de données suffisantes)
+- H4 (simulation) : le contrôle adaptatif reste robuste sur 8 configurations de simulation testées -- jamais présenté comme un verdict statistique
+
+## Code source
+
+Dépôt GitHub public : https://github.com/C95234/Helios (backend et frontend dans le même dépôt, dossiers séparés)
