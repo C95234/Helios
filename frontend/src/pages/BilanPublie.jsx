@@ -115,6 +115,20 @@ export default function BilanPublie() {
           n'anticipe pas les statistiques officielles, elle les suit ou réagit à des chocs que l'officiel ne
           capture pas du tout (le cas des attentats).
         </p>
+        <p className="text-muted">
+          <strong>Nuance importante, à ne pas manquer :</strong> Wikipédia n'est pas un canal de réaction
+          instantanée. Consulter ou éditer un article suppose souvent que l'événement soit déjà identifié
+          comme notable -- l'activité d'édition en particulier est structurellement réactive (on documente
+          une fois qu'on sait quoi documenter). Le résultat majoritairement défavorable à H1 ci-dessus peut
+          donc refléter une limite de <em>ce proxy précis</em> plutôt qu'une réfutation de l'idée que des
+          signaux sociaux rapides précèdent les statistiques officielles -- c'est exactement pourquoi
+          l'extension Google Trends ci-dessous a été menée. Elle donne, avec une source différente, un
+          résultat tout aussi négatif -- mais l'intérêt de recherche capté par Trends reste lui aussi une
+          réaction (chercher un mot qu'on vient d'entendre), pas la mesure d'une opinion qui se forme en
+          direct. Le seul signal vraiment temps réel identifié en explorant cette question (le flux public
+          de Bluesky) n'a pas d'historique avant 2024, donc aucun moyen de le tester sur les phénomènes
+          curatés ici -- la question reste ouverte, pas tranchée.
+        </p>
         <MethodNote methodKeys={["rolling_variance", "rolling_ac1"]} expertMode={true} />
 
         <h3>Extension : Google Trends comme troisième signal social</h3>
@@ -367,6 +381,15 @@ export default function BilanPublie() {
           réseau réel se distingue nettement et systématiquement de la grille ; H3 n'est soutenue que sur le
           cas où H1 est aussi la plus contredite (gilets jaunes), suggérant que la force du signal temporel
           — pas la complémentarité temporel/spatial — porte l'essentiel du résultat sur ce cas.
+        </p>
+        <p>
+          Un point à ne pas lire trop vite sur H1 : le résultat défavorable tient sur <strong>deux</strong>{" "}
+          proxies sociaux testés (Wikipédia, puis Google Trends en complément), tous deux structurellement
+          réactifs -- on consulte ou on recherche un sujet une fois qu'il devient notable, pas avant. Aucun
+          des deux n'est un vrai signal d'opinion en temps réel. Ce round de tests dit donc « les proxies
+          disponibles et testables sur l'historique ne précèdent pas l'officiel » -- pas « aucun signal
+          social ne pourrait jamais précéder l'officiel ». La question reste ouverte pour une vraie source
+          en temps réel (voir les limites de H1 pour le détail).
         </p>
         <p>
           H4 se tient à part : ce n'est pas un test contre le réel, mais elle montre, sur 8 configurations de
