@@ -27,11 +27,11 @@ from app.routers.fusion import _fetch_current_signal
 from app.stats.quench import detect_quench
 
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "app" / "data" / "mast_shots.json"
-CAMPAIGNS = ["M9", "M8", "M7", "M6", "M5"]
-PAGE_SIZE = 80
-CANDIDATES_PER_CAMPAIGN = 30  # sous-echantillonnes sur toute la page, pas seulement les premiers tirs (souvent calibration/setup)
-TARGET_DISRUPTED = 4
-TARGET_STABLE = 3
+CAMPAIGNS = ["M9", "M8", "M7", "M6", "M5", "M4", "M3", "M2", "M1"]
+PAGE_SIZE = 100  # maximum accepte par l'API (verifie en direct -- 150 renvoie 422)
+CANDIDATES_PER_CAMPAIGN = 50  # sous-echantillonnes sur toute la page, pas seulement les premiers tirs (souvent calibration/setup)
+TARGET_DISRUPTED = 10
+TARGET_STABLE = 10
 
 
 async def _list_shot_ids(campaign: str, page_size: int, n_candidates: int) -> list[int]:
@@ -116,6 +116,13 @@ async def main() -> None:
 
     shots = disrupted + stable
     print(f"\nRetenus : {len(disrupted)} disruptés, {len(stable)} stables ({len(shots)} au total).")
+
+    if OUTPUT_PATH.exists():
+        existing = json.loads(OUTPUT_PATH.read_text(encoding="utf-8")).get("shots", [])
+        if len(shots) < len(existing):
+            print(f"Moins de tirs retenus ({len(shots)}) que dans le fichier existant ({len(existing)}) -- pas d'ecrasement, arret.")
+            return
+
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT_PATH.write_text(
         json.dumps({"shots": shots, "source": "https://mastapp.site", "note": "Curation verifiee en direct, voir curate_mast_shots.py"}, indent=2, ensure_ascii=False),

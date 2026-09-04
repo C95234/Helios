@@ -121,3 +121,39 @@ export const H5_RESULT = {
   exponential: { r: -1.4936, pValue: 0.0365, favorsPowerLaw: false },
   verdict: "against",
 };
+
+// Second domaine -- detection sur donnees de tokamak (§7ter). Resultat fige
+// d'un appel a /api/hypotheses/fusion/aggregate sur la batterie curatee de
+// app/data/mast_shots.json (20 tirs reels MAST, campagnes M7-M9, graine par
+// defaut, n_surrogates=50, reproductible) -- l'outil "tester en direct" plus
+// bas relance le meme calcul, tir par tir, sur MAST en direct.
+export const FUSION_RESULT = {
+  nShots: 20,
+  nDisrupted: 10,
+  nStable: 10,
+  nDisruptedWithPrecursor: 8,
+  nStableFalsePositive: 3,
+  verdict: "favorable",
+  shots: [
+    { shotId: 28461, campaign: "M9", disrupted: true, tQuench: 0.5125, peakCurrentKa: 13.5, varianceSig: false, ac1Sig: true, moranSig: false, precursor: true },
+    { shotId: 28463, campaign: "M9", disrupted: true, tQuench: 0.5133, peakCurrentKa: 24.0, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28465, campaign: "M9", disrupted: true, tQuench: 0.5131, peakCurrentKa: 24.9, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28467, campaign: "M9", disrupted: true, tQuench: 0.5137, peakCurrentKa: 22.7, varianceSig: true, ac1Sig: true, moranSig: false, precursor: true },
+    { shotId: 28542, campaign: "M9", disrupted: true, tQuench: 3.9991, peakCurrentKa: 22.9, varianceSig: false, ac1Sig: false, moranSig: true, precursor: true },
+    { shotId: 28544, campaign: "M9", disrupted: true, tQuench: 0.5141, peakCurrentKa: 19.8, varianceSig: true, ac1Sig: true, moranSig: false, precursor: true },
+    { shotId: 19045, campaign: "M7", disrupted: true, tQuench: 0.5214, peakCurrentKa: 19.9, varianceSig: true, ac1Sig: true, moranSig: true, precursor: true },
+    { shotId: 19054, campaign: "M7", disrupted: true, tQuench: 0.5218, peakCurrentKa: 17.2, varianceSig: true, ac1Sig: true, moranSig: true, precursor: true },
+    { shotId: 19056, campaign: "M7", disrupted: true, tQuench: 0.507, peakCurrentKa: 22.0, varianceSig: false, ac1Sig: false, moranSig: true, precursor: true },
+    { shotId: 19061, campaign: "M7", disrupted: true, tQuench: 0.507, peakCurrentKa: 27.7, varianceSig: false, ac1Sig: false, moranSig: true, precursor: true },
+    { shotId: 28476, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 18.5, varianceSig: true, ac1Sig: false, moranSig: true, precursor: true },
+    { shotId: 28478, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 45.2, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28484, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 10.5, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28486, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 19.4, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28488, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 29.0, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28492, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 11.9, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 28553, campaign: "M9", disrupted: false, tQuench: null, peakCurrentKa: 25.8, varianceSig: true, ac1Sig: false, moranSig: false, precursor: true },
+    { shotId: 25414, campaign: "M8", disrupted: false, tQuench: null, peakCurrentKa: 195.0, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 19039, campaign: "M7", disrupted: false, tQuench: null, peakCurrentKa: 12.9, varianceSig: false, ac1Sig: false, moranSig: false, precursor: false },
+    { shotId: 19043, campaign: "M7", disrupted: false, tQuench: null, peakCurrentKa: 13.7, varianceSig: true, ac1Sig: false, moranSig: false, precursor: true },
+  ],
+};

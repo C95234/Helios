@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { SCORECARD, STRENGTHS, WEAKNESSES, CONCLUSION } from "../data/bilanProjet.js";
-import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT } from "../data/bilanPublie.js";
+import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT, FUSION_RESULT } from "../data/bilanPublie.js";
 import { POSITIONING_SHORT } from "../data/positionnement.js";
 
 export default function Bilan() {
@@ -53,6 +53,28 @@ export default function Bilan() {
         <p className="text-muted">
           Détail complet, tableaux et graphiques par phénomène : <Link to="/resultats">Résultats</Link>{" "}
           (une page par hypothèse).
+        </p>
+      </section>
+
+      <section>
+        <h2>Second domaine (fusion) -- jamais combiné au score ci-dessus</h2>
+        <div className="agg-summary">
+          <div className="agg-stat">
+            <span className="agg-number">
+              {FUSION_RESULT.nDisruptedWithPrecursor}/{FUSION_RESULT.nDisrupted}
+            </span>
+            <span>tirs disruptés avec précurseur</span>
+          </div>
+          <div className="agg-stat">
+            <span className="agg-number">
+              {FUSION_RESULT.nStableFalsePositive}/{FUSION_RESULT.nStable}
+            </span>
+            <span>faux positifs (tirs stables)</span>
+          </div>
+        </div>
+        <p className="text-muted">
+          Détection sur données de tokamak (MAST), même moteur de calcul que H1/H2 -- résultat encourageant mais
+          pas net (taux de faux positifs notable). Toujours présenté à part : <Link to="/resultats/fusion">Résultats -- Fusion</Link>.
         </p>
       </section>
 

@@ -8,10 +8,17 @@
       "campaign": "M9"
     },
     {
-      "shot_id": 28464,
+      "shot_id": 28463,
       "disrupted": true,
-      "peak_current_ka": 21.9,
-      "t_quench": 0.5126997232437134,
+      "peak_current_ka": 24.0,
+      "t_quench": 0.513299822807312,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28465,
+      "disrupted": true,
+      "peak_current_ka": 24.9,
+      "t_quench": 0.5130997896194458,
       "campaign": "M9"
     },
     {
@@ -22,6 +29,20 @@
       "campaign": "M9"
     },
     {
+      "shot_id": 28542,
+      "disrupted": true,
+      "peak_current_ka": 22.9,
+      "t_quench": 3.9990997314453125,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28544,
+      "disrupted": true,
+      "peak_current_ka": 19.8,
+      "t_quench": 0.5140997171401978,
+      "campaign": "M9"
+    },
+    {
       "shot_id": 19045,
       "disrupted": true,
       "peak_current_ka": 19.9,
@@ -29,11 +50,25 @@
       "campaign": "M7"
     },
     {
-      "shot_id": 28473,
-      "disrupted": false,
-      "peak_current_ka": 14.7,
-      "t_quench": null,
-      "campaign": "M9"
+      "shot_id": 19054,
+      "disrupted": true,
+      "peak_current_ka": 17.2,
+      "t_quench": 0.5217999219894409,
+      "campaign": "M7"
+    },
+    {
+      "shot_id": 19056,
+      "disrupted": true,
+      "peak_current_ka": 22.0,
+      "t_quench": 0.5069999694824219,
+      "campaign": "M7"
+    },
+    {
+      "shot_id": 19061,
+      "disrupted": true,
+      "peak_current_ka": 27.7,
+      "t_quench": 0.5069999694824219,
+      "campaign": "M7"
     },
     {
       "shot_id": 28476,
@@ -43,11 +78,67 @@
       "campaign": "M9"
     },
     {
+      "shot_id": 28478,
+      "disrupted": false,
+      "peak_current_ka": 45.2,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28484,
+      "disrupted": false,
+      "peak_current_ka": 10.5,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
       "shot_id": 28486,
       "disrupted": false,
       "peak_current_ka": 19.4,
       "t_quench": null,
       "campaign": "M9"
+    },
+    {
+      "shot_id": 28488,
+      "disrupted": false,
+      "peak_current_ka": 29.0,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28492,
+      "disrupted": false,
+      "peak_current_ka": 11.9,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 28553,
+      "disrupted": false,
+      "peak_current_ka": 25.8,
+      "t_quench": null,
+      "campaign": "M9"
+    },
+    {
+      "shot_id": 25414,
+      "disrupted": false,
+      "peak_current_ka": 195.0,
+      "t_quench": null,
+      "campaign": "M8"
+    },
+    {
+      "shot_id": 19039,
+      "disrupted": false,
+      "peak_current_ka": 12.9,
+      "t_quench": null,
+      "campaign": "M7"
+    },
+    {
+      "shot_id": 19043,
+      "disrupted": false,
+      "peak_current_ka": 13.7,
+      "t_quench": null,
+      "campaign": "M7"
     }
   ],
   "source": "https://mastapp.site",
