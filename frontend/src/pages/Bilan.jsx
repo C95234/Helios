@@ -42,8 +42,8 @@ export default function Bilan() {
             <span>H3 favorable (calculables)</span>
           </div>
           <div className="agg-stat">
-            <span className="agg-number">{H4_SUMMARY.nUnderThreshold}/{H4_SUMMARY.nConfigs}</span>
-            <span>H4 configs sous r_c</span>
+            <span className="agg-number">{H4_SUMMARY.nRobust}/{H4_SUMMARY.nConfigs}</span>
+            <span>H4 configs robustes (≥90% de 30 graines)</span>
           </div>
           <div className="agg-stat">
             <span className="agg-number">{H5_RESULT.verdict === "against" ? "rejetée" : H5_RESULT.verdict}</span>

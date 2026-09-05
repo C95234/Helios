@@ -13,6 +13,13 @@ import VerdictBadge from "../../components/VerdictBadge.jsx";
 const HISTORY_PAGE = "h4";
 const METHOD_KEYS = ["kuramoto_h4"];
 
+function robustnessOutcome(nUnder, nSeeds) {
+  const frac = nUnder / nSeeds;
+  if (frac >= 0.9) return "favorable";
+  if (frac >= 0.6) return "neutral";
+  return "against";
+}
+
 function RChart({ label, trace, refValue, refLabel, color, yDomain = [0, 1] }) {
   const data = trace.time.map((t, i) => ({ t, r: trace.values[i] }));
   return (
@@ -78,7 +85,7 @@ export default function H4Result() {
       code="H4"
       title="Contrôle actif de la synchronisation (inspiré du RCA)"
       verdict="simulation"
-      summary="Un couplage adaptatif, qui s'affaiblit localement quand une paire d'oscillateurs se verrouille en phase, peut-il empêcher une bascule collective sans réduire l'activité individuelle à zéro ? Sur 8 configurations testées, le contrôle reste robuste dans les 8 cas."
+      summary="Un couplage adaptatif, qui s'affaiblit localement quand une paire d'oscillateurs se verrouille en phase, peut-il empêcher une bascule collective sans réduire l'activité individuelle à zéro ? Sur 8 configurations testées avec une seule graine chacune, les 8 restaient sous le seuil -- mais un contrôle de robustesse sur 30 graines par configuration montre que ce n'est fiable (≥90 % des graines) que pour 6 des 8 : le couplage très fort (K=5K_c) et le petit réseau (N=15) ne restent sous le seuil qu'une fois sur deux à quatre fois sur cinq."
       postulateSimple={H4_DATA.simple}
       postulateExpert={H4_DATA.expert}
       resultText={
@@ -93,7 +100,8 @@ export default function H4Result() {
                   <th>β</th>
                   <th>r sans contrôle</th>
                   <th>r avec contrôle</th>
-                  <th>Sous r_c={H4_R_THRESHOLD}</th>
+                  <th>Robustesse (30 graines)</th>
+                  <th>Verdict</th>
                 </tr>
               </thead>
               <tbody>
@@ -105,15 +113,20 @@ export default function H4Result() {
                     <td>{c.beta}</td>
                     <td>{c.rUncontrolled.toFixed(3)}</td>
                     <td>{c.rControlled.toFixed(3)}</td>
-                    <td><VerdictBadge outcome={c.rControlled < H4_R_THRESHOLD ? "favorable" : "against"} /></td>
+                    <td>{c.nSeedsUnderThreshold}/{c.nSeeds}</td>
+                    <td><VerdictBadge outcome={robustnessOutcome(c.nSeedsUnderThreshold, c.nSeeds)} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p className="text-muted">
-            Le contrôle adaptatif maintient r sous le seuil dans les 8 configurations sur 8, y compris à
-            K=5×K_c. Détail sur <Link to="/bilan">la page Bilan</Link>.
+            Sur une seule graine (la colonne « r avec contrôle »), les 8 configurations restaient sous le
+            seuil -- y compris à K=5×K_c. Un contrôle de robustesse sur 30 graines indépendantes par
+            configuration nuance ce résultat : le contrôle reste fiable (≥90 % des graines sous le seuil)
+            pour 6 configurations sur 8, mais devient peu fiable pour un couplage très fort (K=5×K_c,
+            15/30 -- un cas sur deux) et pour un petit réseau (N=15, 24/30). Détail sur{" "}
+            <Link to="/bilan">la page Bilan</Link>.
           </p>
         </>
       }
@@ -121,7 +134,7 @@ export default function H4Result() {
       limits={[
         "H4 n'est jamais testée contre des données réelles -- une démonstration de principe en simulation, pas un verdict statistique.",
         "Le mode « réseau réel » calibre la topologie du réseau (qui est voisin de qui) sur les 96 départements français, mais pas le reste : les fréquences propres et l'intensité de synchronisation restent simulées, pas mesurées sur un vrai signal social. Ça ne transforme donc pas H4 en test empirique.",
-        "La relation entre β et l'efficacité du contrôle n'est pas monotone sur les configurations testées -- probablement un effet de la graine unique utilisée, à vérifier sur plusieurs graines.",
+        "Vérifié sur 30 graines par configuration (backend/scripts/h4_seed_robustness.py) : le contrôle n'est fiable (≥90 % des graines sous le seuil) que pour 6 configurations sur 8. Il devient peu fiable pour un couplage très fort (K=5×K_c, sous le seuil une fois sur deux) et pour un petit réseau (N=15, quatre fois sur cinq) -- la graine unique utilisée à l'origine pour ces deux configurations avait simplement été favorable.",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
     >

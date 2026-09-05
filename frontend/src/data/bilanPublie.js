@@ -33,19 +33,25 @@ export const H3_UNAVAILABLE = h3.unavailable;
 export const H3_SUMMARY = h3.summary;
 export const H3_REFRESHED_AT = h3.refreshedAt;
 
+// rControlled/rUncontrolled : une seule graine (celle figee a l'origine).
+// nSeedsUnderThreshold/nSeeds : controle de robustesse sur 30 graines
+// independantes par configuration (backend/scripts/h4_seed_robustness.py),
+// mene apres avoir remarque que la relation beta/efficacite n'etait pas
+// monotone sur une seule graine -- voir les limites de H4Result.jsx.
 export const H4_CONFIGS = [
-  { name: "K=2K_c, β=2 (référence)", n: 40, kOverKc: 2.0, beta: 2, rUncontrolled: 0.963, rControlled: 0.284 },
-  { name: "K=3K_c, β=2", n: 40, kOverKc: 3.0, beta: 2, rUncontrolled: 0.985, rControlled: 0.31 },
-  { name: "K=5K_c, β=2 (couplage fort)", n: 40, kOverKc: 5.0, beta: 2, rUncontrolled: 0.995, rControlled: 0.361 },
-  { name: "K=3K_c, β=0,5 (contrôle faible)", n: 40, kOverKc: 3.0, beta: 0.5, rUncontrolled: 0.985, rControlled: 0.432 },
-  { name: "K=3K_c, β=1", n: 40, kOverKc: 3.0, beta: 1, rUncontrolled: 0.985, rControlled: 0.357 },
-  { name: "K=3K_c, β=4 (contrôle fort)", n: 40, kOverKc: 3.0, beta: 4, rUncontrolled: 0.985, rControlled: 0.413 },
-  { name: "Petit réseau", n: 15, kOverKc: 3.0, beta: 2, rUncontrolled: 0.982, rControlled: 0.457 },
-  { name: "Grand réseau", n: 80, kOverKc: 3.0, beta: 2, rUncontrolled: 0.987, rControlled: 0.253 },
+  { name: "K=2K_c, β=2 (référence)", n: 40, kOverKc: 2.0, beta: 2, rUncontrolled: 0.963, rControlled: 0.284, nSeedsUnderThreshold: 30, nSeeds: 30 },
+  { name: "K=3K_c, β=2", n: 40, kOverKc: 3.0, beta: 2, rUncontrolled: 0.985, rControlled: 0.31, nSeedsUnderThreshold: 30, nSeeds: 30 },
+  { name: "K=5K_c, β=2 (couplage fort)", n: 40, kOverKc: 5.0, beta: 2, rUncontrolled: 0.995, rControlled: 0.361, nSeedsUnderThreshold: 15, nSeeds: 30 },
+  { name: "K=3K_c, β=0,5 (contrôle faible)", n: 40, kOverKc: 3.0, beta: 0.5, rUncontrolled: 0.985, rControlled: 0.432, nSeedsUnderThreshold: 30, nSeeds: 30 },
+  { name: "K=3K_c, β=1", n: 40, kOverKc: 3.0, beta: 1, rUncontrolled: 0.985, rControlled: 0.357, nSeedsUnderThreshold: 30, nSeeds: 30 },
+  { name: "K=3K_c, β=4 (contrôle fort)", n: 40, kOverKc: 3.0, beta: 4, rUncontrolled: 0.985, rControlled: 0.413, nSeedsUnderThreshold: 30, nSeeds: 30 },
+  { name: "Petit réseau", n: 15, kOverKc: 3.0, beta: 2, rUncontrolled: 0.982, rControlled: 0.457, nSeedsUnderThreshold: 24, nSeeds: 30 },
+  { name: "Grand réseau", n: 80, kOverKc: 3.0, beta: 2, rUncontrolled: 0.987, rControlled: 0.253, nSeedsUnderThreshold: 30, nSeeds: 30 },
 ];
 
 export const H4_R_THRESHOLD = 0.5;
-export const H4_SUMMARY = { nConfigs: 8, nUnderThreshold: 8 };
+// Robuste = controle sous le seuil sur au moins 90% des 30 graines testees.
+export const H4_SUMMARY = { nConfigs: 8, nRobust: 6, nPartial: 1, nUnreliable: 1 };
 
 // Extension H1 -- Google Trends comme troisieme signal social, en plus de
 // Wikipedia. Derogation documentee au §6 (acces non officiel, voir
