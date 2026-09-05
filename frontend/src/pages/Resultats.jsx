@@ -41,6 +41,19 @@ export default function Resultats() {
           Voir la détection sur données de fusion
         </Link>
       </section>
+
+      <section className="hypotheses-teaser" style={{ marginTop: "1.5rem" }}>
+        <h2>Troisième domaine d'application — Modèle réduit de physique des plasmas</h2>
+        <p>
+          Le même moteur de détection statistique (variance, autocorrélation, code inchangé) appliqué à une
+          température simulée par un vrai modèle réduit de bilan de puissance (seuil d'ignition, critère de
+          Lawson) -- ni donnée mesurée (contrairement à Fusion ci-dessus), ni analogie sociale (contrairement
+          à H4). Détection uniquement -- jamais combiné aux deux autres domaines dans un même verdict.
+        </p>
+        <Link to="/resultats/plasma-modele" className="cta secondary">
+          Voir le modèle de bilan de puissance
+        </Link>
+      </section>
     </div>
   );
 }

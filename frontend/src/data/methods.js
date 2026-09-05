@@ -184,6 +184,26 @@ export const METHODS = {
       "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
     ],
   },
+  plasma_power_balance: {
+    label: "Bilan de puissance 0-D et seuil d'ignition (§7quater)",
+    simple:
+      "L'énergie d'un plasma augmente avec le chauffage qu'on lui apporte et avec sa propre production de fusion, et diminue par les pertes (confinement, rayonnement). Tant que les pertes dominent, une perturbation se résorbe -- le plasma reste stable à basse température. Si on augmente lentement le chauffage externe, ce point stable finit par disparaître : au-delà, plus rien n'empêche l'emballement, la température s'envole vers l'ignition. C'est le même type de bascule brutale qu'ailleurs dans Hélios (une bifurcation), mais ici sur une vraie équation de physique des plasmas, pas une transposition sociale.",
+    formula:
+      "\\frac{dW}{dt} = P_{\\text{chauffage}} + P_{\\text{fusion}}(T) - \\frac{W}{\\tau_E} - P_{\\text{rayonnement}}(T)",
+    derivationSteps: [
+      { text: "$W = \\tfrac{3}{2}nT$ est la densité d'énergie du plasma ($n$ supposé constant -- approximation standard du modèle 0-D, Freidberg 2007). $P_{\\text{fusion}}(T)$ est la puissance d'auto-chauffage par les particules alpha (mélange D-T 50/50, $n_D=n_T=n/2$) :" },
+      { tex: "P_{\\text{fusion}}(T) = \\tfrac14 n^2 \\langle\\sigma v\\rangle(T)\\, E_\\alpha", block: true },
+      { text: "où $E_\\alpha=3{,}5$ MeV est l'énergie de la particule alpha (le neutron, 14,1 MeV, s'échappe sans chauffer le plasma) et $\\langle\\sigma v\\rangle(T)$ la réactivité D-T, paramétrée empiriquement par Bosch & Hale (1992) -- la formule de référence du domaine, pas une approximation maison. $P_{\\text{rayonnement}}(T) = C\\,n^2\\sqrt T$ est le rayonnement de freinage (bremsstrahlung, formulaire NRL standard)." },
+      { text: "À chauffage externe $P_{\\text{chauffage}}$ fixe, les équilibres sont les racines de $dW/dt=0$. Sur un graphe gain (chauffage + fusion) contre perte (confinement + rayonnement) en fonction de $T$, un point où le gain croise la perte par le dessus (perte qui reprend le dessus juste après) est stable ; un point où c'est l'inverse est instable. Quand $P_{\\text{chauffage}}$ augmente lentement, le point stable remonte en température jusqu'à rencontrer le point instable : les deux fusionnent et disparaissent -- une bifurcation nœud-col, exactement la structure mathématique déjà validée pour H1 au §5.6quater du Journal de recherche (là avec une variable sociale, ici avec la vraie physique)." },
+      { text: "Au-delà de ce chauffage critique, $dW/dt>0$ pour toute température : plus aucun équilibre n'arrête la croissance de $T$, qui s'emballe vers l'ignition. C'est le critère de Lawson (1957) sous sa forme dynamique -- pas un seuil arbitraire, le point exact où gain et perte deviennent tangents." },
+      { text: "Test statistique identique à H1/Fusion : variance et autocorrélation glissantes de $T(t)$ avant l'emballement, testées par données de substitution (§5.4) -- aucune nouvelle méthode, seule l'équation physique change." },
+    ],
+    references: [
+      "Lawson, J. D. (1957). « Some Criteria for a Power Producing Thermonuclear Reactor. » Proceedings of the Physical Society B, 70(1), 6–10.",
+      "Freidberg, J. P. (2007). Plasma Physics and Fusion Energy. Cambridge University Press.",
+      "Bosch, H.-S., & Hale, G. M. (1992). « Improved formulas for fusion cross-sections and thermal reactivities. » Nuclear Fusion, 32(4), 611–631.",
+    ],
+  },
 };
 
 /** Bibliographie complète (§12) -- affichée en un seul endroit pour référence croisée. */
@@ -209,4 +229,7 @@ export const BIBLIOGRAPHY = [
   "Touboul, J., & Destexhe, A. (2010). « Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics? » PLoS ONE, 5(2), e9448.",
   "Jackson, S., Khan, S., Cummings, N. et al. (2025). « An Open Data Service for Supporting Research in Machine Learning on Tokamak Data. » IEEE Transactions on Plasma Science.",
   "Zheng, W., Xue, F., Chen, Z. et al. (2023). « Disruption prediction for future tokamaks using parameter-based transfer learning. » Communications Physics, 6, 181.",
+  "Lawson, J. D. (1957). « Some Criteria for a Power Producing Thermonuclear Reactor. » Proceedings of the Physical Society B, 70(1), 6–10.",
+  "Freidberg, J. P. (2007). Plasma Physics and Fusion Energy. Cambridge University Press.",
+  "Bosch, H.-S., & Hale, G. M. (1992). « Improved formulas for fusion cross-sections and thermal reactivities. » Nuclear Fusion, 32(4), 611–631.",
 ];

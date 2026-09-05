@@ -28,6 +28,24 @@ véritable démarche scientifique testable : contribuer, même modestement,
 croisant les statistiques officielles (lentes, fiables) et les signaux
 sociaux (rapides, bruités mais précoces).
 
+**Précision indispensable sur les deux objets fictionnels du roman
+(à ne jamais confondre)** :
+- **Hélios**, dans le roman, est le système de prédiction/gouvernance
+  sociale construit à partir du modèle de Moussa et Louise. C'est lui
+  qui inspire directement l'ensemble du produit (H1, H2, H3, et le nom
+  du logiciel).
+- **Le RCA** (Réacteur à Cohérence Adaptative), dans le roman, est un
+  objet complètement différent : un **générateur d'énergie par fusion
+  nucléaire à confinement magnétique** — un problème de physique des
+  plasmas, sans aucun rapport avec la prédiction sociale. Seul son
+  **principe de contrôle** (laisser vivre les turbulences locales du
+  plasma, empêcher seulement qu'elles se synchronisent en une résonance
+  globale destructrice) est repris, par analogie, pour construire le
+  module H4 (§5.8). Le RCA n'est **jamais** simulé ou modélisé en tant
+  que réacteur — seule l'idée de contrôle est transposée à un réseau
+  social abstrait. Toute référence au RCA dans ce document désigne cette
+  analogie, jamais une tentative de modéliser un vrai réacteur à fusion.
+
 **Objectif pour l'auteur du projet** : produire un logiciel fonctionnel,
 pédagogique et défendable scientifiquement, utilisable comme démonstration
 de compétence (freelance/portfolio) et, si les résultats s'y prêtent,
@@ -77,7 +95,7 @@ d'importance** :
 **Ce que ce projet n'apporte pas, à énoncer explicitement partout où
 le positionnement scientifique est présenté** : une nouvelle théorie,
 une nouvelle méthode mathématique, ou une découverte au sens où on
-l'entend pour un prix scientifique majeur. Le mot « découverte »
+l'entend pour un prix scientifique majeur. Le mot \og{}découverte\fg{}
 ne doit jamais être utilisé pour décrire un résultat du projet, ni sur
 le site, ni dans les rapports générés, ni dans le Journal de recherche.
 
@@ -433,6 +451,12 @@ tester leur significativité (§5.4), puis comparer selon H1/H2/H3.
 
 ### 5.8 H4 — Contrôle actif de la synchronisation (inspiré du RCA)
 
+**Rappel (voir §1, "Précision indispensable")** : le RCA du roman est un
+générateur d'énergie par fusion, pas un système de prédiction sociale.
+Ce module n'en simule ni la physique ni le réacteur — il transpose
+uniquement son principe de contrôle (désynchroniser sans figer) à un
+réseau abstrait, comme démonstration pédagogique.
+
 **Nature différente des trois premières hypothèses** : H1-H3 sont des
 hypothèses empiriques, testées contre des données réelles et un verdict
 statistique. H4 n'est **pas testable de la même façon** — on ne peut pas
@@ -723,6 +747,59 @@ différents.
 
 ---
 
+## 7quater. Troisième volet — modèle réduit de physique des plasmas (bilan de puissance, seuil d'ignition)
+
+**Ce que c'est, et ce que ce n'est pas** : contrairement à H4 (analogie
+pédagogique de Kuramoto, §5.8) et contrairement au §7ter (données
+réelles de tokamak), ce volet utilise un **modèle réduit mais réel de
+la physique des plasmas** — le bilan de puissance à zéro dimension
+(0-D power balance), un modèle standard de la discipline (utilisé pour
+estimer les conditions d'ignition d'un réacteur), pas une simulation
+complète de magnétohydrodynamique (hors de portée, voir §1). C'est de
+la vraie physique, simplifiée délibérément par la discipline
+elle-même pour rester analytiquement traitable — pas une approximation
+de notre fait.
+
+**Le modèle** : l'énergie contenue dans le plasma $W$ évolue selon
+$$\frac{dW}{dt} = P_{\text{chauffage}} + P_{\text{fusion}}(T) - \frac{W}{\tau_E} - P_{\text{rayonnement}}(T)$$
+où $T$ est la température du plasma, $\tau_E$ le temps de confinement
+de l'énergie (un paramètre empirique caractéristique de la machine),
+$P_{\text{fusion}}(T)$ la puissance produite par les réactions de
+fusion (fonction fortement non linéaire de $T$, paramétrée
+empiriquement — Bosch & Hale, 1992), et $P_{\text{rayonnement}}(T)$
+les pertes par rayonnement (bremsstrahlung, $\propto n^2\sqrt T$).
+
+**Le seuil d'ignition, un vrai point de bifurcation physique** : à
+basse température, les pertes dominent — la branche est stable. Si le
+chauffage pousse $T$ au-delà d'un seuil critique, $P_{\text{fusion}}(T)$
+croît plus vite que les pertes : le plasma s'auto-entretient
+(ignition). C'est la même structure mathématique qu'un pli
+(saddle-node), exactement comme au §5.6quater — sauf qu'ici c'est le
+critère de Lawson (1957) lui-même, pas une transposition sociale.
+
+**Méthode** : appliquer exactement le protocole déjà construit et
+validé (§5.6quater/quinquies) — simulation stochastique du modèle en
+faisant lentement approcher le paramètre de chauffage du seuil
+d'ignition, calcul des indicateurs précurseurs (variance, AC1) sur des
+réalisations bruitées, détection par franchissement de seuil. Aucune
+nouvelle méthode statistique à construire : seule l'équation physique
+change.
+
+**Cadrage honnête** : le modèle 0-D de bilan de puissance est un
+classique de l'enseignement et de la conception préliminaire des
+réacteurs à fusion (Freidberg, 2007 ; Wesson, 2004) — pas une nouveauté.
+L'apport reste le même que pour les deux autres domaines : vérifier si
+les indicateurs précurseurs déjà validés ailleurs se comportent de la
+même façon sur un système physique réel gouverné par une vraie
+bifurcation, distinct autant du socio-territorial (§5-§7) que de la
+détection sur données réelles de tokamak (§7ter).
+
+**Sortie attendue** : même gabarit que les autres domaines, clairement
+étiqueté "modèle réduit, pas une simulation de réacteur complet" —
+et jamais combiné aux deux autres domaines dans un même verdict.
+
+---
+
 ## 8. Architecture technique
 
 - **Backend** : Python (FastAPI), pandas/numpy/statsmodels/scipy pour les
@@ -805,7 +882,11 @@ pas seulement documentés :
 - **V6** : second domaine d'application (§7ter) — connecteur MAST/
   DisruptionBench, rejeu du pipeline H1/H2/H3 inchangé sur la grille
   ECEi, verdict présenté séparément des résultats socio-territoriaux.
-- **V7 (conditionnelle)** : connecteurs marchés financiers et Trends,
+- **V7** : troisième volet (§7quater) — modèle 0-D de bilan de
+  puissance, seuil d'ignition, rejeu du protocole §5.6quater/quinquies
+  sur cette équation physique, verdict présenté séparément des deux
+  autres domaines.
+- **V8 (conditionnelle)** : connecteurs marchés financiers et Trends,
   uniquement si accès API officiel obtenu dans le respect du §6 et §9.3.
 
 ---
@@ -864,6 +945,10 @@ pas seulement documentés :
       projet", jamais formulée comme une conception fonctionnelle.
 - [ ] Les résultats du domaine fusion et du domaine socio-territorial
       sont affichés séparément, jamais combinés en un verdict unique.
+- [ ] Le module §7quater est étiqueté "modèle réduit de physique des
+      plasmas, pas une simulation de réacteur" partout où il apparaît,
+      et ses résultats ne sont jamais combinés à ceux du §7ter (données
+      réelles de tokamak) ni du domaine socio-territorial.
 
 ---
 
@@ -882,8 +967,11 @@ exacte dans l'interface (mode expert), pas seulement d'un nom d'auteur :
 - Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality: An explanation of the 1/f noise." *Physical Review Letters*, 59(4), 381–384. — fondement théorique de H5.
 - Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). "Power-Law Distributions in Empirical Data." *SIAM Review*, 51(4), 661–703. — méthode d'estimation et de test utilisée pour H5 (§5.9.1-5.9.2).
 - Touboul, J., & Destexhe, A. (2010). "Can Power-Law Scaling and Neuronal Avalanches Arise from Stochastic Dynamics?" *PLoS ONE*, 5(2), e9448. — mise en garde méthodologique citée au §5.9 (cadrage honnête).
-- Jackson, S., Khan, S., Cummings, N. et al. (2025). "An Open Data Service for Supporting Research in Machine Learning on Tokamak Data." *IEEE Transactions on Plasma Science*. — source du connecteur MAST/FAIR MAST cité au §7ter.
-- Zheng, W., Xue, F., Chen, Z. et al. (2023). "Disruption prediction for future tokamaks using parameter-based transfer learning." *Communications Physics*, 6, 181. — contexte du domaine (approches par apprentissage profond, cadrage honnête du §7ter).
+- Jackson, S., Khan, S., Cummings, N. *et al.* (2025). "An Open Data Service for Supporting Research in Machine Learning on Tokamak Data." *IEEE Transactions on Plasma Science*. — source du connecteur MAST/FAIR MAST cité au §7ter.
+- Zheng, W., Xue, F., Chen, Z. *et al.* (2023). "Disruption prediction for future tokamaks using parameter-based transfer learning." *Communications Physics*, 6, 181. — contexte du domaine (approches par apprentissage profond, cadrage honnête du §7ter).
+- Lawson, J. D. (1957). "Some Criteria for a Power Producing Thermonuclear Reactor." *Proceedings of the Physical Society B*, 70(1), 6–10. — critère d'ignition à la base du §7quater.
+- Freidberg, J. P. (2007). *Plasma Physics and Fusion Energy*. Cambridge University Press. — référence du modèle 0-D de bilan de puissance.
+- Bosch, H.-S., & Hale, G. M. (1992). "Improved formulas for fusion cross-sections and thermal reactivities." *Nuclear Fusion*, 32(4), 611–631. — paramétrage de $P_{\text{fusion}}(T)$ cité au §7quater.
 - Dakos, V., van Nes, E. H., Donangelo, R., Fort, H., & Scheffer, M. (2010). "Spatial correlation as leading indicator of catastrophic shifts." *Theoretical Ecology*, 3, 163–174.
 - MacLaren, N. G., Aihara, K., & Masuda, N. (2025). "Applicability of spatial early warning signals to complex network dynamics." *Journal of the Royal Society Interface*, 22(226), 20240696. — source du créneau identifié pour H2 (les EWS spatiaux sont validés presque exclusivement sur des grilles régulières, pas sur des réseaux réels irréguliers).
 - Kuramoto, Y. (1975). "Self-entrainment of a population of coupled non-linear oscillators." In *International Symposium on Mathematical Problems in Theoretical Physics*, Lecture Notes in Physics, 39, 420–422.

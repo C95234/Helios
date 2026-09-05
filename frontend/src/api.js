@@ -27,6 +27,8 @@ export const api = {
   testH5: () => getJson(`/hypotheses/h5`),
   testFusionShot: (shotId) => getJson(`/hypotheses/fusion?shot_id=${shotId}`),
   testFusionAggregate: () => getJson(`/hypotheses/fusion/aggregate`),
+  testPlasmaRun: (params) => getJson(`/hypotheses/plasma?${new URLSearchParams(params).toString()}`),
+  testPlasmaAggregate: () => getJson(`/hypotheses/plasma/aggregate`),
   getConnectors: () => getJson(`/connectors`),
   getGuardrails: () => getJson(`/connectors/guardrails`),
 };

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -312,4 +314,49 @@ class H5Response(BaseModel):
         "Source réelle : amplitude des chocs trimestriels de chômage départemental (Insee), seule source "
         "disponible parmi celles envisagées au §5.9.3 -- GDELT (rate-limité de façon persistante) et "
         "Reddit/SNAP (aucun connecteur construit) restent indisponibles."
+    )
+
+
+class PlasmaRunResult(BaseModel):
+    """Un scénario simulé du modèle réduit de bilan de puissance (§7quater,
+    troisième domaine d'application) -- réutilise EXACTEMENT le même moteur
+    statistique que H1/Fusion (variance/AC1 + surrogate_test), appliqué à
+    une température simulée par une vraie équation physique (pas une donnée
+    mesurée comme Fusion, pas une analogie sociale comme H4). scenario
+    "ignited" : le chauffage externe est ramené lentement au-delà du seuil
+    critique (bifurcation nœud-col, cf. §5.6quater appliqué à la physique
+    des plasmas -- ici le vrai critère de Lawson). scenario "stable" : cas
+    de contrôle, chauffage reste sous le seuil, aucun emballement attendu."""
+
+    seed: int
+    scenario: Literal["ignited", "stable"]
+    ignited: bool
+    t_ignition: float | None
+    peak_temperature_kev: float
+    n_points_analyzed: int
+    variance_significance: SignificanceOut
+    ac1_significance: SignificanceOut
+    precursor_before_ignition: bool
+    verdict_simple: str
+
+
+class PlasmaAggregateResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
+    n_runs: int
+    n_ignited: int
+    n_stable: int
+    n_ignited_with_precursor: int
+    n_stable_false_positive: int
+    runs: list[PlasmaRunResult]
+    verdict_simple: str
+    model_disclaimer: str = (
+        "Modèle réduit de physique des plasmas (bilan de puissance à zéro dimension, Freidberg 2007 ; "
+        "Wesson 2004) -- PAS une simulation de réacteur complet (aucune magnétohydrodynamique). "
+        "Paramètres (densité, temps de confinement) illustratifs, pas ceux d'une machine réelle précise."
+    )
+    scope_disclaimer: str = (
+        "Détection uniquement -- ce module ne conçoit aucun système de contrôle réel de plasma. Jamais "
+        "combiné aux résultats du domaine socio-territorial (H1-H5) ni à la détection sur données réelles "
+        "de tokamak (§7ter, module Fusion) dans un même verdict."
     )

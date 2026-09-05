@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { SCORECARD, STRENGTHS, WEAKNESSES, CONCLUSION } from "../data/bilanProjet.js";
-import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT, FUSION_RESULT } from "../data/bilanPublie.js";
+import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT, FUSION_RESULT, PLASMA_RESULT } from "../data/bilanPublie.js";
 import { POSITIONING_SHORT } from "../data/positionnement.js";
 
 export default function Bilan() {
@@ -75,6 +75,29 @@ export default function Bilan() {
         <p className="text-muted">
           Détection sur données de tokamak (MAST), même moteur de calcul que H1/H2 -- résultat encourageant mais
           pas net (taux de faux positifs notable). Toujours présenté à part : <Link to="/resultats/fusion">Résultats -- Fusion</Link>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Troisième domaine (bilan de puissance) -- jamais combiné aux deux autres</h2>
+        <div className="agg-summary">
+          <div className="agg-stat">
+            <span className="agg-number">
+              {PLASMA_RESULT.nIgnitedWithPrecursor}/{PLASMA_RESULT.nIgnited}
+            </span>
+            <span>réalisations ignitées avec précurseur</span>
+          </div>
+          <div className="agg-stat">
+            <span className="agg-number">
+              {PLASMA_RESULT.nStableFalsePositive}/{PLASMA_RESULT.nStable}
+            </span>
+            <span>faux positifs (réalisations stables)</span>
+          </div>
+        </div>
+        <p className="text-muted">
+          Modèle réduit de physique des plasmas (bilan de puissance 0-D, seuil d'ignition), même moteur de
+          calcul que H1/Fusion -- résultat net, mais sur un phénomène simulé bien plus propre qu'une vraie
+          donnée bruitée. Toujours présenté à part : <Link to="/resultats/plasma-modele">Résultats -- Modèle de plasma</Link>.
         </p>
       </section>
 

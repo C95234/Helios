@@ -24,6 +24,7 @@ territoires agrégés.
 ## Second domaine d'application — Fusion nucléaire
 
 - [Détection sur données de tokamak](/resultats/fusion): le même pipeline de détection (H1/H2, code inchangé) appliqué à des données ouvertes de plasma (MAST, UKAEA) — détection uniquement, jamais de conception de système de contrôle réel. Vérité terrain de disruption dérivée des données MAST elles-mêmes (chute brutale du courant plasma), pas de DisruptionBench (DIII-D/EAST/Alcator C-Mod exigent des identifiants institutionnels). Résultats toujours présentés séparément du domaine socio-territorial.
+- [Modèle de bilan de puissance et seuil d'ignition](/resultats/plasma-modele): un modèle réduit mais réel de physique des plasmas (0-D power balance, critère de Lawson) — pas une simulation de réacteur complet, pas les données de tokamak du point précédent. Troisième domaine de test, jamais combiné aux deux autres.
 
 ## Méthode
 

@@ -94,3 +94,41 @@ export const H5_REFRESHED_AT = h5.refreshedAt;
 // relance le meme calcul, tir par tir, sur MAST en direct.
 export const FUSION_RESULT = fusion;
 export const FUSION_REFRESHED_AT = fusion.refreshedAt;
+
+// Troisieme domaine -- modele reduit de physique des plasmas, bilan de
+// puissance 0-D, seuil d'ignition (§7quater). Simulation pure (aucune
+// donnee externe, contrairement a Fusion) -- exclue du rafraichissement
+// automatique comme H4, valeurs gelees apres une execution reelle en local
+// (20 realisations : 10 "ignited" seeds 0-9, 10 "stable" seeds 10000-10009,
+// n_surrogates=200). L'outil "tester en direct" de la page relance le meme
+// calcul avec de nouvelles graines.
+export const PLASMA_RESULT = {
+  nRuns: 20,
+  nIgnited: 10,
+  nStable: 10,
+  nIgnitedWithPrecursor: 10,
+  nStableFalsePositive: 0,
+  verdict: "favorable",
+  runs: [
+    { seed: 0, scenario: "ignited", ignited: true, tIgnition: 5.998, peakTemperatureKev: 30.14, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 1, scenario: "ignited", ignited: true, tIgnition: 5.944, peakTemperatureKev: 30.18, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 2, scenario: "ignited", ignited: true, tIgnition: 6.014, peakTemperatureKev: 30.05, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 3, scenario: "ignited", ignited: true, tIgnition: 5.910, peakTemperatureKev: 30.10, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 4, scenario: "ignited", ignited: true, tIgnition: 5.948, peakTemperatureKev: 30.03, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 5, scenario: "ignited", ignited: true, tIgnition: 5.908, peakTemperatureKev: 30.01, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 6, scenario: "ignited", ignited: true, tIgnition: 5.908, peakTemperatureKev: 30.08, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 7, scenario: "ignited", ignited: true, tIgnition: 5.976, peakTemperatureKev: 30.01, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 8, scenario: "ignited", ignited: true, tIgnition: 5.992, peakTemperatureKev: 30.14, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 9, scenario: "ignited", ignited: true, tIgnition: 5.918, peakTemperatureKev: 30.16, varianceSig: true, ac1Sig: false, precursor: true },
+    { seed: 10000, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.50, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10001, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.50, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10002, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.50, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10003, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.51, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10004, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.52, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10005, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.51, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10006, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.50, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10007, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.51, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10008, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.51, varianceSig: false, ac1Sig: false, precursor: false },
+    { seed: 10009, scenario: "stable", ignited: false, tIgnition: null, peakTemperatureKev: 1.50, varianceSig: false, ac1Sig: false, precursor: false },
+  ],
+};

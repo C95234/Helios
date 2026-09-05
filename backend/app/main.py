@@ -10,7 +10,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.util import get_remote_address
 
-from .routers import analyze, connectors, demo, fusion, h2, h3, h4, h5, hypotheses, series
+from .routers import analyze, connectors, demo, fusion, h2, h3, h4, h5, hypotheses, plasma, series
 from .settings import ALLOWED_ORIGINS, ENVIRONMENT, RATE_LIMIT
 
 # Journalisation d'audit (qui, quand, quoi) sans jamais loguer le contenu des
@@ -67,6 +67,7 @@ app.include_router(h3.router)
 app.include_router(h4.router)
 app.include_router(h5.router)
 app.include_router(fusion.router)
+app.include_router(plasma.router)
 app.include_router(connectors.router)
 
 
