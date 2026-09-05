@@ -17,13 +17,24 @@ export default function Roman() {
           se rapproche d'un point de rupture.
         </p>
         <p>
-          Le roman met aussi en scène un second dispositif, le <strong>RCA</strong> (contrôle actif de la
-          synchronisation) : plutôt que de simplement détecter une bascule à venir, il cherche à
-          l'empêcher -- non pas en supprimant toute agitation, mais en affaiblissant sélectivement les
-          liens entre les éléments qui commencent à se synchroniser entre eux. C'est cette intuition qui a
-          inspiré le module <Link to="/resultats/h4">H4</Link> d'Hélios : une traduction mathématique
-          directe (modèle de Kuramoto et couplage adaptatif), en simulation, jamais présentée comme une
-          preuve de ce que le RCA du roman pourrait faire dans le monde réel.
+          Le roman met aussi en scène un second dispositif : le <strong>RCA</strong>, un générateur
+          d'énergie qui rend la fusion nucléaire maîtrisable. Sa prouesse n'est pas de supprimer toute
+          turbulence dans le plasma, mais de l'empêcher de se synchroniser en un seul emballement
+          catastrophique -- en affaiblissant sélectivement les couplages entre les zones qui commencent à
+          se verrouiller entre elles, plutôt qu'en figeant l'ensemble.
+        </p>
+        <p>
+          Cette intuition de contrôle a inspiré deux choses distinctes dans Hélios, qu'il ne faut jamais
+          confondre : le module <Link to="/resultats/h4">H4</Link> en traduit le{" "}
+          <strong>principe de contrôle</strong> en simulation abstraite (modèle de Kuramoto, un réseau
+          social illustratif -- jamais du vrai plasma) ; le module{" "}
+          <Link to="/resultats/fusion">Fusion</Link> teste si le{" "}
+          <strong>principe de détection</strong> qui sous-tend H1 et H2 (variance, autocorrélation, indice
+          de Moran) repère aussi la fébrilité qui précède une vraie disruption, sur des données réelles de
+          tokamak (MAST) -- puisque c'est précisément le domaine physique où le RCA du roman est censé
+          opérer. Aucun des deux modules ne prétend reproduire le RCA lui-même : H4 ne pilote aucun vrai
+          système, et Fusion se limite à la détection, jamais au contrôle -- concevoir un vrai système de
+          contrôle de plasma est hors du périmètre de ce projet.
         </p>
         <p>
           Hélios reprend l'intuition du roman et la transforme en démarche scientifique testable : les

@@ -160,6 +160,22 @@ export default function FusionResult() {
         UKAEA) -- pas une nouvelle méthode, une réplication sur un domaine physique différent.
       </p>
 
+      <div className="simulation-banner">
+        <strong>D'où vient cette question :</strong>
+        <span>
+          Dans le <Link to="/roman">roman</Link> qui a inspiré Hélios, le RCA est un générateur d'énergie
+          qui rend la fusion nucléaire maîtrisable -- non pas en supprimant toute turbulence du plasma, mais
+          en l'empêchant de se synchroniser en un seul emballement (le même principe de contrôle traduit en
+          simulation dans <Link to="/resultats/h4">H4</Link>). C'est précisément parce que le RCA du roman
+          opère sur un plasma de fusion que ce second domaine a été choisi : si les indicateurs qui
+          détectent une fébrilité avant une bascule sociale (variance, autocorrélation, indice de Moran --
+          H1/H2) fonctionnent sur un vrai signal social, se comportent-ils aussi sur le vrai phénomène
+          physique que le RCA fictif est censé maîtriser -- une disruption de plasma ? Ce module ne teste
+          que cette question de <strong>détection</strong> ; il ne simule ni ne conçoit aucun système de
+          contrôle, contrairement au RCA du roman ou à la simulation pédagogique de H4.
+        </span>
+      </div>
+
       <div className="controls">
         <label>
           Numéro de tir MAST
