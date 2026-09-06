@@ -5,14 +5,19 @@ import { STATUS_LABELS } from "../data/hypotheses.js";
 export default function HypothesisCard({ hypothesis }) {
   const [expertMode, setExpertMode] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
-  const { code, title, simple, expert, status, statusNote, link, detailReasons } = hypothesis;
+  const { code, catchyTitle, title, simple, expert, status, statusNote, link, detailReasons } = hypothesis;
 
   return (
-    <div className="hypothesis-card">
+    <div className={`hypothesis-card hypothesis-card--${code.toLowerCase()}`}>
       <div className="result-card-header">
-        <h3>
-          <span className="hypothesis-code">{code}</span> — {title}
-        </h3>
+        <div>
+          <h3 className="hypothesis-catchy-title">{catchyTitle ?? title}</h3>
+          {catchyTitle && (
+            <p className="hypothesis-technical-badge">
+              <span className="hypothesis-code">{code}</span> {title}
+            </p>
+          )}
+        </div>
         <button
           type="button"
           className="mode-toggle"

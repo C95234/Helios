@@ -6,6 +6,7 @@
 export const HYPOTHESES = [
   {
     code: "H1",
+    catchyTitle: "Qui le sent venir en premier ?",
     title: "Décalage temporel",
     simple:
       "Est-ce que les réseaux sociaux montrent des signes de tension avant que les statistiques officielles ne le confirment, pour un même événement de rupture ?",
@@ -18,6 +19,7 @@ export const HYPOTHESES = [
   },
   {
     code: "H2",
+    catchyTitle: "La France n'est pas un quadrillage",
     title: "Robustesse sur réseau réel",
     simple:
       "Est-ce que la façon dont des territoires voisins évoluent ensemble se comporte différemment sur la vraie carte des communes françaises que sur une grille régulière artificielle ?",
@@ -30,6 +32,7 @@ export const HYPOTHESES = [
   },
   {
     code: "H3",
+    catchyTitle: "Deux petits signaux font-ils un grand signal ?",
     title: "Indicateur joint",
     simple:
       "Est-ce que combiner le signal temporel et le signal géographique donne un résultat plus fiable, avec moins de fausses alertes, que chacun pris isolément ?",
@@ -42,6 +45,7 @@ export const HYPOTHESES = [
   },
   {
     code: "H4",
+    catchyTitle: "Calmer sans étouffer",
     title: "Contrôle actif de la synchronisation (inspiré du RCA)",
     simple:
       "Peut-on empêcher une bascule collective sans supprimer l'activité individuelle -- en affaiblissant seulement les liens entre les éléments qui sont en train de se synchroniser entre eux, plutôt qu'en réduisant tout le système au silence ?",
@@ -54,6 +58,7 @@ export const HYPOTHESES = [
   },
   {
     code: "H5",
+    catchyTitle: "Pourquoi presque toutes les crises sont petites",
     title: "Criticité auto-organisée",
     simple:
       "Est-ce que les tailles des chocs observés (au lieu d'une seule bascule ponctuelle) suivent une loi de puissance -- signe que le système vit en permanence à la limite de la stabilité, plutôt que d'approcher un seul point de rupture ?",
@@ -71,4 +76,5 @@ export const STATUS_LABELS = {
   "non-disponible": "Pas encore testable",
   simulation: "Simulation pédagogique (pas un test statistique)",
   distribution: "Testable (test de distribution, pas un épisode)",
+  "testable-batterie": "Testable (batterie curatée, données réelles)",
 };

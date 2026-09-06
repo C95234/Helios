@@ -69,6 +69,8 @@ export default function H5Result() {
     <ResultPageTemplate
       code="H5"
       title="Criticité auto-organisée"
+      catchyTitle={H5_DATA.catchyTitle}
+      domain={{ name: "Société", to: "/resultats#societe" }}
       verdict={H5_RESULT.verdict}
       episodesLabel={`${H5_RESULT.nTail} chocs analysés (sur ${H5_RESULT.nTotal} au total, ${H5_RESULT.periodStart.slice(0, 4)}–${H5_RESULT.periodEnd.slice(0, 4)})`}
       summary="Les tailles des chocs de chômage départemental suivent-elles une loi de puissance -- signe que le système vit en permanence à la limite de la stabilité plutôt que d'approcher un seul point de rupture ? Sur la source réelle disponible, non : le test de plausibilité rejette la loi de puissance, et les deux modèles alternatifs (log-normale, exponentielle) sont préférés."

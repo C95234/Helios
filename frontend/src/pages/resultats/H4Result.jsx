@@ -84,6 +84,8 @@ export default function H4Result() {
     <ResultPageTemplate
       code="H4"
       title="Contrôle actif de la synchronisation (inspiré du RCA)"
+      catchyTitle={H4_DATA.catchyTitle}
+      domain={{ name: "Société", to: "/resultats#societe" }}
       verdict="simulation"
       summary="Un couplage adaptatif, qui s'affaiblit localement quand une paire d'oscillateurs se verrouille en phase, peut-il empêcher une bascule collective sans réduire l'activité individuelle à zéro ? Sur 8 configurations testées avec une seule graine chacune, les 8 restaient sous le seuil -- mais un contrôle de robustesse sur 30 graines par configuration montre que ce n'est fiable (≥90 % des graines) que pour 6 des 8 : le couplage très fort (K=5K_c) et le petit réseau (N=15) ne restent sous le seuil qu'une fois sur deux à quatre fois sur cinq."
       postulateSimple={H4_DATA.simple}

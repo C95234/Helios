@@ -57,7 +57,7 @@ export default function Bilan() {
       </section>
 
       <section>
-        <h2>Second domaine (fusion) -- jamais combiné au score ci-dessus</h2>
+        <h2>Domaine Fusion nucléaire -- jamais combiné au score ci-dessus</h2>
         <div className="agg-summary">
           <div className="agg-stat">
             <span className="agg-number">
@@ -79,7 +79,7 @@ export default function Bilan() {
       </section>
 
       <section>
-        <h2>Troisième domaine (bilan de puissance) -- jamais combiné aux deux autres</h2>
+        <h2>Domaine Fusion nucléaire -- modèle de bilan de puissance, jamais combiné au module Fusion</h2>
         <div className="agg-summary">
           <div className="agg-stat">
             <span className="agg-number">
@@ -98,6 +98,16 @@ export default function Bilan() {
           Modèle réduit de physique des plasmas (bilan de puissance 0-D, seuil d'ignition), même moteur de
           calcul que H1/Fusion -- résultat net, mais sur un phénomène simulé bien plus propre qu'une vraie
           donnée bruitée. Toujours présenté à part : <Link to="/resultats/plasma-modele">Résultats -- Modèle de plasma</Link>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Domaine Mémoire collective -- démonstration pédagogique, jamais un verdict statistique</h2>
+        <p className="text-muted">
+          Réseau de Hopfield (mémoire associative, prix Nobel de physique 2024) : rappel fiable jusqu'à
+          p≈10 motifs mémorisés pour un groupe de 100, chute nette au-delà -- comme H4, une démonstration de
+          principe en simulation, jamais testée contre des données réelles. Toujours présenté à part :{" "}
+          <Link to="/resultats/hopfield">Résultats -- Mémoire collective</Link>.
         </p>
       </section>
 

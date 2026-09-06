@@ -274,6 +274,8 @@ export default function H1Result() {
     <ResultPageTemplate
       code="H1"
       title="Décalage temporel"
+      catchyTitle={H1_DATA.catchyTitle}
+      domain={{ name: "Société", to: "/resultats#societe" }}
       verdict="against"
       nEpisodes={H1_SUMMARY.nPhenomena}
       summary="Les signaux sociaux se déclenchent-ils avant les statistiques officielles, pour un même événement de rupture ? Sur les 6 phénomènes testés, 1 seul va dans ce sens -- 5 vont à l'encontre."

@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import { HYPOTHESES } from "../data/hypotheses.js";
+import { FUSION_DOMAIN_MODULES, MEMOIRE_COLLECTIVE_MODULES } from "../data/domainModules.js";
 import HypothesisCard from "../components/HypothesisCard.jsx";
 
 export default function Resultats() {
@@ -7,52 +7,58 @@ export default function Resultats() {
     <div className="page page-hypotheses">
       <h1>Résultats</h1>
       <p className="lede">
-        Hélios teste quatre hypothèses de recherche originales sur des données réelles (H1, H2, H3, H5), et en
-        tire une conclusion honnête — jamais un verdict plus catégorique que ce que le test statistique permet.
-        H4 est d'une autre nature : une simulation pédagogique, pas un test statistique — voir sa mention
-        distincte ci-dessous. H5 diffère aussi des trois premières : pas un épisode testé à la fois, mais une
-        distribution testée sur un grand nombre de chocs (§5.9). Chaque page de résultat suit le même gabarit :
-        verdict, postulat, résultat obtenu, limites, puis l'outil pour le tester soi-même en direct.
+        Hélios teste des méthodes de détection de bascules et d'états critiques, établies dans la
+        littérature scientifique, sur trois domaines distincts -- société, fusion nucléaire, mémoire
+        collective -- présentés ici en parallèle, sans ordre de priorité entre eux. Chaque page de module
+        suit le même gabarit : verdict, postulat, résultat obtenu, limites, puis l'outil pour le tester
+        soi-même en direct (sauf mention contraire). Les résultats de chaque domaine ne sont jamais combinés
+        entre eux.
       </p>
 
-      <div className="hypotheses-list">
-        {HYPOTHESES.map((h) => (
-          <HypothesisCard key={h.code} hypothesis={h} />
-        ))}
-      </div>
-
-      <p className="hypotheses-footnote">
-        Pour H1-H3 : le protocole de validation prévoit au moins 5 épisodes historiques indépendants avant
-        toute conclusion ferme — jamais de verdict « confirmée » sur un seul cas. H4 n'entre pas dans ce
-        décompte : en tant que simulation, elle n'aura jamais de verdict de ce type, quel que soit le nombre
-        d'exécutions. H5 non plus : son verdict repose sur un test de plausibilité par bootstrap et une
-        comparaison à des modèles alternatifs (§5.9.2), pas sur un décompte d'épisodes.
-      </p>
-
-      <section className="hypotheses-teaser" style={{ marginTop: "2.5rem" }}>
-        <h2>Second domaine d'application — Fusion nucléaire</h2>
-        <p>
-          Le même pipeline de détection (variance, autocorrélation, indice de Moran — code inchangé) appliqué
-          à des données réelles et ouvertes de tokamak (MAST, UKAEA), pour démontrer que la méthode généralise
-          au-delà du socio-territorial. Détection uniquement -- jamais un système de contrôle réel, jamais
-          combiné aux résultats H1-H5 dans un même verdict.
+      <section id="societe" className="domain-section">
+        <h2>Domaine Société</h2>
+        <p className="domain-tagline">
+          Un système social envoie-t-il des signes avant de basculer -- et peut-on apprendre à les repérer,
+          honnêtement, avant que les statistiques officielles ne les confirment ?
         </p>
-        <Link to="/resultats/fusion" className="cta secondary">
-          Voir la détection sur données de fusion
-        </Link>
+        <div className="hypotheses-list">
+          {HYPOTHESES.map((h) => (
+            <HypothesisCard key={h.code} hypothesis={h} />
+          ))}
+        </div>
+        <p className="hypotheses-footnote">
+          Pour H1-H3 : le protocole de validation prévoit au moins 5 épisodes historiques indépendants avant
+          toute conclusion ferme — jamais de verdict « confirmée » sur un seul cas. H4 n'entre pas dans ce
+          décompte : en tant que simulation, elle n'aura jamais de verdict de ce type, quel que soit le
+          nombre d'exécutions. H5 non plus : son verdict repose sur un test de plausibilité par bootstrap et
+          une comparaison à des modèles alternatifs (§5.9.2), pas sur un décompte d'épisodes.
+        </p>
       </section>
 
-      <section className="hypotheses-teaser" style={{ marginTop: "1.5rem" }}>
-        <h2>Troisième domaine d'application — Modèle réduit de physique des plasmas</h2>
-        <p>
-          Le même moteur de détection statistique (variance, autocorrélation, code inchangé) appliqué à une
-          température simulée par un vrai modèle réduit de bilan de puissance (seuil d'ignition, critère de
-          Lawson) -- ni donnée mesurée (contrairement à Fusion ci-dessus), ni analogie sociale (contrairement
-          à H4). Détection uniquement -- jamais combiné aux deux autres domaines dans un même verdict.
+      <section id="fusion" className="domain-section">
+        <h2>Domaine Fusion nucléaire</h2>
+        <p className="domain-tagline">
+          Avant qu'un plasma de fusion ne perde son confinement -- ou ne s'embrase de lui-même -- y a-t-il
+          des signes avant-coureurs mesurables ?
         </p>
-        <Link to="/resultats/plasma-modele" className="cta secondary">
-          Voir le modèle de bilan de puissance
-        </Link>
+        <div className="hypotheses-list">
+          {FUSION_DOMAIN_MODULES.map((m) => (
+            <HypothesisCard key={m.code} hypothesis={m} />
+          ))}
+        </div>
+      </section>
+
+      <section id="memoire-collective" className="domain-section">
+        <h2>Domaine Mémoire collective</h2>
+        <p className="domain-tagline">
+          Comment un groupe se souvient-il d'une situation déjà vécue, et jusqu'où peut-il pousser sa mémoire
+          avant de tout confondre ?
+        </p>
+        <div className="hypotheses-list">
+          {MEMOIRE_COLLECTIVE_MODULES.map((m) => (
+            <HypothesisCard key={m.code} hypothesis={m} />
+          ))}
+        </div>
       </section>
     </div>
   );

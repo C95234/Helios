@@ -96,6 +96,8 @@ export default function H3Result() {
     <ResultPageTemplate
       code="H3"
       title="Indicateur joint"
+      catchyTitle={H3_DATA.catchyTitle}
+      domain={{ name: "Société", to: "/resultats#societe" }}
       verdict="preliminary"
       nEpisodes={H3_SUMMARY.nCalculable}
       summary="Combiner un signal temporel (confiance des ménages, national) et un signal spatial (indice de Moran) réduit-il les faux positifs par rapport à chaque signal pris seul ? Calculable sur 4 phénomènes sur 6 -- 1 favorable."

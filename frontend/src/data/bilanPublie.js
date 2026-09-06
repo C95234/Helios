@@ -88,7 +88,7 @@ export const TRENDS_SUMMARY = {
 export const H5_RESULT = h5;
 export const H5_REFRESHED_AT = h5.refreshedAt;
 
-// Second domaine -- detection sur donnees de tokamak (§7ter). Rafraichi
+// Domaine Fusion nucleaire -- detection sur donnees de tokamak (§7ter). Rafraichi
 // automatiquement sur la batterie curatee de app/data/mast_shots.json
 // (voir en-tete de fichier) -- l'outil "tester en direct" de la page
 // relance le meme calcul, tir par tir, sur MAST en direct.

@@ -98,11 +98,13 @@ export default function FusionResult() {
     <ResultPageTemplate
       code="Fusion"
       title="Détection sur données de tokamak (MAST)"
+      catchyTitle="La même méthode, un tout autre monde"
+      domain={{ name: "Fusion nucléaire", to: "/resultats#fusion" }}
       verdict={FUSION_RESULT.verdict}
       episodesLabel={`${FUSION_RESULT.nShots} tirs analysés (${FUSION_RESULT.nDisrupted} disruptés, ${FUSION_RESULT.nStable} stables)`}
-      summary="Le même pipeline de détection que H1/H2 (variance, autocorrélation et indice de Moran, code inchangé) généralise-t-il à un domaine physique totalement différent -- des données réelles de tokamak (MAST) ? Sur 10 tirs disruptés, 8 montrent un signal précurseur avant le quench -- mais 3 des 10 tirs stables (témoins) montrent aussi un signal jugé significatif, un faux positif à ne pas passer sous silence."
-      postulateSimple="Est-ce que les mêmes indicateurs statistiques qui détectent une fébrilité avant une rupture sociale détectent aussi une fébrilité avant une disruption de plasma -- un domaine physique sans aucun rapport avec le socio-territorial ?"
-      postulateExpert="Réplication du pipeline H1 (variance/AC1 glissantes + test par données de substitution) et H2 (indice de Moran + test par données de substitution) sur le courant plasma et le réseau des sondes magnétiques d'un tokamak réel (MAST), sans aucune branche de calcul spécifique -- même moteur, deux domaines de données (§7ter)."
+      summary="Avant qu'un plasma de fusion ne perde son confinement, y a-t-il des signes avant-coureurs mesurables ? Sur 10 tirs disruptés d'un tokamak réel (MAST), 8 montrent un signal précurseur avant le quench -- mais 3 des 10 tirs stables (témoins) montrent aussi un signal jugé significatif, un faux positif à ne pas passer sous silence. Même moteur statistique que le domaine Société (variance, autocorrélation, indice de Moran, code inchangé) -- une preuve que la méthode généralise, pas un emprunt."
+      postulateSimple="Une disruption de plasma (perte brutale de confinement) est-elle précédée d'un signal détectable, comme les indicateurs statistiques qui détectent une fébrilité avant une rupture sociale ?"
+      postulateExpert="Le courant plasma et le réseau des sondes magnétiques d'un tokamak réel (MAST) montrent-ils une fébrilité statistique avant le quench ? Réplication du pipeline construit pour le domaine Société (variance/AC1 glissantes + test par données de substitution, indice de Moran + test par données de substitution) sans aucune branche de calcul spécifique -- même moteur, deux domaines de données (§7ter)."
       resultText={
         <>
           <p className="text-muted">Rafraîchi automatiquement le {FUSION_RESULT.refreshedAt} (sur la batterie de tirs MAST déjà curatée).</p>
@@ -155,9 +157,8 @@ export default function FusionResult() {
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
     >
       <p className="lede">
-        Second domaine d'application, distinct des hypothèses socio-territoriales (H1-H5) : le même moteur de
-        calcul, sans aucune branche spécifique, appliqué à des données réelles et ouvertes de tokamak (MAST,
-        UKAEA) -- pas une nouvelle méthode, une réplication sur un domaine physique différent.
+        Domaine Fusion nucléaire, distinct du domaine Société (H1-H5) : détection sur des données réelles et
+        ouvertes de tokamak (MAST, UKAEA), jamais combinée à celles d'un autre domaine dans un même verdict.
       </p>
 
       <div className="simulation-banner">
@@ -167,7 +168,7 @@ export default function FusionResult() {
           qui rend la fusion nucléaire maîtrisable -- non pas en supprimant toute turbulence du plasma, mais
           en l'empêchant de se synchroniser en un seul emballement (le même principe de contrôle traduit en
           simulation dans <Link to="/resultats/h4">H4</Link>). C'est précisément parce que le RCA du roman
-          opère sur un plasma de fusion que ce second domaine a été choisi : si les indicateurs qui
+          opère sur un plasma de fusion que ce domaine a été choisi : si les indicateurs qui
           détectent une fébrilité avant une bascule sociale (variance, autocorrélation, indice de Moran --
           H1/H2) fonctionnent sur un vrai signal social, se comportent-ils aussi sur le vrai phénomène
           physique que le RCA fictif est censé maîtriser -- une disruption de plasma ? Ce module ne teste

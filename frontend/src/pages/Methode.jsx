@@ -33,11 +33,12 @@ export default function Methode() {
         <div className="hypothesis-card">
           <h3>Réseaux de Hopfield et groupes sociaux</h3>
           <p>
-            Analogie pédagogique avec un des modèles fondateurs du deep learning (Hopfield, prix Nobel de
-            physique 2024) -- mémoire associative, attracteurs, perte de stabilité, pour éclairer la logique
-            du logiciel du roman. Ne sert de base à aucun module H1-H5, Fusion ou Plasma.
+            Démonstration complète (théorème de convergence, calcul de la capacité de mémoire) qui sert de
+            support théorique au domaine <Link to="/resultats#memoire-collective">Mémoire collective</Link> --
+            un modèle fondateur du deep learning (Hopfield, prix Nobel de physique 2024), pas le contenu
+            principal du domaine lui-même.
           </p>
-          <Link to="/methode/hopfield-social" className="hypothesis-status-link">
+          <Link to="/methode/hopfield" className="hypothesis-status-link">
             Lire le cours →
           </Link>
         </div>

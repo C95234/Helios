@@ -170,6 +170,8 @@ export default function H2Result() {
     <ResultPageTemplate
       code="H2"
       title="Robustesse sur réseau réel"
+      catchyTitle={H2_DATA.catchyTitle}
+      domain={{ name: "Société", to: "/resultats#societe" }}
       verdict="neutral"
       nEpisodes={1}
       summary="L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Sur la tendance (la question formelle de H2), ni l'un ni l'autre n'est significatif -- mais le niveau distingue nettement les deux réseaux."

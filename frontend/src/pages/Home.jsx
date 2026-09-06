@@ -42,17 +42,35 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="hypotheses-teaser">
-        <h2>Des questions précises, testées sur des données réelles</h2>
-        <p>
-          Au-delà des indicateurs, Hélios teste plusieurs hypothèses de recherche originales — par exemple, «
-          les réseaux sociaux montrent-ils des signes de tension avant les statistiques officielles ? » ou «
-          les chocs observés suivent-ils une loi de puissance, signe d'un système à la limite permanente de la
-          stabilité ? ».
+      <section className="domains-teaser">
+        <h2>Trois domaines, une même question</h2>
+        <p className="text-muted" style={{ textAlign: "center", margin: "0 auto" }}>
+          Présentés en parallèle, sans ordre de priorité entre eux -- chaque domaine répond à sa propre
+          question, avec ses propres données.
         </p>
-        <Link to="/resultats" className="cta secondary">
-          Voir les résultats
-        </Link>
+        <div className="domains-grid">
+          <div className="domain-card">
+            <h3>Société</h3>
+            <p>Les gens en parlent-ils avant que les chiffres officiels ne le confirment -- ou l'inverse ?</p>
+            <Link to="/resultats#societe" className="cta secondary">
+              Explorer
+            </Link>
+          </div>
+          <div className="domain-card">
+            <h3>Fusion nucléaire</h3>
+            <p>Avant qu'un plasma de fusion ne perde son confinement, y a-t-il des signes avant-coureurs ?</p>
+            <Link to="/resultats#fusion" className="cta secondary">
+              Explorer
+            </Link>
+          </div>
+          <div className="domain-card">
+            <h3>Mémoire collective</h3>
+            <p>Comment un groupe se souvient-il d'une situation déjà vécue ?</p>
+            <Link to="/resultats#memoire-collective" className="cta secondary">
+              Explorer
+            </Link>
+          </div>
+        </div>
       </section>
 
       <section className="hypotheses-teaser">

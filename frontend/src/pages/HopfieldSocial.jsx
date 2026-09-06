@@ -14,8 +14,11 @@ export default function HopfieldSocial() {
         renforcent quand une séquence d'événements se répète, formant une mémoire du système.
       </p>
       <p className="text-muted">
-        Complément au <Link to="/methode/cours-statistiques">cours de statistiques</Link>, pas une nouvelle
-        hypothèse testée : aucun module H1-H5, Fusion ou Plasma ne repose sur ce modèle.
+        Support théorique du domaine{" "}
+        <Link to="/resultats#memoire-collective">Mémoire collective</Link> -- voir le résultat sur{" "}
+        <Link to="/resultats/hopfield">sa propre page</Link>. Complément au{" "}
+        <Link to="/methode/cours-statistiques">cours de statistiques</Link>, indépendant des domaines
+        Société et Fusion nucléaire.
       </p>
 
       <nav className="cours-toc">

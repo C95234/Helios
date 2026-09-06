@@ -17,6 +17,8 @@ const VERDICT_LABEL = {
 export default function ResultPageTemplate({
   code,
   title,
+  catchyTitle,
+  domain,
   verdict,
   nEpisodes,
   episodesLabel,
@@ -27,10 +29,17 @@ export default function ResultPageTemplate({
   methodLink,
   limits,
   journalLink,
+  showLiveSection = true,
   children,
 }) {
   return (
     <div className={`page page-resultat page-resultat-${code.toLowerCase()}`}>
+      {domain && (
+        <p className="breadcrumb">
+          <Link to={domain.to}>{domain.name}</Link> <span aria-hidden="true">›</span> {title}
+        </p>
+      )}
+
       <div className={`verdict-banner verdict-banner--${verdict}`}>
         <span className="verdict-banner-code">{code}</span>
         <span className="verdict-banner-label">{VERDICT_LABEL[verdict]}</span>
@@ -43,7 +52,8 @@ export default function ResultPageTemplate({
         </span>
       </div>
 
-      <h1>{title}</h1>
+      <h1>{catchyTitle ?? title}</h1>
+      {catchyTitle && <p className="technical-subtitle">{title}</p>}
       <p className="lede">{summary}</p>
 
       <section>
@@ -79,8 +89,12 @@ export default function ResultPageTemplate({
         </p>
       )}
 
-      <hr className="divider" />
-      <h2>Tester ce résultat en direct</h2>
+      {showLiveSection && (
+        <>
+          <hr className="divider" />
+          <h2>Tester ce résultat en direct</h2>
+        </>
+      )}
       {children}
     </div>
   );

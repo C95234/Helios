@@ -109,11 +109,13 @@ export default function PlasmaModeleResult() {
     <ResultPageTemplate
       code="Plasma"
       title="Modèle réduit de physique des plasmas — seuil d'ignition"
+      catchyTitle="Le seuil où le feu s'auto-entretient"
+      domain={{ name: "Fusion nucléaire", to: "/resultats#fusion" }}
       verdict={PLASMA_RESULT.verdict}
       episodesLabel={`${PLASMA_RESULT.nRuns} réalisations analysées (${PLASMA_RESULT.nIgnited} ignitées, ${PLASMA_RESULT.nStable} stables)`}
-      summary="Le même moteur statistique que H1/Fusion (variance, autocorrélation, test par données de substitution) détecte-t-il une fébrilité avant l'emballement d'un vrai modèle réduit de physique des plasmas (bilan de puissance 0-D, critère de Lawson) -- un troisième domaine, ni donnée réelle mesurée (contrairement à Fusion) ni analogie sociale (contrairement à H4) ? Sur 10 réalisations qui traversent le seuil critique, les 10 montrent un signal précurseur -- mais aucune des 10 réalisations de contrôle (chauffage sous le seuil) ne déclenche de faux positif."
-      postulateSimple="Est-ce que les mêmes indicateurs statistiques qui détectent une fébrilité avant une bascule sociale ou une disruption de plasma mesurée détectent aussi l'approche d'un seuil d'ignition dans un vrai modèle physique réduit -- pas une donnée mesurée, pas une analogie, une vraie équation de bilan de puissance ?"
-      postulateExpert="Réplication du même moteur que H1 (variance/AC1 glissantes + test par données de substitution, §5.1/5.4) sur la température d'un modèle 0-D de bilan de puissance (Freidberg 2007 ; Wesson 2004) intégré par Euler-Maruyama, chauffage externe ramené lentement au-delà du seuil critique -- une bifurcation nœud-col bien réelle (le critère de Lawson, 1957), même structure mathématique que celle déjà validée pour H1 au §5.6quater/quinquies du Journal de recherche, mais ici sans transposition sociale (§7quater)."
+      summary="À quel moment précis un plasma de fusion s'embrase-t-il tout seul ? Sur 10 réalisations d'un modèle réduit de physique des plasmas (bilan de puissance 0-D, critère de Lawson) qui traversent le seuil critique, les 10 montrent un signal précurseur -- mais aucune des 10 réalisations de contrôle (chauffage sous le seuil) ne déclenche de faux positif. Même moteur statistique que le reste du projet (variance, autocorrélation, test par données de substitution), ni donnée réelle mesurée (contrairement à Fusion) ni analogie sociale (contrairement à H4)."
+      postulateSimple="Est-ce que l'approche d'un seuil d'ignition -- le moment où un plasma de fusion s'auto-entretient -- se détecte statistiquement avant d'être franchi, dans un vrai modèle physique réduit (pas une donnée mesurée, pas une analogie, une vraie équation de bilan de puissance) ?"
+      postulateExpert="Réplication du moteur statistique du reste du projet (variance/AC1 glissantes + test par données de substitution, §5.1/5.4) sur la température d'un modèle 0-D de bilan de puissance (Freidberg 2007 ; Wesson 2004) intégré par Euler-Maruyama, chauffage externe ramené lentement au-delà du seuil critique -- une bifurcation nœud-col bien réelle (le critère de Lawson, 1957), même structure mathématique que celle déjà validée pour le domaine Société au §5.6quater/quinquies du Journal de recherche, mais ici sans transposition sociale (§7quater)."
       resultText={
         <>
           <dl className="signal-stats">
@@ -165,10 +167,9 @@ export default function PlasmaModeleResult() {
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche (même protocole que H1)" }}
     >
       <p className="lede">
-        Troisième domaine d'application, distinct des hypothèses socio-territoriales (H1-H5) et du module
-        Fusion (données réelles de tokamak, §7ter) : le même moteur de détection statistique, sans aucune
-        branche spécifique, appliqué à une température simulée par un vrai modèle réduit de physique des
-        plasmas -- pas une nouvelle méthode, une réplication sur un troisième domaine.
+        Domaine Fusion nucléaire, aux côtés du module Fusion (données réelles de tokamak) : une température
+        simulée par un vrai modèle réduit de physique des plasmas, jamais combinée aux résultats d'un autre
+        domaine ou module dans un même verdict.
       </p>
 
       <div className="simulation-banner">
