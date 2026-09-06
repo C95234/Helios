@@ -115,6 +115,30 @@ class H2Response(BaseModel):
     )
 
 
+class H2VariableResult(BaseModel):
+    """Un indicateur territorial réel testé pour H2 (réseau réel vs grille de
+    contrôle) -- au-delà du seul chômage, cf. `routers/h2.py` `VARIABLES`."""
+
+    key: str
+    label: str
+    n_periods: int
+    period_start: str
+    period_end: str
+    real_trend: TrendTestOut
+    grid_trend: TrendTestOut
+    outcome: str  # "favorable" | "against" | "neutral"
+
+
+class H2AggregateResponse(BaseModel):
+    n_variables_tested: int
+    n_favorable: int
+    n_against: int
+    n_neutral: int
+    results: list[H2VariableResult]
+    errors: list[str]
+    verdict_simple: str
+
+
 class ConnectorInfo(BaseModel):
     name: str
     label: str

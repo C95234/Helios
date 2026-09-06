@@ -8,8 +8,8 @@
 export const SCORECARD = [
   { dim: "Rigueur statistique", verdict: "strong", label: "Solide", note: "Chaque indicateur vérifié contre une valeur de référence (statsmodels, calcul à la main) à ±1e-6. Tests par substitution/permutation, pas de p-value « brute »." },
   { dim: "Honnêteté scientifique", verdict: "strong", label: "Très solide", note: "Aucun verdict « confirmée » forcé. Une erreur de raisonnement gardée visible plutôt qu'effacée. H4 jamais confondue avec un test statistique." },
-  { dim: "Couverture des tests", verdict: "mixed", label: "Correcte, mais limitée", note: "6 phénomènes pour H1/H3 (curatés à la main), une seule série pour H2. Sous le seuil de significativité pratique d'un vrai échantillon." },
-  { dim: "Résultats obtenus", verdict: "weak", label: "Majoritairement négatifs", note: "Aucune des 3 hypothèses réelles n'est confirmée sur ce round. H1 va même à l'encontre du sens attendu dans 5 cas sur 6." },
+  { dim: "Couverture des tests", verdict: "mixed", label: "Correcte, mais limitée", note: "6 phénomènes pour H1/H3 (curatés à la main), 5 variables réelles pour H2 (chômage, défaillances, logements, créations, population). Sous le seuil de significativité pratique d'un vrai échantillon." },
+  { dim: "Résultats obtenus", verdict: "weak", label: "Majoritairement négatifs", note: "Aucune des 3 hypothèses réelles n'est confirmée sur ce round. H1 va à l'encontre du sens attendu dans 5 cas sur 6, H2 dans 3 des 5 variables testées." },
   { dim: "Reproductibilité", verdict: "strong", label: "Bonne", note: "46 tests automatisés, scripts de recherche versionnés, déviations documentées dans le code lui-même, pas seulement en prose." },
   { dim: "Fidélité au cahier des charges", verdict: "mixed", label: "Presque complète", note: "§1-§7bis, §9, §11-§12 couverts. §8 (comptes, PostgreSQL, JWT) volontairement non implémenté -- écart assumé, pas oublié." },
 ];
@@ -23,7 +23,7 @@ export const STRENGTHS = [
 ];
 
 export const WEAKNESSES = [
-  { title: "Échantillon petit et curaté, structurellement", text: "6 phénomènes pour H1/H3, choisis à la main. Même au-dessus du seuil de 5 épisodes, ce n'est pas un échantillon représentatif. H2 n'a qu'une seule série testable." },
+  { title: "Échantillon petit et curaté, structurellement", text: "6 phénomènes pour H1/H3, choisis à la main. Même au-dessus du seuil de 5 épisodes, ce n'est pas un échantillon représentatif. H2 teste désormais 5 variables réelles, mais sur le même territoire et à peu près la même période -- pas 5 systèmes indépendants." },
   { title: "Aucune des trois hypothèses réelles n'est soutenue par ce round", text: "C'est un résultat honnête, pas un problème de méthode -- mais ça reste la conclusion factuelle. Le projet démontre une méthode rigoureuse plus qu'il ne prouve la thèse qu'il teste." },
   { title: "La calibration H3 reste un problème de recherche ouvert", text: "Le bootstrap couplé par période est une adaptation raisonnable, mais pas la méthode originale (surrogates à phase aléatoire couplés) -- contourné plutôt que résolu." },
   { title: "La reproduction du protocole de recherche est qualitative, pas exacte", text: "Sans script original, la calibration a dû être devinée puis ajustée empiriquement (87,5% contre 80/90% documentés) -- dans le bon sens, pas une validation au chiffre près." },

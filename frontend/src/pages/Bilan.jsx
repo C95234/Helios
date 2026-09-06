@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { SCORECARD, STRENGTHS, WEAKNESSES, CONCLUSION } from "../data/bilanProjet.js";
-import { H1_SUMMARY, H2_RESULT, H3_SUMMARY, H4_SUMMARY, H5_RESULT, FUSION_RESULT, PLASMA_RESULT } from "../data/bilanPublie.js";
+import { H1_SUMMARY, H2_AGGREGATE, H3_SUMMARY, H4_SUMMARY, H5_RESULT, FUSION_RESULT, PLASMA_RESULT } from "../data/bilanPublie.js";
 import { POSITIONING_SHORT } from "../data/positionnement.js";
 
 export default function Bilan() {
@@ -34,8 +34,8 @@ export default function Bilan() {
             <span>H1 favorable</span>
           </div>
           <div className="agg-stat">
-            <span className="agg-number">non sig.</span>
-            <span>H2 tendance (τ={H2_RESULT.realNetwork.trendTau})</span>
+            <span className="agg-number">{H2_AGGREGATE.nAgainst}/{H2_AGGREGATE.nVariablesTested}</span>
+            <span>H2 défavorables (5 variables réelles)</span>
           </div>
           <div className="agg-stat">
             <span className="agg-number">{H3_SUMMARY.favorable}/{H3_SUMMARY.nCalculable}</span>

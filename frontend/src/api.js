@@ -22,6 +22,7 @@ export const api = {
   testH1: (phenomenon) => getJson(`/hypotheses/h1?phenomenon=${phenomenon}`),
   testH1Aggregate: () => getJson(`/hypotheses/h1/aggregate?n_surrogates=100`),
   testH2: () => getJson(`/hypotheses/h2`),
+  testH2Aggregate: () => getJson(`/hypotheses/h2/aggregate?n_surrogates=300`),
   testH3: (phenomenon) => getJson(`/hypotheses/h3?phenomenon=${phenomenon}`),
   simulateH4: (params) => getJson(`/hypotheses/h4?${new URLSearchParams(params).toString()}`),
   testH5: () => getJson(`/hypotheses/h5`),

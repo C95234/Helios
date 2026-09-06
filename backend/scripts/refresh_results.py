@@ -36,7 +36,7 @@ from fastapi import HTTPException
 
 from app.phenomena import PHENOMENA
 from app.routers.fusion import test_fusion_aggregate
-from app.routers.h2 import test_h2
+from app.routers.h2 import test_h2, test_h2_aggregate
 from app.routers.h3 import test_h3
 from app.routers.h5 import test_h5
 from app.routers.hypotheses import test_h1_aggregate
@@ -92,6 +92,21 @@ async def refresh_h1() -> None:
     _write_if_ok("h1", {"phenomena": phenomena, "summary": summary})
 
 
+def _h2_aggregate_verdict(agg) -> str:
+    """Meme seuils que la phrase de verdict deja calculee dans
+    test_h2_aggregate (routers/h2.py) -- traduits ici en un statut court
+    pour le badge de la page, faute d'un endroit commun entre le script
+    Python et le frontend JS (meme limite deja documentee pour Fusion)."""
+    n = len(agg.results)
+    if n == 0:
+        return "neutral"
+    if agg.n_favorable > agg.n_against and agg.n_favorable >= n / 2:
+        return "favorable"
+    if agg.n_against > agg.n_favorable and agg.n_against >= n / 2:
+        return "against"
+    return "neutral"
+
+
 async def refresh_h2() -> None:
     print("H2...")
     # Les valeurs par defaut des routers sont des objets fastapi.Query --
@@ -140,7 +155,35 @@ async def refresh_h2() -> None:
         "real": r.real_network.moran_series.values,
         "grid": r.control_grid.moran_series.values,
     }
-    _write_if_ok("h2", {"result": result, "moranSeries": moran_series})
+
+    agg = await test_h2_aggregate(n_surrogates=500)
+    aggregate = {
+        "nVariablesTested": agg.n_variables_tested,
+        "nFavorable": agg.n_favorable,
+        "nAgainst": agg.n_against,
+        "nNeutral": agg.n_neutral,
+        "verdict": _h2_aggregate_verdict(agg),
+        "verdictSimple": agg.verdict_simple,
+        "errors": agg.errors,
+        "variables": [
+            {
+                "key": v.key,
+                "label": v.label,
+                "nPeriods": v.n_periods,
+                "periodStart": v.period_start,
+                "periodEnd": v.period_end,
+                "realTau": round(v.real_trend.observed_tau, 3) if v.real_trend.observed_tau is not None else None,
+                "realP": round(v.real_trend.p_value, 3) if v.real_trend.p_value is not None else None,
+                "realSig": v.real_trend.significant_at_0_05,
+                "gridTau": round(v.grid_trend.observed_tau, 3) if v.grid_trend.observed_tau is not None else None,
+                "gridP": round(v.grid_trend.p_value, 3) if v.grid_trend.p_value is not None else None,
+                "gridSig": v.grid_trend.significant_at_0_05,
+                "outcome": v.outcome,
+            }
+            for v in agg.results
+        ],
+    }
+    _write_if_ok("h2", {"result": result, "moranSeries": moran_series, "aggregate": aggregate})
 
 
 async def refresh_h3() -> None:

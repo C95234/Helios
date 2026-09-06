@@ -26,6 +26,7 @@ export const H1_REFRESHED_AT = h1.refreshedAt;
 
 export const H2_RESULT = h2.result;
 export const H2_MORAN_SERIES = h2.moranSeries;
+export const H2_AGGREGATE = h2.aggregate;
 export const H2_REFRESHED_AT = h2.refreshedAt;
 
 export const H3_PHENOMENA = h3.phenomena;
