@@ -31,6 +31,17 @@ export default function Methode() {
           </Link>
         </div>
         <div className="hypothesis-card">
+          <h3>Réseaux de Hopfield et groupes sociaux</h3>
+          <p>
+            Analogie pédagogique avec un des modèles fondateurs du deep learning (Hopfield, prix Nobel de
+            physique 2024) -- mémoire associative, attracteurs, perte de stabilité, pour éclairer la logique
+            du logiciel du roman. Ne sert de base à aucun module H1-H5, Fusion ou Plasma.
+          </p>
+          <Link to="/methode/hopfield-social" className="hypothesis-status-link">
+            Lire le cours →
+          </Link>
+        </div>
+        <div className="hypothesis-card">
           <h3>Bibliographie complète</h3>
           <p>Toutes les références citées dans le projet, exactes -- jamais un nom d'auteur seul.</p>
           <Link to="/methode/bibliographie" className="hypothesis-status-link">

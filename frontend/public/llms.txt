@@ -30,6 +30,7 @@ territoires agrégés.
 
 - [Cours de statistiques appliquées](/methode/cours-statistiques): définitions, démonstrations complètes et exercices corrigés pour chaque outil statistique utilisé (variance, corrélation, tests par permutation, tau de Kendall, indice de Moran, méthode de Fisher/Brown, loi de puissance).
 - [Des suites au ralentissement critique](/methode/suites-ralentissement-critique): construction progressive du modèle mathématique depuis les suites numériques de terminale.
+- [Réseaux de Hopfield et groupes sociaux](/methode/hopfield-social): analogie pédagogique avec un modèle fondateur du deep learning (Hopfield, prix Nobel de physique 2024) pour éclairer la logique du logiciel du roman -- mémoire associative, attracteurs, perte de stabilité. Ne sert de base à aucun module H1-H5, Fusion ou Plasma.
 - [Bibliographie complète](/methode/bibliographie): toutes les références citées, jamais un nom d'auteur seul.
 
 ## Journal de recherche
