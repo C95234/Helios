@@ -12,6 +12,8 @@ territoires agrégés.
 ## Positionnement scientifique
 
 - [Ce que le projet apporte à la recherche](/positionnement): réplication, résultats négatifs, outil réutilisable, médiation scientifique — et ce que le projet n'apporte pas.
+- [Contribution à ewstools (outil open source)](/positionnement/ewstools): indicateur spatial (indice de Moran) et combinaison d'indicateurs corrélés (méthode empirique de Brown), absents du paquet de référence pour les signaux précurseurs. Code et tests développés et vérifiés (21 tests, 0 régression), statut à jour affiché sur la page (jamais présentée comme soumise ou fusionnée avant de l'être réellement).
+- [hopfieldkit — paquet Python publié](/positionnement/hopfieldkit): apprentissage hebbien, démonstration de convergence, théorie de la capacité, diagnostics des limites connues (attracteurs parasites, dépendance à l'ordre), et un second mode d'apprentissage par descente de gradient comparé empiriquement à la règle de Hebb (Gardner 1988). 22 tests. Code complet, pas encore publié sur PyPI, développé en paquet autonome faute d'outil de référence équivalent existant pour les réseaux de Hopfield en Python. Lié à la page du domaine Mémoire collective, pas un doublon.
 
 ## Domaine — Société
 

@@ -232,4 +232,7 @@ export const BIBLIOGRAPHY = [
   "Lawson, J. D. (1957). « Some Criteria for a Power Producing Thermonuclear Reactor. » Proceedings of the Physical Society B, 70(1), 6–10.",
   "Freidberg, J. P. (2007). Plasma Physics and Fusion Energy. Cambridge University Press.",
   "Bosch, H.-S., & Hale, G. M. (1992). « Improved formulas for fusion cross-sections and thermal reactivities. » Nuclear Fusion, 32(4), 611–631.",
+  "Bury, T. M. (2023). « ewstools: A Python package for early warning signals of bifurcations in time series data. » Journal of Open Source Software, 8(82), 5038.",
+  "Gardner, E. (1988). « The space of interactions in neural network models. » Journal of Physics A, 21(1), 257–270.",
+  "Diederich, S., & Opper, M. (1987). « Learning of correlated patterns in spin-glass networks by local learning rules. » Physical Review Letters, 58(9), 949–952.",
 ];

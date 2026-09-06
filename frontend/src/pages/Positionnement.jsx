@@ -38,6 +38,38 @@ export default function Positionnement() {
         <p>{NOT_A_DISCOVERY}</p>
       </section>
 
+      <section>
+        <h2>Deux contributions concrètes</h2>
+        <p>
+          Le pilier « un outil de recherche réutilisable » ci-dessus ne reste pas une affirmation abstraite :
+          deux preuves concrètes, de nature différente.
+        </p>
+        <div className="card-list">
+          <div className="bilan-card">
+            <h3>
+              <Link to="/positionnement/ewstools">Contribution à ewstools (outil open source)</Link>
+            </h3>
+            <p>
+              Indicateur spatial (indice de Moran) et combinaison d'indicateurs corrélés (méthode empirique de
+              Brown), absents du paquet de référence pour les signaux précurseurs. Code et tests développés
+              et vérifiés, statut de soumission tenu à jour honnêtement -- jamais présentée comme soumise ou
+              fusionnée avant de l'être réellement.
+            </p>
+          </div>
+          <div className="bilan-card">
+            <h3>
+              <Link to="/positionnement/hopfieldkit">hopfieldkit -- paquet Python</Link>
+            </h3>
+            <p>
+              Apprentissage hebbien, démonstration de convergence, théorie de la capacité, diagnostics des
+              limites connues, et un second mode d'apprentissage par descente de gradient comparé
+              empiriquement à la règle de Hebb (Gardner 1988). Code complet et testé, développé en paquet
+              autonome faute d'outil de référence équivalent existant pour les réseaux de Hopfield en Python.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <p className="text-muted">
         Voir aussi <Link to="/bilan">le Bilan</Link> pour la synthèse points forts / points faibles, et{" "}
         <Link to="/resultats">Résultats</Link> pour le détail par hypothèse.

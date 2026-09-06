@@ -109,6 +109,84 @@ ce positionnement en une ou deux phrases.
 
 ---
 
+## 1ter. Preuve du pilier "outil réutilisable" — deux contributions concrètes
+
+**Ce que c'est** : le pilier 3 du §1bis ("un outil de recherche
+réutilisable") ne doit pas rester une affirmation abstraite — il existe
+deux preuves concrètes, de nature différente, à documenter sur le
+site : une contribution à un outil existant, et un nouveau paquet
+publié pour combler un vide constaté.
+
+### 1ter.1 Contribution à `ewstools`
+
+Deux modules ont été développés pour combler un manque identifié dans
+`ewstools` (bibliothèque Python de référence pour les signaux
+précurseurs, publiée dans le *Journal of Open Source Software*) : un
+indicateur spatial (indice de Moran, absent du paquet) et une
+combinaison d'indicateurs corrélés (méthode empirique de Brown, absente
+aussi). 13 tests ajoutés, tous passants, aucune régression sur les 44
+tests existants du paquet.
+
+**Page dédiée à créer** (liée depuis la page "Positionnement
+scientifique", §1bis) :
+1. Ce qui a été identifié comme manquant et pourquoi (contenu de
+   `CONTRIBUTION_spatial_significance.md`).
+2. Le code et les tests, avec lien vers le dépôt (fork public).
+3. Les pistes d'usage déjà rédigées (recherche, industrie, services
+   publics).
+4. **Un statut affiché honnêtement et tenu à jour**, jamais présenté
+   comme acquis avant de l'être réellement :
+   - `Soumis (pull request ouverte)` — dès que la PR est envoyée ;
+   - `En attente de revue` — tant que le mainteneur n'a pas répondu ;
+   - `Accepté` / `Fusionné` — seulement une fois réellement mérgé dans
+     le dépôt officiel `ThomasMBury/ewstools` ;
+   - `Non retenu` — si c'est le cas, affiché sans être masqué, avec la
+     raison si elle a été donnée.
+
+**Garde-fou** : tant que la pull request n'est pas fusionnée par le
+mainteneur officiel, le site ne doit jamais dire que la contribution
+"fait partie" d'`ewstools` — seulement qu'elle est disponible via le
+fork (`pip install git+https://github.com/<compte>/ewstools.git@<branche>`),
+utilisable immédiatement par Hélios ou par quiconque, indépendamment de
+la décision du mainteneur.
+
+### 1ter.2 Le paquet `hopfieldkit`
+
+Contrairement à `ewstools` (contribution à un outil dominant existant),
+le paysage des réseaux de Hopfield en Python est fragmenté — une
+dizaine de petits projets isolés, sans tests ni documentation
+comparables. `hopfieldkit` a donc été publié comme paquet autonome
+plutôt que comme contribution : apprentissage hebbien, démonstration de
+convergence, théorie de la capacité (bornes de Hopfield 1982 et
+Amit-Gutfreund-Sompolinsky 1985), diagnostics des limites connues
+(attracteurs parasites, dépendance à l'ordre de mise à jour), **et**
+un second mode d'apprentissage par descente de gradient (règle de type
+perceptron, Gardner 1988 ; Diederich & Opper 1987), avec comparaison
+empirique de capacité entre les deux méthodes d'apprentissage. 19 tests,
+tous passants.
+
+**Page dédiée à créer**, même structure que 1ter.1, avec un statut
+adapté à la nature différente de cette contribution (pas de mainteneur
+tiers à attendre) :
+- `Code complet, non encore publié` — tant que le paquet n'est que sur
+  le dépôt local/GitHub du projet ;
+- `Publié sur PyPI` — une fois `pip install hopfieldkit` réellement
+  fonctionnel publiquement.
+
+**Lien croisé obligatoire** : cette page doit être liée depuis la page
+de résultat du domaine "Mémoire collective" (module Hopfield, voir
+cahier des charges de visibilité) — le même code y est utilisé pour la
+démonstration pédagogique, ce paquet en est la version généralisée et
+publiable, pas un doublon indépendant.
+
+**Garde-fou commun aux deux contributions** : Hélios n'a jamais dépendu
+d'`ewstools` ni d'un paquet externe pour le module Hopfield — les deux
+implémentations propres existent déjà dans le produit (§5, §6, §5.8/5.9).
+Ces deux contributions sont un geste séparé vers la communauté de
+recherche, jamais présentées comme une dépendance technique du produit.
+
+---
+
 ## 2. Page d'accueil
 
 **Objectif** : donner envie de comprendre, sans exiger de bagage
@@ -949,6 +1027,17 @@ pas seulement documentés :
       plasmas, pas une simulation de réacteur" partout où il apparaît,
       et ses résultats ne sont jamais combinés à ceux du §7ter (données
       réelles de tokamak) ni du domaine socio-territorial.
+- [ ] La page dédiée à la contribution `ewstools` (§1ter.1) affiche un
+      statut à jour (soumis / en attente / accepté / non retenu),
+      jamais présenté comme fusionné avant de l'être réellement.
+- [ ] La page dédiée au paquet `hopfieldkit` (§1ter.2) affiche un
+      statut à jour (code complet / publié sur PyPI), et renvoie vers
+      la page de résultat du domaine Mémoire collective sans la
+      dupliquer.
+- [ ] Aucune page du site n'affirme qu'Hélios dépend d'`ewstools` ou
+      d'`hopfieldkit` pour fonctionner — les deux sont présentées comme
+      un geste séparé vers la communauté, jamais comme une dépendance
+      technique.
 
 ---
 

@@ -46,6 +46,11 @@ export default function HopfieldResult() {
           <p className="text-muted">
             Détail complet, démonstrations et exercices corrigés : <Link to="/methode/hopfield">cours Hopfield</Link>.
           </p>
+          <p className="text-muted">
+            Ce même code est aussi généralisé en un paquet Python autonome, testé, à part :{" "}
+            <Link to="/positionnement/hopfieldkit">hopfieldkit</Link> -- un geste vers la communauté, pas une
+            dépendance de ce module.
+          </p>
         </>
       }
       methodLink={{ to: "/methode/hopfield", label: "Voir la démonstration complète (convergence, capacité de mémoire)" }}

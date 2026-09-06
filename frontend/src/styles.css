@@ -1154,6 +1154,29 @@ code {
   color: var(--color-text-muted);
 }
 
+.status-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 100px;
+}
+
+.status-badge--favorable {
+  background: #e8f2ec;
+  color: var(--color-calm);
+}
+
+.status-badge--against {
+  background: #fbeae5;
+  color: var(--color-warn);
+}
+
+.status-badge--neutral {
+  background: #faf1de;
+  color: var(--color-mid);
+}
+
 .series-chart-legend {
   display: flex;
   gap: 1rem;

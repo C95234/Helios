@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
 import Positionnement from "./pages/Positionnement.jsx";
+import EwstoolsContribution from "./pages/EwstoolsContribution.jsx";
+import HopfieldkitPackage from "./pages/HopfieldkitPackage.jsx";
 import Comprendre from "./pages/Comprendre.jsx";
 import Resultats from "./pages/Resultats.jsx";
 import H1Result from "./pages/resultats/H1Result.jsx";
@@ -31,6 +33,8 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/positionnement" element={<Positionnement />} />
+        <Route path="/positionnement/ewstools" element={<EwstoolsContribution />} />
+        <Route path="/positionnement/hopfieldkit" element={<HopfieldkitPackage />} />
         <Route path="/comprendre" element={<Comprendre />} />
         <Route path="/resultats" element={<Resultats />} />
         <Route path="/resultats/h1" element={<H1Result />} />

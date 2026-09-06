@@ -417,4 +417,6 @@ export const HOPFIELD_REFERENCES = [
   "Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). « Storing infinite numbers of patterns in a spin-glass model of neural networks. » Physical Review Letters, 55(14).",
   "McCulloch, W. S., & Pitts, W. (1943). « A logical calculus of the ideas immanent in nervous activity. » Bulletin of Mathematical Biophysics, 5.",
   "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). « Learning representations by back-propagating errors. » Nature, 323, 533-536.",
+  "Gardner, E. (1988). « The space of interactions in neural network models. » Journal of Physics A, 21(1), 257–270.",
+  "Diederich, S., & Opper, M. (1987). « Learning of correlated patterns in spin-glass networks by local learning rules. » Physical Review Letters, 58(9), 949–952.",
 ];
