@@ -283,11 +283,30 @@ main {
   margin: 0.35rem 0;
 }
 
-.result-expert code {
+.code-block {
+  background: #f0efe9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+code {
   background: #f0efe9;
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
   font-size: 0.85rem;
+}
+
+.code-block code {
+  background: none;
+  padding: 0;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  white-space: pre;
+  color: var(--color-text);
 }
 
 .gauge {

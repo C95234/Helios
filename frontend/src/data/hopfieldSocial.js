@@ -306,6 +306,109 @@ export const HOPFIELD_SECTIONS = [
       },
     ],
   },
+  {
+    id: "code-annote",
+    number: 6,
+    title: "Le code annoté : comment le réseau apprend et restitue",
+    blocks: [
+      {
+        type: "remarque",
+        body: [
+          {
+            text: "Deux phases reviennent, sous une forme ou une autre, dans presque tout système d'IA : une phase d'APPRENTISSAGE (fixer les paramètres d'un modèle à partir de données déjà observées) et une phase de RESTITUTION -- ou inférence -- (utiliser ces paramètres pour reconstruire ou prédire quelque chose de nouveau). Le réseau de Hopfield est un cas particulièrement simple et entièrement calculable à la main des deux : voici le code réel (`backend/scripts/hopfield_social.py`), annoté ligne par ligne -- extrait simplifié, sans le compteur d'historique utilisé uniquement pour tracer le graphique du §5.",
+          },
+        ],
+      },
+      {
+        type: "code",
+        title: "Phase d'apprentissage -- règle de Hebb (méthode train)",
+        body: [
+          {
+            code: `def train(self, patterns):
+    # ENTREE : une liste de configurations deja observees (les "donnees
+    # d'entrainement") -- ici, des etats sociaux passes, chacun un
+    # vecteur de +1/-1 de taille N.
+    self.W = np.zeros((self.n, self.n))  # les parametres du modele : une
+                                          # matrice de liens, tous a zero au depart
+
+    for xi in patterns:
+        # Pour CHAQUE configuration observee, on ajoute sa "signature"
+        # a la matrice : produit exterieur xi . xi^T -- chaque paire
+        # (i, j) de territoires recoit +1 si i et j etaient dans le
+        # meme etat pour cette configuration, -1 sinon.
+        self.W += np.outer(xi, xi)
+
+    self.W /= self.n             # normalisation (le signal ne doit pas
+                                  # exploser avec le nombre de territoires)
+    np.fill_diagonal(self.W, 0)  # un territoire n'a pas de lien avec lui-meme
+
+    # SORTIE : self.W contient desormais TOUT ce que le reseau "sait" --
+    # aucune iteration, aucune descente de gradient : une seule somme.`,
+          },
+        ],
+      },
+      {
+        type: "exemple",
+        title: "Ce que le réseau apprend, concrètement",
+        body: [
+          {
+            text: "C'est exactement le calcul déjà fait à la main au §2 : avec les deux configurations « société apaisée » et « fracture nord-sud », la boucle `for xi in patterns` produit $w_{12}=w_{34}=0{,}5$ et les autres liens à $0$ -- le réseau a « appris » que les territoires 1-2 évoluent toujours ensemble, et 3-4 aussi, sans qu'on le lui dise explicitement : c'est une conséquence directe de la somme des produits extérieurs.",
+          },
+        ],
+      },
+      {
+        type: "code",
+        title: "Phase de restitution -- mise à jour asynchrone (méthode recall)",
+        body: [
+          {
+            code: `def recall(self, s, max_steps=200, ...):
+    # ENTREE : un etat s, potentiellement incomplet ou corrompu --
+    # l'equivalent d'un signal partiel, un "indice" a partir duquel
+    # retrouver la configuration complete.
+    s = s.copy()
+    order = np.arange(self.n)
+
+    for step in range(max_steps):
+        rng.shuffle(order)   # un territoire mis a jour a la fois, dans
+                              # un ordre remelange a chaque passage
+        changed = False
+        for i in order:
+            h_i = self.W[i] @ s        # "avis" collectif des autres
+                                        # territoires sur l'etat de i,
+                                        # via les liens APPRIS ci-dessus
+            new_si = 1 if h_i >= 0 else -1
+            if new_si != s[i]:
+                s[i] = new_si
+                changed = True
+        if not changed:      # plus personne ne change d'avis :
+            break             # un etat stable est atteint
+
+    return s
+    # SORTIE : la configuration la plus proche, PARMI CELLES APPRISES,
+    # de l'etat de depart -- la memoire "restituee".`,
+          },
+        ],
+      },
+      {
+        type: "exemple",
+        title: "Comment le réseau restitue, concrètement",
+        body: [
+          {
+            text: "C'est exactement l'exemple déjà traité au §3 : à partir du signal corrompu $(-1,+1,-1,-1)$, la boucle `for i in order` recalcule $h_1=0{,}5\\ge0$, bascule $s_1$ à $+1$, puis ne change plus rien -- `recall` renvoie $(+1,+1,-1,-1)$, exactement « fracture nord-sud », avec une énergie passée de $0$ à $-1$. Rien n'est « deviné » : chaque territoire suit uniquement la règle `new_si = 1 if h_i >= 0 else -1`, appliquée aux liens appris à l'étape précédente.",
+          },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Ce que ce mécanisme n'est pas",
+        body: [
+          {
+            text: "L'apprentissage par une somme directe (une seule passe, sans itération) est un cas particulier et historique. La plupart des systèmes d'IA modernes (réseaux profonds, grands modèles de langage) apprennent différemment : par descente de gradient, en ajustant progressivement des millions de paramètres pour réduire une erreur mesurée sur des exemples, au fil de milliers d'itérations (rétropropagation du gradient, Rumelhart, Hinton & Williams, 1986). Le point commun reste la structure en deux phases -- apprentissage puis restitution/inférence -- mais le COMMENT diffère profondément. Le réseau de Hopfield est choisi ici précisément parce que son apprentissage est visible et calculable à la main (§2), contrairement à un réseau profond entraîné par gradient.",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const HOPFIELD_REFERENCES = [
@@ -313,4 +416,5 @@ export const HOPFIELD_REFERENCES = [
   "Hopfield, J. J. (1982). « Neural networks and physical systems with emergent collective computational abilities. » PNAS, 79(8).",
   "Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). « Storing infinite numbers of patterns in a spin-glass model of neural networks. » Physical Review Letters, 55(14).",
   "McCulloch, W. S., & Pitts, W. (1943). « A logical calculus of the ideas immanent in nervous activity. » Bulletin of Mathematical Biophysics, 5.",
+  "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). « Learning representations by back-propagating errors. » Nature, 323, 533-536.",
 ];

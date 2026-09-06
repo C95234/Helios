@@ -8,12 +8,20 @@ const TYPE_LABEL = {
   remarque: "Remarque",
   exemple: "Exemple corrigé",
   exercice: "Exercice",
+  code: "Code annoté",
 };
 
 function BlockBody({ body }) {
   return (
     <>
       {body.map((item, i) => {
+        if (item.code) {
+          return (
+            <pre className="code-block" key={i}>
+              <code>{item.code}</code>
+            </pre>
+          );
+        }
         if (item.table) {
           return (
             <div className="table-scroll" key={i}>

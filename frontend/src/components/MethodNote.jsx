@@ -1,18 +1,17 @@
 import { METHODS } from "../data/methods.js";
 import Math from "./Math.jsx";
 
-/** Découpe un texte contenant des segments $...$ et rend chacun en LaTeX inline. */
+/** Découpe un texte contenant des segments $...$ (LaTeX inline) et `...` (code
+ * inline) et rend chacun avec le composant approprié. */
 export function TextWithMath({ text }) {
-  const parts = text.split(/(\$[^$]+\$)/g);
+  const parts = text.split(/(\$[^$]+\$|`[^`]+`)/g);
   return (
     <>
-      {parts.map((part, i) =>
-        part.startsWith("$") && part.endsWith("$") ? (
-          <Math key={i} tex={part.slice(1, -1)} />
-        ) : (
-          <span key={i}>{part}</span>
-        )
-      )}
+      {parts.map((part, i) => {
+        if (part.startsWith("$") && part.endsWith("$")) return <Math key={i} tex={part.slice(1, -1)} />;
+        if (part.startsWith("`") && part.endsWith("`")) return <code key={i}>{part.slice(1, -1)}</code>;
+        return <span key={i}>{part}</span>;
+      })}
     </>
   );
 }
