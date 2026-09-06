@@ -43,8 +43,10 @@ export const EWSTOOLS_STATUS = {
 };
 
 export const EWSTOOLS_INFO = {
-  status: "developpe_non_soumis",
+  status: "soumis",
   repoUrl: "https://github.com/ThomasMBury/ewstools",
+  forkUrl: "https://github.com/C95234/ewstools/tree/helios-spatial-and-ebm",
+  pullRequestUrl: "https://github.com/ThomasMBury/ewstools/pull/482",
   packageName: "ewstools",
   summary:
     "Deux modules développés pour combler un manque identifié dans ewstools (bibliothèque Python de référence pour les signaux précurseurs, publiée dans le Journal of Open Source Software) : un indicateur spatial (indice de Moran, absent du paquet) et une combinaison de p-values corrélées (méthode empirique de Brown, absente aussi).",
@@ -67,7 +69,7 @@ export const HOPFIELDKIT_STATUS = {
 export const HOPFIELDKIT_INFO = {
   status: "code_complet_non_publie",
   packageName: "hopfieldkit",
-  repoUrl: null,
+  repoUrl: "https://github.com/C95234/hopfieldkit",
   summary:
     "Apprentissage hebbien, démonstration de convergence, théorie de la capacité (bornes de Hopfield 1982 et Amit-Gutfreund-Sompolinsky 1985), diagnostics des limites connues (attracteurs parasites, dépendance à l'ordre de mise à jour), et un second mode d'apprentissage par descente de gradient façon perceptron (Gardner 1988 ; Diederich & Opper 1987), avec comparaison empirique de capacité entre les deux méthodes.",
   nTests: 22,

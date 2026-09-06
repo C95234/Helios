@@ -51,9 +51,8 @@ export default function Positionnement() {
             </h3>
             <p>
               Indicateur spatial (indice de Moran) et combinaison d'indicateurs corrélés (méthode empirique de
-              Brown), absents du paquet de référence pour les signaux précurseurs. Code et tests développés
-              et vérifiés, statut de soumission tenu à jour honnêtement -- jamais présentée comme soumise ou
-              fusionnée avant de l'être réellement.
+              Brown), absents du paquet de référence pour les signaux précurseurs. Pull request soumise,
+              en attente de revue -- jamais présentée comme fusionnée avant de l'être réellement.
             </p>
           </div>
           <div className="bilan-card">

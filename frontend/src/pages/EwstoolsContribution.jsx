@@ -49,7 +49,8 @@ export default function EwstoolsContribution() {
         </dl>
         <p className="text-muted">
           Détail complet du manque identifié et de la démarche : <code>CONTRIBUTION_spatial_significance.md</code>{" "}
-          dans le dépôt de la contribution.
+          dans le dépôt de la contribution. Code source :{" "}
+          <a href={EWSTOOLS_INFO.forkUrl} target="_blank" rel="noreferrer">fork (branche helios-spatial-and-ebm)</a>.
         </p>
       </section>
 
@@ -67,8 +68,8 @@ export default function EwstoolsContribution() {
         <p>
           Tant que la pull request n'est pas fusionnée par le mainteneur officiel de <code>ewstools</code>, ce
           site ne dit jamais que cette contribution « fait partie » du paquet -- seulement qu'elle est
-          développée et testée, disponible dès que la démarche de soumission aura lieu. Le statut ci-dessus
-          (« {status.label} ») reflète l'état réel, pas un objectif.
+          soumise et en attente de revue. Le statut ci-dessus (« {status.label} ») reflète l'état réel, pas un
+          objectif : <a href={EWSTOOLS_INFO.pullRequestUrl} target="_blank" rel="noreferrer">voir la pull request</a>.
         </p>
         <p className="text-muted">
           Hélios n'a jamais dépendu d'<code>ewstools</code> : son propre indice de Moran et sa propre logique

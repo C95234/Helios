@@ -48,6 +48,9 @@ export default function HopfieldkitPackage() {
             <dd>{HOPFIELDKIT_INFO.nTests}, tous passants</dd>
           </div>
         </dl>
+        <p className="text-muted">
+          Code source : <a href={HOPFIELDKIT_INFO.repoUrl} target="_blank" rel="noreferrer">{HOPFIELDKIT_INFO.repoUrl}</a>.
+        </p>
       </section>
 
       <section>
