@@ -67,9 +67,10 @@ export const HOPFIELDKIT_STATUS = {
 };
 
 export const HOPFIELDKIT_INFO = {
-  status: "code_complet_non_publie",
+  status: "publie_pypi",
   packageName: "hopfieldkit",
   repoUrl: "https://github.com/C95234/hopfieldkit",
+  pypiUrl: "https://pypi.org/project/hopfieldkit/",
   summary:
     "Apprentissage hebbien, démonstration de convergence, théorie de la capacité (bornes de Hopfield 1982 et Amit-Gutfreund-Sompolinsky 1985), diagnostics des limites connues (attracteurs parasites, dépendance à l'ordre de mise à jour), et un second mode d'apprentissage par descente de gradient façon perceptron (Gardner 1988 ; Diederich & Opper 1987), avec comparaison empirique de capacité entre les deux méthodes.",
   nTests: 22,

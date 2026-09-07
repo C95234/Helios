@@ -47,9 +47,9 @@ export default function HopfieldResult() {
             Détail complet, démonstrations et exercices corrigés : <Link to="/methode/hopfield">cours Hopfield</Link>.
           </p>
           <p className="text-muted">
-            Ce même code est aussi généralisé en un paquet Python autonome, testé, à part :{" "}
-            <Link to="/positionnement/hopfieldkit">hopfieldkit</Link> -- un geste vers la communauté, pas une
-            dépendance de ce module.
+            Ce même code est aussi généralisé et publié séparément en paquet Python autonome, testé, sur
+            PyPI : <Link to="/positionnement/hopfieldkit">hopfieldkit</Link> -- un geste vers la communauté,
+            pas une dépendance de ce module.
           </p>
         </>
       }

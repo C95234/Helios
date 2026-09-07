@@ -62,8 +62,9 @@ export default function Positionnement() {
             <p>
               Apprentissage hebbien, démonstration de convergence, théorie de la capacité, diagnostics des
               limites connues, et un second mode d'apprentissage par descente de gradient comparé
-              empiriquement à la règle de Hebb (Gardner 1988). Code complet et testé, développé en paquet
-              autonome faute d'outil de référence équivalent existant pour les réseaux de Hopfield en Python.
+              empiriquement à la règle de Hebb (Gardner 1988). Publié sur PyPI (<code>pip install
+              hopfieldkit</code>) faute d'outil de référence équivalent existant pour les réseaux de Hopfield
+              en Python.
             </p>
           </div>
         </div>

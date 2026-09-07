@@ -50,6 +50,8 @@ export default function HopfieldkitPackage() {
         </dl>
         <p className="text-muted">
           Code source : <a href={HOPFIELDKIT_INFO.repoUrl} target="_blank" rel="noreferrer">{HOPFIELDKIT_INFO.repoUrl}</a>.
+          Paquet : <a href={HOPFIELDKIT_INFO.pypiUrl} target="_blank" rel="noreferrer">{HOPFIELDKIT_INFO.pypiUrl}</a> --{" "}
+          <code>pip install hopfieldkit</code>.
         </p>
       </section>
 
@@ -65,9 +67,8 @@ export default function HopfieldkitPackage() {
       <section>
         <h2>Statut, tenu à jour honnêtement</h2>
         <p>
-          Ce site ne dit jamais que <code>hopfieldkit</code> est publié tant que <code>pip install
-          hopfieldkit</code> n'est pas réellement fonctionnel publiquement. Le statut ci-dessus (« {status.label} »)
-          reflète l'état réel.
+          <code>pip install hopfieldkit</code> est réellement fonctionnel publiquement depuis la version 0.1.0.
+          Le statut ci-dessus (« {status.label} ») reflète l'état réel, pas un objectif.
         </p>
         <p className="text-muted">
           Hélios n'a jamais dépendu de ce paquet pour son propre module Mémoire collective -- ce paquet en est
