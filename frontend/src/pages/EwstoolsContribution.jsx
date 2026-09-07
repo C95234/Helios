@@ -55,6 +55,52 @@ export default function EwstoolsContribution() {
       </section>
 
       <section>
+        <h2>Aperçu du code</h2>
+        <p className="text-muted"><code>ewstools/spatial.py</code></p>
+        <pre className="code-block">
+          <code>{`def morans_i(values, weights) -> float:
+    """I = (N / S0) * [sum_ij w_ij (x_i - xbar)(x_j - xbar)] / [sum_i (x_i - xbar)^2]"""
+    x = np.asarray(values, dtype=float)
+    w = np.asarray(weights, dtype=float)
+    deviations = x - x.mean()
+    s0 = w.sum()
+    numerator = deviations @ w @ deviations
+    denominator = (deviations**2).sum()
+    return float((len(x) / s0) * (numerator / denominator))
+
+
+class SpatialEWS:
+    """Suit les conventions data -> state -> ews de MultiTimeSeries."""
+
+    def compute_moran(self):
+        df_pre = self._pre_transition()
+        self.ews["morans_i"] = df_pre.apply(
+            lambda row: morans_i(row.to_numpy(), self.weights), axis=1
+        )`}</code>
+        </pre>
+        <p className="text-muted"><code>ewstools/pvalues.py</code></p>
+        <pre className="code-block">
+          <code>{`def combine_pvalues_ebm(data, p_values) -> dict:
+    """Empirical Brown's Method (Poole et al., 2016)."""
+    chi2_fisher = -2.0 * np.sum(np.log(np.clip(p_values, 1e-15, 1.0)))
+    corr = np.corrcoef(data, rowvar=False)
+
+    # Brown (1975) polynomial approximation of Cov(-2 ln p_i, -2 ln p_j)
+    cov_sum = sum(
+        corr[i, j] * (3.263 + corr[i, j] * (0.710 + corr[i, j] * 0.027))
+        for i in range(k) for j in range(i + 1, k)
+    )
+    var_fisher = 4 * k + 2 * cov_sum
+    c = var_fisher / (2 * 2 * k)          # method-of-moments scale factor
+    df_ebm = 2 * (2 * k) ** 2 / var_fisher
+    return {"p_combined": chi2.sf(chi2_fisher / c, df_ebm), ...}`}</code>
+        </pre>
+        <p className="text-muted">
+          Code complet, commenté et testé : voir le fork lié ci-dessus.
+        </p>
+      </section>
+
+      <section>
         <h2>Pistes d'usage</h2>
         <ul>
           {EWSTOOLS_INFO.usageAngles.map((angle) => (

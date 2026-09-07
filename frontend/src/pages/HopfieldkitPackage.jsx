@@ -56,6 +56,46 @@ export default function HopfieldkitPackage() {
       </section>
 
       <section>
+        <h2>Aperçu du code</h2>
+        <p className="text-muted"><code>hopfieldkit/hebbian.py</code> -- apprentissage en un coup</p>
+        <pre className="code-block">
+          <code>{`class HopfieldNetwork(BaseHopfieldNetwork):
+    def fit(self, patterns):
+        """W = (1/n) * sum_mu (x^mu outer x^mu), diagonale annulée."""
+        w = np.zeros((self.n_units, self.n_units))
+        for pattern in patterns:
+            w += np.outer(pattern, pattern)
+        w /= self.n_units
+        np.fill_diagonal(w, 0.0)
+        self.weights = w
+        return self`}</code>
+        </pre>
+        <p className="text-muted"><code>hopfieldkit/perceptron.py</code> -- apprentissage itératif par marge (Gardner)</p>
+        <pre className="code-block">
+          <code>{`class PerceptronHopfieldNetwork(BaseHopfieldNetwork):
+    def fit(self, patterns, max_epochs=500, seed=None):
+        w = np.zeros((n, n))
+        for epoch in range(max_epochs):
+            for mu in rng.permutation(n_patterns):
+                x = patterns[mu]
+                stabilities = x * (w @ x)          # x_i * h_i pour chaque unite
+                violated = stabilities <= self.kappa
+                if not violated.any():
+                    continue
+                delta = (self.learning_rate / n) * np.outer(x, x)
+                np.fill_diagonal(delta, 0.0)
+                # symetrique par construction : voir la note du module
+                update_mask = violated[:, None] | violated[None, :]
+                w += delta * update_mask
+        self.weights = w
+        return self`}</code>
+        </pre>
+        <p className="text-muted">
+          Code complet, commenté et testé (théorie de la capacité, diagnostics) : voir le dépôt lié ci-dessus.
+        </p>
+      </section>
+
+      <section>
         <h2>Pistes d'usage</h2>
         <ul>
           {HOPFIELDKIT_INFO.usageAngles.map((angle) => (
