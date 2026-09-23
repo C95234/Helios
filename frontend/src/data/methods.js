@@ -235,4 +235,7 @@ export const BIBLIOGRAPHY = [
   "Bury, T. M. (2023). « ewstools: A Python package for early warning signals of bifurcations in time series data. » Journal of Open Source Software, 8(82), 5038.",
   "Gardner, E. (1988). « The space of interactions in neural network models. » Journal of Physics A, 21(1), 257–270.",
   "Diederich, S., & Opper, M. (1987). « Learning of correlated patterns in spin-glass networks by local learning rules. » Physical Review Letters, 58(9), 949–952.",
+  "Hebb, D. O. (1949). The Organization of Behavior.",
+  "Hopfield, J. J. (1982). « Neural networks and physical systems with emergent collective computational abilities. » PNAS, 79(8), 2554–2558.",
+  "Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). « Storing infinite numbers of patterns in a spin-glass model of neural networks. » Physical Review Letters, 55(14), 1530–1533.",
 ];

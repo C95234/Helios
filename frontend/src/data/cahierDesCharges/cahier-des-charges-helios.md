@@ -878,6 +878,61 @@ et jamais combiné aux deux autres domaines dans un même verdict.
 
 ---
 
+## 7quinquies. Domaine — Mémoire collective (Hopfield)
+
+**Ce qui manquait jusqu'ici** : contrairement à la Fusion nucléaire
+(§7ter, §7quater), qui a sa propre spécification complète, le domaine
+Mémoire collective n'existait que sous forme de contenu pédagogique
+(cours, démonstration numérique) et de paquet open source
+(`hopfieldkit`, §1ter.2) — jamais comme domaine de recherche formalisé
+au même titre que les deux autres. Cette section corrige l'oubli.
+
+**Positionnement** : comment un groupe reconnaît-il une configuration
+sociale déjà vécue, et combien de configurations distinctes peut-il
+retenir avant de les confondre ? Un réseau de Hopfield (Hopfield, 1982 ;
+prix Nobel de physique 2024) modélise cette mémoire associative par
+apprentissage hebbien — la même règle que celle évoquée dans le roman
+(\og{}les liens du graphe se renforcent quand une séquence se répète\fg{}).
+
+**Ce qui est testé, dans l'esprit des autres domaines** :
+1. **Mémoire et rappel** — reconnaître une configuration à partir d'un
+   signal partiel ou bruité.
+2. **Perte de stabilité d'un attracteur** — un signal précurseur d'un
+   genre différent de H1-H5 : pas une variance qui monte, mais un état
+   collectif qui cesse d'être un minimum stable (voir la démonstration
+   du cours joint, §"Bascule").
+3. **Limite de capacité** — combien de configurations un groupe de
+   taille N peut retenir avant que le rappel échoue (bornes de Hopfield
+   1982 et Amit-Gutfreund-Sompolinsky 1985, vérifiées empiriquement dans
+   `hopfieldkit`).
+
+**Statut, à afficher sans ambiguïté** : comme H4, ce domaine est une
+**démonstration pédagogique, non testée empiriquement sur données
+réelles** — jamais un verdict "confirmée/infirmée" comme H1-H3, H5, ou
+le module fusion (§7ter). Aucun test statistique de significativité
+n'est appliqué ici : c'est un modèle illustratif, pas une hypothèse
+testée sur des données socio-territoriales réelles.
+
+**Contenu à afficher sur la page de résultat de ce domaine** (gabarit
+habituel, mode simplifié/expert) :
+- La démonstration numérique déjà produite (mémoire, rappel, courbe de
+  capacité — voir `hopfieldkit`).
+- Les démonstrations mathématiques complètes en mode expert (fonction
+  d'énergie, preuve de convergence, dérivation de la capacité) —
+  contenu déjà rédigé dans le cours joint (*Réseaux de Hopfield et
+  groupes sociaux*), à intégrer tel quel plutôt que réécrit.
+- Un lien vers `hopfieldkit` (§1ter.2) comme implémentation de référence
+  réutilisable, sans dupliquer son contenu.
+
+**Garde-fou (identique aux deux autres domaines)** : jamais combiné aux
+résultats du domaine Société ni du domaine Fusion nucléaire dans un même
+verdict. Description de ce domaine ouverte sur sa propre question
+("comment un groupe se souvient-il..."), jamais sur une référence à un
+autre domaine en première phrase (règle du §0.1 du cahier des charges
+de visibilité).
+
+---
+
 ## 8. Architecture technique
 
 - **Backend** : Python (FastAPI), pandas/numpy/statsmodels/scipy pour les
@@ -1066,6 +1121,9 @@ exacte dans l'interface (mode expert), pas seulement d'un nom d'auteur :
 - Kuramoto, Y. (1975). "Self-entrainment of a population of coupled non-linear oscillators." In *International Symposium on Mathematical Problems in Theoretical Physics*, Lecture Notes in Physics, 39, 420–422.
 - Strogatz, S. H. (2000). "From Kuramoto to Crawford: exploring the onset of synchronization in populations of coupled oscillators." *Physica D*, 143(1-4), 1–20.
 - Popovych, O. V., & Tass, P. A. (2012). "Desynchronizing electrical and sensory coordinated reset neuromodulation." *Frontiers in Human Neuroscience*, 6, 58. — inspiration du principe de contrôle adaptatif utilisé pour H4, transposé ici en simulation, pas appliqué tel quel.
+- Hebb, D. O. (1949). *The Organization of Behavior*. — règle d'apprentissage citée au §7quinquies (domaine Mémoire collective).
+- Hopfield, J. J. (1982). "Neural networks and physical systems with emergent collective computational abilities." *PNAS*, 79(8), 2554–2558. — modèle fondateur du domaine Mémoire collective (§7quinquies), prix Nobel de physique 2024.
+- Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). "Storing infinite numbers of patterns in a spin-glass model of neural networks." *Physical Review Letters*, 55(14), 1530–1533. — borne de capacité citée au §7quinquies et dans `hopfieldkit`.
 
 **Règle de citation** : aucune formule ou démonstration affichée en mode
 expert ne doit apparaître sans la référence correspondante visible dans
