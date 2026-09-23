@@ -520,6 +520,15 @@ code {
   color: var(--color-sim);
 }
 
+.hypothesis-status--comparatif {
+  background: #eceafb;
+  border: 1px solid var(--color-sim);
+}
+
+.hypothesis-status--comparatif .hypothesis-status-label {
+  color: var(--color-sim);
+}
+
 .simulation-banner {
   display: flex;
   gap: 0.6rem;
@@ -1296,6 +1305,11 @@ code {
 }
 
 .verdict-banner--simulation {
+  background: #eceafb;
+  color: var(--color-sim);
+}
+
+.verdict-banner--comparatif {
   background: #eceafb;
   color: var(--color-sim);
 }

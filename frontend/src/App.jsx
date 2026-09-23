@@ -14,6 +14,7 @@ import H5Result from "./pages/resultats/H5Result.jsx";
 import FusionResult from "./pages/resultats/FusionResult.jsx";
 import PlasmaModeleResult from "./pages/resultats/PlasmaModeleResult.jsx";
 import HopfieldResult from "./pages/resultats/HopfieldResult.jsx";
+import IaVsStatistiquesResult from "./pages/resultats/IaVsStatistiquesResult.jsx";
 import Methode from "./pages/Methode.jsx";
 import CoursStatistiques from "./pages/CoursStatistiques.jsx";
 import SuitesRalentissement from "./pages/SuitesRalentissement.jsx";
@@ -45,6 +46,7 @@ export default function App() {
         <Route path="/resultats/fusion" element={<FusionResult />} />
         <Route path="/resultats/plasma-modele" element={<PlasmaModeleResult />} />
         <Route path="/resultats/hopfield" element={<HopfieldResult />} />
+        <Route path="/resultats/ia-vs-statistiques" element={<IaVsStatistiquesResult />} />
         <Route path="/methode" element={<Methode />} />
         <Route path="/methode/cours-statistiques" element={<CoursStatistiques />} />
         <Route path="/methode/suites-ralentissement-critique" element={<SuitesRalentissement />} />

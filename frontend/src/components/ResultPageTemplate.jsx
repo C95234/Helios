@@ -6,6 +6,7 @@ const VERDICT_LABEL = {
   neutral: "Non concluant",
   preliminary: "Préliminaire",
   simulation: "Non testée empiriquement",
+  comparatif: "Banc d'essai comparatif",
 };
 
 /**

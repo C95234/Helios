@@ -37,6 +37,23 @@ export const FUSION_DOMAIN_MODULES = [
   },
 ];
 
+/** Banc d'essai transversal (suite ewstools §3bis) -- n'appartient à aucun
+ * domaine, jamais combiné à un verdict de domaine. */
+export const BANC_ESSAI_MODULES = [
+  {
+    code: "IA",
+    catchyTitle: "Un signal précurseur se voit-il aussi bien à l'œil qu'appris par une machine ?",
+    title: "Indicateurs statistiques vs deep learning",
+    simple:
+      "Sur les mêmes fenêtres de série brute, un classifieur entraîné détecte-t-il l'approche d'une bascule mieux qu'un indicateur statistique classique -- ou est-ce l'inverse ?",
+    expert:
+      "Comparaison, sur les deux modèles de bifurcation déjà construits pour Hélios (nœud-col, Kuramoto), d'un petit classifieur CNN 1D entraîné sur des données synthétiques face à l'indicateur statistique classique déjà utilisé partout ailleurs dans le projet -- taux de détection, délai d'anticipation, robustesse sur un grand nombre de graines de test.",
+    status: "comparatif",
+    statusNote: "Résultat asymétrique : le classifieur détecte aussi bien mais bien plus tôt que l'indicateur classique sur le nœud-col, alors qu'aucun des deux ne discrimine bien sur Kuramoto -- les deux sens du résultat sont rapportés sans favoriser l'un ou l'autre.",
+    link: { to: "/resultats/ia-vs-statistiques", label: "Voir le résultat" },
+  },
+];
+
 export const MEMOIRE_COLLECTIVE_MODULES = [
   {
     code: "Hopfield",

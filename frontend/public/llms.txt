@@ -32,6 +32,10 @@ territoires agrégés.
 
 - [Comment un groupe se souvient de ce qu'il a déjà vécu — mémoire collective (Hopfield)](/resultats/hopfield): comment un groupe reconnaît-il une situation déjà vécue, et combien de situations distinctes peut-il retenir avant de les confondre ? Le même principe mathématique a valu un prix Nobel de physique en 2024 (John Hopfield). Le mécanisme qui explique ici la perte de stabilité d'un souvenir collectif éclaire, sous un autre angle, ce qu'on observe aussi dans le domaine Société — une convergence entre deux domaines, pas une dépendance de l'un envers l'autre. Démonstration pédagogique (mémoire, mise en instabilité, limite de capacité), non testée empiriquement. Cours théorique complet en lien.
 
+## Banc d'essai transversal
+
+- [Un signal précurseur se voit-il aussi bien à l'œil qu'appris par une machine ?](/resultats/ia-vs-statistiques): un petit classifieur de deep learning (CNN 1D) entraîné sur des séries synthétiques, comparé à l'indicateur statistique classique déjà utilisé partout ailleurs dans le projet, sur les deux modèles de bifurcation déjà construits (nœud-col, Kuramoto) — taux de détection, délai d'anticipation, robustesse sur un grand nombre de graines de test. N'appartient à aucun des trois domaines, jamais combiné à leurs verdicts. Test de réplication comparative, pas une nouvelle méthode — les deux sens du résultat sont rapportés honnêtement.
+
 ## Méthode
 
 - [Cours de statistiques appliquées](/methode/cours-statistiques): définitions, démonstrations complètes et exercices corrigés pour chaque outil statistique utilisé (variance, corrélation, tests par permutation, tau de Kendall, indice de Moran, méthode de Fisher/Brown, loi de puissance).

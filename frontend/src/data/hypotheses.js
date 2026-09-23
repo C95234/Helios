@@ -77,4 +77,5 @@ export const STATUS_LABELS = {
   simulation: "Simulation pédagogique (pas un test statistique)",
   distribution: "Testable (test de distribution, pas un épisode)",
   "testable-batterie": "Testable (batterie curatée, données réelles)",
+  comparatif: "Banc d'essai comparatif (réplication, pas une nouvelle méthode)",
 };

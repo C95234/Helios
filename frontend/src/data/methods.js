@@ -238,4 +238,5 @@ export const BIBLIOGRAPHY = [
   "Hebb, D. O. (1949). The Organization of Behavior.",
   "Hopfield, J. J. (1982). « Neural networks and physical systems with emergent collective computational abilities. » PNAS, 79(8), 2554–2558.",
   "Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). « Storing infinite numbers of patterns in a spin-glass model of neural networks. » Physical Review Letters, 55(14), 1530–1533.",
+  "Bury, T. M., Sujith, R. I., Pavithran, I., Scheffer, M., Lenton, T. M., Anand, M., & Bauch, C. T. (2021). « Deep learning for early warning signals of tipping points. » Proceedings of the National Academy of Sciences, 118(39), e2106140118.",
 ];

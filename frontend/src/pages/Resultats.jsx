@@ -1,5 +1,5 @@
 import { HYPOTHESES } from "../data/hypotheses.js";
-import { FUSION_DOMAIN_MODULES, MEMOIRE_COLLECTIVE_MODULES } from "../data/domainModules.js";
+import { BANC_ESSAI_MODULES, FUSION_DOMAIN_MODULES, MEMOIRE_COLLECTIVE_MODULES } from "../data/domainModules.js";
 import HypothesisCard from "../components/HypothesisCard.jsx";
 
 export default function Resultats() {
@@ -56,6 +56,20 @@ export default function Resultats() {
         </p>
         <div className="hypotheses-list">
           {MEMOIRE_COLLECTIVE_MODULES.map((m) => (
+            <HypothesisCard key={m.code} hypothesis={m} />
+          ))}
+        </div>
+      </section>
+
+      <section id="banc-dessai" className="domain-section">
+        <h2>Banc d'essai transversal</h2>
+        <p className="domain-tagline">
+          Un signal précurseur se voit-il aussi bien à l'œil (indicateur statistique classique) qu'appris par
+          une machine (classifieur de deep learning) ? N'appartient à aucun des trois domaines ci-dessus,
+          jamais combiné à leurs verdicts.
+        </p>
+        <div className="hypotheses-list">
+          {BANC_ESSAI_MODULES.map((m) => (
             <HypothesisCard key={m.code} hypothesis={m} />
           ))}
         </div>
