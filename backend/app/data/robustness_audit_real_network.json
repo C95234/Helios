@@ -1,0 +1,22 @@
+{
+  "n_reps": 200,
+  "seed0": 5000,
+  "n_departments": 96,
+  "real_network_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 200,
+    "n_tipped": 200,
+    "n_precedence": 155,
+    "n_valid": 200,
+    "precedence_rate": 0.775
+  },
+  "real_network_contagion": {
+    "coupling": "contagion",
+    "n_reps": 200,
+    "n_tipped": 200,
+    "n_precedence": 155,
+    "n_valid": 200,
+    "precedence_rate": 0.775
+  },
+  "elapsed_seconds": 3596.5
+}

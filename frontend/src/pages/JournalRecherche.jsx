@@ -74,7 +74,8 @@ export default function JournalRecherche() {
           signaux sont réellement complémentaires plutôt qu'un simple décalage temporel l'un de l'autre. En
           simulation, sur toutes les configurations testées (anneau, réseau irrégulier, réseau réel des
           départements, deux régimes de couplage), le signal temporel précède le signal spatial dans une
-          nette majorité des cas (75% à 90% selon la configuration) -- jamais dans 100% des cas. Sur les 3
+          nette majorité des cas (73% à 80% selon la configuration, sur 200 réalisations Monte-Carlo par
+          configuration -- voir le point 8 sur l'audit de robustesse) -- jamais dans 100% des cas. Sur les 3
           seuls épisodes historiques réels disponibles, l'exception se manifeste concrètement : 2 précèdent
           par le temporel, 1 (les gilets jaunes de 2018) par le spatial. Cela n'invalide pas H3, mais en
           précise le sens attendu -- une tendance dominante, pas une règle absolue.{" "}

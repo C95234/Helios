@@ -1,0 +1,29 @@
+{
+  "n_reps": 200,
+  "seed0": 5000,
+  "ring_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 200,
+    "n_tipped": 200,
+    "n_precedence": 146,
+    "n_valid": 200,
+    "precedence_rate": 0.73
+  },
+  "ring_contagion": {
+    "coupling": "contagion",
+    "n_reps": 200,
+    "n_tipped": 200,
+    "n_precedence": 147,
+    "n_valid": 200,
+    "precedence_rate": 0.735
+  },
+  "irregular_diffusive": {
+    "coupling": "diffusive",
+    "n_reps": 200,
+    "n_tipped": 200,
+    "n_precedence": 159,
+    "n_valid": 200,
+    "precedence_rate": 0.795
+  },
+  "elapsed_seconds": 2486.9
+}

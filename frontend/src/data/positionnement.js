@@ -51,7 +51,7 @@ export const EWSTOOLS_INFO = {
   packageName: "ewstools",
   summary:
     "Un module développé pour combler un manque identifié dans ewstools (bibliothèque Python de référence pour les signaux précurseurs, publiée dans le Journal of Open Source Software) : un indicateur spatial (indice de Moran), absent du paquet.",
-  nTestsAdded: 15,
+  nTestsAdded: 19,
   nTestsExistingBaseline: 32,
   gapFound:
     "Recherche vérifiée en direct sur le dépôt réel avant tout code : ewstools couvre en détail la branche temporelle des signaux précurseurs (variance, autocorrélation, spectre...) mais ne contient aucune trace de « moran » ou « spatial » dans ses modules principaux.",

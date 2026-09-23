@@ -135,6 +135,32 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "audit-robustesse",
+    title: "8. Audit de robustesse -- les taux de précédence tenaient-ils sur plus de graines ?",
+    simple:
+      "Un relecteur externe d'une contribution logicielle liée à ce projet a trouvé un test qui ne passait que sur environ la moitié des essais aléatoires -- un signal qu'il fallait vérifier si d'autres résultats d'Hélios, mesurés sur peu de simulations (40 ou 20), tenaient aussi sur beaucoup plus d'essais. Réponse : le réseau réel tient bien (77,5% contre 75% annoncé), mais le réseau en anneau était surestimé -- 73%/73,5% contre les 80%/90% publiés au point 7, pas 90%.",
+    expertBlocks: [
+      {
+        text: "Déclencheur : une revue externe indépendante (sur une contribution au paquet ewstools, sans rapport direct avec ce module) a révélé qu'un test interne à ce paquet ne passait que sur 526/1000 graines aléatoires -- proche du hasard, malgré une apparence de test fiable sur une seule graine. Ceci a motivé une vérification du même type sur les résultats de précédence variance/Moran d'Hélios, qui n'avaient jamais été testés sur plus de 40 réalisations Monte-Carlo (20 pour le réseau réel).",
+      },
+      {
+        text: "Protocole : les points 5, 6 et 7 ci-dessus rejoués avec 200 réalisations indépendantes (contre 40 pour l'anneau/réseau irrégulier, 20 pour le réseau réel), mêmes paramètres, nouvelles graines (5000+).",
+      },
+      {
+        text: "Résultat sur l'anneau (N=40) : la précédence variance → Moran tombe à 73,0% (couplage diffusif) et 73,5% (couplage contagion) sur 200 réalisations, contre 80%/90% rapportés aux points 5-6 sur 40 réalisations. La conclusion qualitative (la variance précède plus souvent qu'elle ne suit) reste vraie, mais le chiffre annoncé était optimiste -- et l'écart apparent entre couplage diffusif et contagion (80% vs 90%), présenté au point 6 comme une preuve de robustesse au type de couplage, ne survit pas à l'échantillon plus grand : les deux couplages donnent en réalité un taux quasi identique (73,0% vs 73,5%), ce qui est en un sens un résultat plus solide -- le type de couplage n'a simplement pas d'effet mesurable sur ce taux, plutôt que d'avoir un effet différent selon le couplage comme le suggérait le chiffre à 40 réalisations.",
+      },
+      {
+        text: "Réseau irrégulier aléatoire (N=40, couplage diffusif) : 79,5% sur 200 réalisations, cohérent avec le 80% rapporté sur 40 au point 7 -- ce résultat-là tenait déjà.",
+      },
+      {
+        text: "Réseau réel des 96 départements : 77,5% pour les deux couplages sur 200 réalisations, cohérent avec le 75% rapporté sur seulement 20 réalisations au point 7 -- également stable, malgré le tout petit échantillon d'origine.",
+      },
+      {
+        text: "Constat retenu : ce n'est pas la taille du réseau ni la nature du couplage qui rendait le chiffre fragile, mais le nombre de réalisations Monte-Carlo à 40 pour l'anneau -- une leçon directement transposable à tout futur résultat de ce type (préférer 200 réalisations à 40 quand le temps de calcul le permet, comme fait ici : ~42 minutes pour l'anneau et l'irrégulier, ~60 minutes pour le réseau réel).",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */
