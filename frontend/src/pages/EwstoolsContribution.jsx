@@ -30,12 +30,10 @@ export default function EwstoolsContribution() {
       <section>
         <h2>Le code et les tests</h2>
         <p>
-          Deux nouveaux modules : un indicateur spatial (indice de Moran + test de significativité par
-          permutation, classe <code>SpatialEWS</code> suivant les conventions déjà en place dans le paquet), et
-          une combinaison de p-values corrélées (méthode empirique de Brown, Poole et al. 2016) --
-          implémentation réelle de l'algorithme publié, pas l'adaptation simplifiée qu'utilise Hélios en
-          interne pour son propre test H3 (voir <Link to="/methode/cours-statistiques">le cours de
-          statistiques</Link>, section « Statistique jointe H3 », qui documente honnêtement cette différence).
+          Un indicateur spatial (indice de Moran + test de significativité par permutation, classe{" "}
+          <code>SpatialEWS</code> suivant les conventions déjà en place dans le paquet), avec une
+          recette documentée de contrôle de tendance (retirer les motifs spatiaux qui se renforcent
+          lentement dans le temps, un artefact connu qui peut imiter un vrai signal précurseur).
         </p>
         <dl className="signal-stats">
           <div>
@@ -48,9 +46,8 @@ export default function EwstoolsContribution() {
           </div>
         </dl>
         <p className="text-muted">
-          Détail complet du manque identifié et de la démarche : <code>CONTRIBUTION_spatial_significance.md</code>{" "}
-          dans le dépôt de la contribution. Code source :{" "}
-          <a href={EWSTOOLS_INFO.forkUrl} target="_blank" rel="noreferrer">fork (branche helios-spatial-and-ebm)</a>.
+          Code source : <a href={EWSTOOLS_INFO.forkUrl} target="_blank" rel="noreferrer">fork (branche helios-spatial-and-ebm)</a>,{" "}
+          <a href={EWSTOOLS_INFO.pullRequestUrl} target="_blank" rel="noreferrer">pull request #482</a>.
         </p>
       </section>
 
@@ -74,29 +71,24 @@ class SpatialEWS:
 
     def compute_moran(self):
         df_pre = self._pre_transition()
-        self.ews["morans_i"] = df_pre.apply(
+        values = df_pre.apply(
             lambda row: morans_i(row.to_numpy(), self.weights), axis=1
-        )`}</code>
-        </pre>
-        <p className="text-muted"><code>ewstools/pvalues.py</code></p>
-        <pre className="code-block">
-          <code>{`def combine_pvalues_ebm(data, p_values) -> dict:
-    """Empirical Brown's Method (Poole et al., 2016)."""
-    chi2_fisher = -2.0 * np.sum(np.log(np.clip(p_values, 1e-15, 1.0)))
-    corr = np.corrcoef(data, rowvar=False)
-
-    # Brown (1975) polynomial approximation of Cov(-2 ln p_i, -2 ln p_j)
-    cov_sum = sum(
-        corr[i, j] * (3.263 + corr[i, j] * (0.710 + corr[i, j] * 0.027))
-        for i in range(k) for j in range(i + 1, k)
-    )
-    var_fisher = 4 * k + 2 * cov_sum
-    c = var_fisher / (2 * 2 * k)          # method-of-moments scale factor
-    df_ebm = 2 * (2 * k) ** 2 / var_fisher
-    return {"p_combined": chi2.sf(chi2_fisher / c, df_ebm), ...}`}</code>
+        )
+        self.ews["morans_i"] = values
+        # avertit si des NaN apparaissent (unite manquante a un instant)`}</code>
         </pre>
         <p className="text-muted">
           Code complet, commenté et testé : voir le fork lié ci-dessus.
+        </p>
+      </section>
+
+      <section>
+        <h2>Une vraie revue par un mainteneur -- ce qu'elle a changé</h2>
+        <p>{EWSTOOLS_INFO.reviewNote}</p>
+        <p className="text-muted">
+          Cette page documente le processus tel qu'il s'est déroulé, y compris la partie retirée --
+          dans le même esprit que le Journal de recherche : publier honnêtement, corrections
+          comprises, pas seulement le résultat final poli.
         </p>
       </section>
 
@@ -114,7 +106,7 @@ class SpatialEWS:
         <p>
           Tant que la pull request n'est pas fusionnée par le mainteneur officiel de <code>ewstools</code>, ce
           site ne dit jamais que cette contribution « fait partie » du paquet -- seulement qu'elle est
-          soumise et en attente de revue. Le statut ci-dessus (« {status.label} ») reflète l'état réel, pas un
+          soumise et en cours de revue. Le statut ci-dessus (« {status.label} ») reflète l'état réel, pas un
           objectif : <a href={EWSTOOLS_INFO.pullRequestUrl} target="_blank" rel="noreferrer">voir la pull request</a>.
         </p>
         <p className="text-muted">

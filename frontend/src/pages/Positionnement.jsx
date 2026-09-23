@@ -50,9 +50,9 @@ export default function Positionnement() {
               <Link to="/positionnement/ewstools">Contribution à ewstools (outil open source)</Link>
             </h3>
             <p>
-              Indicateur spatial (indice de Moran) et combinaison d'indicateurs corrélés (méthode empirique de
-              Brown), absents du paquet de référence pour les signaux précurseurs. Pull request soumise,
-              en attente de revue -- jamais présentée comme fusionnée avant de l'être réellement.
+              Indicateur spatial (indice de Moran), absent du paquet de référence pour les signaux
+              précurseurs. Revue détaillée reçue d'un mainteneur, corrections appliquées -- jamais
+              présentée comme fusionnée avant de l'être réellement.
             </p>
           </div>
           <div className="bilan-card">

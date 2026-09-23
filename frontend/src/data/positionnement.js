@@ -38,22 +38,25 @@ export const EWSTOOLS_STATUS = {
   developpe_non_soumis: { label: "Développé, pas encore soumis", tone: "neutral" },
   soumis: { label: "Soumis (pull request ouverte)", tone: "neutral" },
   en_attente: { label: "En attente de revue", tone: "neutral" },
+  revue_recue: { label: "Revue reçue, corrections appliquées", tone: "neutral" },
   fusionne: { label: "Accepté / Fusionné", tone: "favorable" },
   non_retenu: { label: "Non retenu", tone: "against" },
 };
 
 export const EWSTOOLS_INFO = {
-  status: "soumis",
+  status: "revue_recue",
   repoUrl: "https://github.com/ThomasMBury/ewstools",
   forkUrl: "https://github.com/C95234/ewstools/tree/helios-spatial-and-ebm",
   pullRequestUrl: "https://github.com/ThomasMBury/ewstools/pull/482",
   packageName: "ewstools",
   summary:
-    "Deux modules développés pour combler un manque identifié dans ewstools (bibliothèque Python de référence pour les signaux précurseurs, publiée dans le Journal of Open Source Software) : un indicateur spatial (indice de Moran, absent du paquet) et une combinaison de p-values corrélées (méthode empirique de Brown, absente aussi).",
-  nTestsAdded: 21,
+    "Un module développé pour combler un manque identifié dans ewstools (bibliothèque Python de référence pour les signaux précurseurs, publiée dans le Journal of Open Source Software) : un indicateur spatial (indice de Moran), absent du paquet.",
+  nTestsAdded: 15,
   nTestsExistingBaseline: 32,
   gapFound:
-    "Recherche vérifiée en direct sur le dépôt réel avant tout code : ewstools couvre en détail la branche temporelle des signaux précurseurs (variance, autocorrélation, spectre...) mais ne contient aucune trace de « moran », « spatial », « fisher » ou « brown » dans ses modules principaux.",
+    "Recherche vérifiée en direct sur le dépôt réel avant tout code : ewstools couvre en détail la branche temporelle des signaux précurseurs (variance, autocorrélation, spectre...) mais ne contient aucune trace de « moran » ou « spatial » dans ses modules principaux.",
+  reviewNote:
+    "Revue détaillée et positive de Bruce Stephenson (mainteneur du dépôt), avec vérification indépendante contre esda.moran.Moran et une campagne de mutation testing. Corrections déjà appliquées : un vrai bug corrigé (p-value de permutation pouvant tomber exactement à 0), de la documentation ajoutée (contrôle de tendance, mise en garde sur la matrice de poids), et le test initialement fragile renommé en témoin négatif explicite -- sa config a aussi été durcie (6x6/T=60/seuil 0,30, validée à 1000/1000 graines par les deux côtés indépendamment) plutôt que laissée telle quelle. Un second module (combinaison de p-values corrélées) a été retiré de cette contribution à la demande du relecteur : hors périmètre du paquet, et il contenait un vrai bug (anti-conservateur sous corrélation négative) et une erreur d'attribution (c'est la méthode de Kost & McDermott, pas celle de Brown) -- corrigés, gardés comme utilitaire local plutôt que republiés ici.",
   usageAngles: [
     "Recherche : toute étude de transition critique sur données spatialisées (écologie, épidémiologie, données socio-territoriales, réseaux de capteurs) gagne un outil de signal précurseur spatial dans le même paquet que l'outil temporel.",
     "Industrie / surveillance d'infrastructure : réseaux de capteurs (réseaux électriques, surveillance structurelle) produisent déjà exactement la forme de données attendue par le nouveau module.",
