@@ -49,7 +49,7 @@ export const BANC_ESSAI_MODULES = [
     expert:
       "Comparaison, sur les deux modèles de bifurcation déjà construits pour Hélios (nœud-col, Kuramoto), d'un petit classifieur CNN 1D (ré-entraîné 5 fois indépendamment, moyenne et écart-type rapportés) face à l'indicateur statistique COMPLET de H1 (variance et AC1, tau de Kendall, test par données de substitution) -- taux de détection, délai d'anticipation, faux positifs.",
     status: "comparatif",
-    statusNote: "Résultat asymétrique : sur le nœud-col, le classifieur détecte 100% des bascules réelles sans aucun faux positif (stable sur les 5 entraînements), contre 93% de détection et un taux de faux positifs élevé pour l'indicateur classique -- écart en partie imputable à un filtre de persistance pas encore recalibré pour ce nouvel indicateur (limite signalée, pas masquée). Sur Kuramoto, aucun des deux ne discrimine les vraies synchronisations des contrôles stables.",
+    statusNote: "Résultat asymétrique sur les modèles simulés : sur le nœud-col, le classifieur détecte 100% des bascules réelles sans aucun faux positif (stable sur les 5 entraînements), contre 93% de détection et un taux de faux positifs élevé pour l'indicateur classique -- écart en partie imputable à un filtre de persistance pas encore recalibré (limite signalée). Sur Kuramoto, aucun des deux ne discrimine les vraies synchronisations des contrôles stables. Appliqué aux données réelles de H1 (attention Wikipédia), le classifieur ne discrimine plus rien du tout (91-100% de fenêtres flaguées partout, y compris le contrôle négatif) -- la différence de domaine entre simulation et réel est totale, un résultat négatif rapporté tel quel.",
     link: { to: "/resultats/ia-vs-statistiques", label: "Voir le résultat" },
   },
 ];

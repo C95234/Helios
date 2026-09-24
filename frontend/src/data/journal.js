@@ -187,6 +187,29 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "cnn-sur-donnees-reelles",
+    title: "10. Le classifieur entraîné sur des modèles simulés ne généralise pas aux données réelles de H1",
+    simple:
+      "Le classifieur du banc d'essai IA vs statistiques, entraîné uniquement sur des trajectoires simulées (nœud-col, Kuramoto), a été appliqué aux 6 épisodes réels déjà testés pour H1 (attention Wikipédia). Résultat net : il flague 91 à 100% des fenêtres sur les 6 épisodes, y compris le contrôle négatif où H1 lui-même n'attend aucun signal -- un classifieur qui répond presque toujours « oui » n'apporte aucune information. Confirme que la difficulté vient de la différence de domaine (données simulées vs réelles), pas de la méthode.",
+    expertBlocks: [
+      {
+        text: "Question posée (cahier des charges dédié, §2.1), dans les deux sens honnêtement envisagés : un classifieur qui a appris une signature dynamique sur des modèles simulés généralise-t-il à un signal social réel -- ou la différence de domaine (échelle, bruit, nature du signal) le rend-elle inutilisable tel quel ?",
+      },
+      {
+        text: "Protocole : ensemble des 5 modèles déjà entraînés (Journal §1.1 du banc d'essai) sur les données simulées, fenêtre de 60 jours glissée (stride 1 jour) le long de l'attention Wikipédia combinée de chacun des 6 épisodes déjà testés pour H1, chaque fenêtre centrée-réduite par sa PROPRE moyenne/écart-type (adaptation nécessaire, la série Wikipédia n'ayant aucun rapport d'échelle avec les quantités simulées vues à l'entraînement).",
+      },
+      {
+        text: "Résultat mesuré : taux de fenêtres flaguées de 90,9% (confinement 2020) à 100% (gilets jaunes 2018, climat social récent, attentats 2015, attentat de Nice), probabilité moyenne comprise entre 0,75 et 0,91 partout. Le contrôle négatif explicite de H1 (« climat social récent », où aucun signal n'est attendu) est flagué à 100% -- exactement comme le seul cas favorable à H1 (attentats de 2015, 100% également). Aucune différence exploitable entre les épisodes.",
+      },
+      {
+        text: "Interprétation, honnête dans le sens où le résultat est tombé : ce n'est pas un échec de la méthode de deep learning en général, ni de l'indicateur statistique classique (qui reste interprétable et déjà testé séparément pour H1 sur ces mêmes données) -- c'est la conséquence attendue de transférer un classifieur d'un domaine (dynamique lisse et continue d'un système simulé proche d'une bifurcation) à un domaine radicalement différent (vues quotidiennes Wikipédia, bruitées, à sauts, sans rapport avec le mécanisme appris). Le cahier des charges envisageait explicitement ce résultat comme aussi informatif qu'un succès -- publié tel quel, sans arrondir.",
+      },
+      {
+        text: "Non fait : recalibrer ou ré-entraîner un classifieur directement sur des données réelles (changerait la question posée -- ici, il s'agissait de tester le TRANSFERT d'un classifieur entraîné sur la simulation, pas d'en entraîner un nouveau sur le réel) ; aucun filtre de persistance temporelle appliqué (contrairement à l'évaluation sur données simulées), calibrer un tel filtre pour des fenêtres quotidiennes très chevauchantes demanderait son propre travail, non fait ici.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
 import { IA_VS_STATS_ASYMMETRY_NOTE, IA_VS_STATS_GUARDRAIL, IA_VS_STATS_METHOD_NOTE, IA_VS_STATS_RESULT as R } from "../../data/iaVsStatistiques.js";
+import { IA_VS_STATS_REAL_H1 as REAL_H1, IA_VS_STATS_REAL_H1_NOTE, IA_VS_STATS_REAL_H1_RESULT_NOTE } from "../../data/iaVsStatsRealH1.js";
 
 function pct(x) {
   return x === null || x === undefined ? "n/a" : `${Math.round(x * 100)}%`;
@@ -93,6 +94,46 @@ function ModelComparisonTable({ title, simple, classical, cnn, nSeeds }) {
   );
 }
 
+function RealH1Extension() {
+  const { phenomena, nSeeds, windowLen } = REAL_H1;
+  return (
+    <>
+      <h3>Extension aux données réelles -- domaine Société (§2.1)</h3>
+      <p className="text-muted">
+        Le classifieur a appris à repérer une bascule sur des modèles simulés (nœud-col, Kuramoto) -- fait-il mieux
+        que rien du tout sur les mêmes épisodes réels qui ont déjà donné des résultats majoritairement négatifs pour
+        H1 ? Ensemble des {nSeeds} modèles (§1.1), fenêtre de {windowLen} jours glissée le long de l'attention
+        Wikipédia de chacun des 6 épisodes déjà testés pour H1 -- comparé, épisode par épisode, au verdict déjà
+        publié sur le signal social (nombre de signaux sociaux significatifs sur 3).
+      </p>
+      <p className="text-muted">{IA_VS_STATS_REAL_H1_NOTE}</p>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th>Phénomène</th>
+              <th>Classifieur (fenêtres flaguées)</th>
+              <th>Probabilité moyenne</th>
+              <th>H1 déjà publié (signal social)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {phenomena.map((p) => (
+              <tr key={p.key}>
+                <td>{p.label}</td>
+                <td>{p.error ? "n/a" : `${p.n_flagged}/${p.n_windows} (${Math.round(p.flagged_fraction * 100)}%)`}</td>
+                <td>{p.error ? p.error : p.mean_probability}</td>
+                <td>{p.h1_published ? `${p.h1_published.n_soc_sig}/${p.h1_published.n_soc} -- ${p.h1_published.outcome}` : "n/a"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-muted">{IA_VS_STATS_REAL_H1_RESULT_NOTE}</p>
+    </>
+  );
+}
+
 export default function IaVsStatistiquesResult() {
   const nTest = R.nTestSaddle + R.nTestKuramoto;
 
@@ -153,6 +194,8 @@ export default function IaVsStatistiquesResult() {
             {R.windowLen} pas de temps. Détail des {R.nSeeds} entraînements (perte initiale → finale, un par ligne)
             dans le fichier de résultat gelé (<code>frontend/src/data/results/ia_vs_stats.json</code>).
           </p>
+
+          <RealH1Extension />
         </>
       }
       methodLink={{ to: "/methode/cnn-deep-learning", label: "Voir la démonstration complète (convolution, rétropropagation, descente de gradient)" }}
@@ -164,7 +207,9 @@ export default function IaVsStatistiquesResult() {
         "Le classifieur est entraîné sur les deux modèles combinés, avec un seuil de décision unique (comme le ferait un utilisateur qui n'aurait pas de modèle spécifique à disposition) -- un classifieur entraîné spécifiquement sur un seul modèle ferait probablement mieux sur celui-ci, mais n'a pas été testé ici.",
         "Échelle réduite par rapport à la version idéale du protocole (jeu d'entraînement et de test plus petits que ce qu'un budget de calcul illimité permettrait) -- un compromis documenté pour que le ré-entraînement multi-graines (§1.1) reste exécutable en un temps raisonnable, pas une limite de méthode.",
         "Jamais combiné aux verdicts des trois domaines (Société, Fusion nucléaire, Mémoire collective) : ce banc d'essai est transversal, pas un module de plus dans l'un d'eux.",
+        "Extension aux données réelles (§2.1) : aucun filtre de persistance appliqué (contrairement à l'évaluation sur données simulées) -- le taux de fenêtres flaguées est un taux brut, fenêtre par fenêtre, pas un nombre d'alertes soutenues dans le temps. La normalisation par fenêtre (moyenne/écart-type propres à chaque fenêtre de 60 jours, plutôt que la normalisation globale du jeu d'entraînement) est une adaptation nécessaire pour un signal d'échelle complètement différente des séries simulées, pas une méthode validée par ailleurs.",
       ]}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (§10 -- extension aux données réelles)" }}
       showLiveSection={false}
     >
       <p className="lede">

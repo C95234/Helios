@@ -1,0 +1,111 @@
+{
+  "refreshedAt": "2026-09-24",
+  "nSeeds": 5,
+  "windowLen": 60,
+  "stride": 1,
+  "phenomena": [
+    {
+      "key": "gilets_jaunes_2018",
+      "label": "Mouvement social 2018 (« gilets jaunes »)",
+      "n_windows": 215,
+      "n_flagged": 215,
+      "flagged_fraction": 1.0,
+      "first_flagged_date": "2018-07-30",
+      "last_flagged_date": "2019-03-01",
+      "mean_probability": 0.9043,
+      "max_probability": 0.9886,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 3,
+        "n_soc": 3,
+        "outcome": "against"
+      }
+    },
+    {
+      "key": "confinement_2020",
+      "label": "Tension sanitaire 2020 (premier confinement)",
+      "n_windows": 77,
+      "n_flagged": 70,
+      "flagged_fraction": 0.9091,
+      "first_flagged_date": "2020-05-17",
+      "last_flagged_date": "2020-08-01",
+      "mean_probability": 0.7509,
+      "max_probability": 0.9216,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 0,
+        "n_soc": 3,
+        "outcome": "against"
+      }
+    },
+    {
+      "key": "chomage_recent",
+      "label": "Climat social recent (fenetre glissante la plus recente)",
+      "n_windows": 885,
+      "n_flagged": 885,
+      "flagged_fraction": 1.0,
+      "first_flagged_date": "2024-02-29",
+      "last_flagged_date": "2026-08-01",
+      "mean_probability": 0.856,
+      "max_probability": 0.9761,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 1,
+        "n_soc": 3,
+        "outcome": "against"
+      }
+    },
+    {
+      "key": "attentats_2015",
+      "label": "Attentats du 13 novembre 2015",
+      "n_windows": 155,
+      "n_flagged": 155,
+      "flagged_fraction": 1.0,
+      "first_flagged_date": "2015-09-29",
+      "last_flagged_date": "2016-03-01",
+      "mean_probability": 0.9076,
+      "max_probability": 0.983,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 2,
+        "n_soc": 3,
+        "outcome": "favorable"
+      }
+    },
+    {
+      "key": "reforme_retraites_2023",
+      "label": "Mouvement social contre la réforme des retraites 2023",
+      "n_windows": 77,
+      "n_flagged": 73,
+      "flagged_fraction": 0.9481,
+      "first_flagged_date": "2023-04-16",
+      "last_flagged_date": "2023-07-01",
+      "mean_probability": 0.7808,
+      "max_probability": 0.9902,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 2,
+        "n_soc": 3,
+        "outcome": "against"
+      }
+    },
+    {
+      "key": "attentat_nice_2016",
+      "label": "Attentat de Nice, juillet 2016",
+      "n_windows": 156,
+      "n_flagged": 156,
+      "flagged_fraction": 1.0,
+      "first_flagged_date": "2016-05-30",
+      "last_flagged_date": "2016-11-01",
+      "mean_probability": 0.8674,
+      "max_probability": 0.9778,
+      "cnn_detects_anything": true,
+      "h1_published": {
+        "n_soc_sig": 2,
+        "n_soc": 3,
+        "outcome": "against"
+      }
+    }
+  ],
+  "elapsedSeconds": 1289.0
+}
