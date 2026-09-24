@@ -43,6 +43,18 @@ export default function Methode() {
           </Link>
         </div>
         <div className="hypothesis-card">
+          <h3>Réseaux de neurones convolutifs et rétropropagation</h3>
+          <p>
+            Démonstration complète (convolution, passe avant sur un exemple jouet, rétropropagation et
+            descente de gradient) du classifieur utilisé dans le{" "}
+            <Link to="/resultats/ia-vs-statistiques">banc d'essai IA vs statistiques</Link> -- chaque calcul
+            vérifié par le code.
+          </p>
+          <Link to="/methode/cnn-deep-learning" className="hypothesis-status-link">
+            Lire le cours →
+          </Link>
+        </div>
+        <div className="hypothesis-card">
           <h3>Bibliographie complète</h3>
           <p>Toutes les références citées dans le projet, exactes -- jamais un nom d'auteur seul.</p>
           <Link to="/methode/bibliographie" className="hypothesis-status-link">

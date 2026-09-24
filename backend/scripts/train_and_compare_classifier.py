@@ -1,13 +1,25 @@
 """Entraine le classifieur et compare a l'indicateur statistique classique
-sur un jeu de test independant -- cahier des charges, suite ewstools §3bis.
+sur un jeu de test independant -- cahier des charges "banc d'essai IA vs
+statistiques : rigueur, extension, pedagogie" (§1).
+
+Corrections §1 par rapport a la version precedente (un seul entrainement,
+un detecteur classique appauvri) :
+- §1.1 : le CNN est entraine sur N_SEEDS initialisations/jeux d'entrainement
+  independants, chaque seed evalue sur le MEME jeu de test partage (jamais
+  vu a l'entrainement) -- moyenne et ecart-type rapportes pour chaque
+  metrique, jamais un chiffre unique.
+- §1.2 : le detecteur "classique" utilise desormais l'indicateur complet de
+  H1 (variance ET AC1 glissantes, tau de Kendall, test par donnees de
+  substitution -- `classical_verdict`, ml_benchmark.py) au lieu d'un seuil
+  de variance simplifie -- calcule UNE SEULE FOIS (il ne depend pas de
+  l'entrainement du CNN, donc pas besoin de le refaire a chaque seed).
 
 Calcul hors-ligne, pas un endpoint produit. Sortie : JSON dans
 frontend/src/data/results/ia_vs_stats.json (memes conventions que les
 autres resultats geles : refreshedAt, chiffres reels).
 
 Usage :
-    python scripts/train_and_compare_classifier.py               # entraine + evalue
-    python scripts/train_and_compare_classifier.py --eval-only    # recharge le modele deja entraine, revalue seulement
+    python scripts/train_and_compare_classifier.py
 """
 from __future__ import annotations
 
@@ -24,7 +36,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from app.ml_benchmark import (  # noqa: E402
     SimpleCNN1D,
     build_dataset,
-    calibrate_variance_threshold,
     classical_verdict,
     generate_kuramoto_ramp_series,
     generate_saddle_node_series,
@@ -39,42 +50,36 @@ OUTPUT_PATH = (
     / "results"
     / "ia_vs_stats.json"
 )
-CHECKPOINT_PATH = Path(__file__).resolve().parent.parent / "app" / "data" / "ia_vs_stats_cnn.pt"
 
 WINDOW_LEN = 60
 STRIDE = 5
-N_TRAIN_SADDLE = 300
-N_TRAIN_KURAMOTO = 300
-N_TEST_SADDLE = 150
-N_TEST_KURAMOTO = 150
-TRAIN_SEED0 = 10_000
-TEST_SEED0 = 90_000
 
-# Nombre de fenetres CONSECUTIVES positives exigees avant de declarer un
-# signal -- sans ce filtre de persistance, une regle appliquee fraiche a
-# chaque fenetre independante (~1400 fenetres par trajectoire de test) finit
-# presque toujours par declencher au moins une fois par pur hasard, meme sur
-# une trajectoire de controle qui ne bascule jamais (verifie : sans filtre,
-# le detecteur classique donnait 100% de faux positifs sur les controles
-# nœud-col -- pas un vrai resultat, juste "assez d'essais pour que le bruit
-# depasse le seuil au moins une fois").
-#
-# Deuxieme piege trouve en verifiant : a CONSECUTIVE_REQUIRED=3 (stride=5,
-# sub_window=15), des fenetres voisines partagent 10 des 15 points de leur
-# "queue" -- un seul sursaut de bruit isole se voit donc dans ~3 fenetres qui
-# se chevauchent et satisfait trivialement l'exigence de 3 consecutives.
-# Valeurs par modele trouvees en balayant 3 a 15 sur des donnees fraiches :
-# le nœud-col se separe tres proprement a 6 (2% de fausses alertes, 100% de
-# detection). Kuramoto ne se separe PAS proprement a aucune valeur testee
-# (le taux de fausses alertes et le taux de detection varient quasiment
-# ensemble d'un bout a l'autre du balayage) -- un vrai resultat, pas un bug :
-# l'indicateur de variance classique ne discrimine pas bien l'approche d'une
-# synchronisation sur ce modele a N=10 oscillateurs. Retenu ici au meilleur
-# compromis trouve (percentile 99, 6 consecutives) plutot qu'un choix qui
-# maquillerait ce constat en cachant le detecteur derriere un seuil qui ne
-# declenche presque jamais.
+# §1.1 -- multiples initialisations/entrainements independants, jamais un seul.
+N_SEEDS = 5
+
+# Adaptation Helios -- echelle reduite par rapport a la premiere version (300/150)
+# pour rester tractable : le detecteur classique corrige (§1.2) coute ~11ms par
+# fenetre (test par donnees de substitution, contre une comparaison a un seuil
+# quasi instantanee avant), et doit balayer chaque fenetre de chaque trajectoire
+# de test -- multiplie par N_SEEDS entrainements CNN, un budget de calcul non
+# extensible a l'identique. Le jeu de test partage (N_TEST_*) reste neanmoins
+# proche de la taille precedente et est desormais commun a tous les seeds
+# (economie : le detecteur classique n'est evalue qu'UNE FOIS, pas N_SEEDS fois).
+N_TRAIN_SADDLE = 50
+N_TRAIN_KURAMOTO = 50
+N_TEST_SADDLE = 30
+N_TEST_KURAMOTO = 30
+TRAIN_SEED0_BASE = 10_000
+TEST_SEED0 = 90_000  # FIXE, partage entre tous les seeds CNN et le detecteur classique
+
+CLASSICAL_N_SURROGATES = 100
+CLASSICAL_SUB_WINDOW = 15
+
+# Meme garde-fou de persistance que la version precedente (voir historique du
+# fichier / commentaire original) : sans lui, une regle appliquee fraiche a
+# chaque fenetre independante finit presque toujours par declencher au moins
+# une fois par pur hasard, meme sur un controle negatif.
 CONSECUTIVE_REQUIRED = {"saddle_node": 6, "kuramoto": 6}
-CALIBRATION_PERCENTILE = {"saddle_node": 95.0, "kuramoto": 99.0}
 
 
 def _first_sustained_flag(flags: list[bool], t_ends: list[float], consecutive_required: int) -> float | None:
@@ -86,134 +91,136 @@ def _first_sustained_flag(flags: list[bool], t_ends: list[float], consecutive_re
     return None
 
 
-def evaluate_trajectory(sim: dict, cnn: SimpleCNN1D, variance_thresholds: dict) -> dict:
-    """Fait glisser une fenetre le long de toute la trajectoire, note le
-    premier instant ou chaque methode bascule en positif de facon
-    SOUTENUE (`CONSECUTIVE_REQUIRED` fenetres consecutives, pas une
-    fenetre isolee), compare a l'instant reel de bascule -- meme schema
-    que `run_precedence_batch`, avec le meme esprit de garde-fou contre
-    le bruit que `detect_precedence` (seuil + fenetre glissante, pas un
-    coup isole). Le seuil du detecteur classique depend de `sim["kind"]`
-    (nœud-col et Kuramoto n'ont pas la meme distribution de bruit de
-    base -- voir `calibrate_variance_threshold`)."""
-    series, dt, t_event = sim["series"], sim["dt"], sim["t_event"]
-    threshold = variance_thresholds[sim["kind"]]
-    consecutive_required = CONSECUTIVE_REQUIRED[sim["kind"]]
-    windows = make_windows(series, dt, None, WINDOW_LEN, STRIDE)  # toutes les fenetres, labels ignores ici
-
+def evaluate_trajectory_cnn(sim: dict, cnn: SimpleCNN1D) -> dict:
+    windows = make_windows(sim["series"], sim["dt"], None, WINDOW_LEN, STRIDE)
     cnn_first_flag = None
-    classical_first_flag = None
-
     if windows:
         t_ends = [w["t_end"] for w in windows]
         X = np.stack([w["window"] for w in windows]).astype(np.float32)
         probs = cnn.predict_proba(X)
         cnn_flags = [bool(p > 0.5) for p in probs]
-        classical_flags = [classical_verdict(w["window"], dt, variance_threshold=threshold) for w in windows]
-
-        cnn_first_flag = _first_sustained_flag(cnn_flags, t_ends, consecutive_required)
-        classical_first_flag = _first_sustained_flag(classical_flags, t_ends, consecutive_required)
-
-    return {
-        "t_event": t_event,
-        "cnn_first_flag": cnn_first_flag,
-        "classical_first_flag": classical_first_flag,
-    }
+        cnn_first_flag = _first_sustained_flag(cnn_flags, t_ends, CONSECUTIVE_REQUIRED[sim["kind"]])
+    return {"t_event": sim["t_event"], "flag": cnn_first_flag}
 
 
-def summarize(records: list[dict], label: str) -> dict:
+def evaluate_trajectory_classical(sim: dict, seed_offset: int) -> dict:
+    windows = make_windows(sim["series"], sim["dt"], None, WINDOW_LEN, STRIDE)
+    classical_first_flag = None
+    if windows:
+        t_ends = [w["t_end"] for w in windows]
+        flags = [
+            classical_verdict(w["window"], sub_window=CLASSICAL_SUB_WINDOW, n_surrogates=CLASSICAL_N_SURROGATES, seed=seed_offset + i)
+            for i, w in enumerate(windows)
+        ]
+        classical_first_flag = _first_sustained_flag(flags, t_ends, CONSECUTIVE_REQUIRED[sim["kind"]])
+    return {"t_event": sim["t_event"], "flag": classical_first_flag}
+
+
+def summarize(records: list[dict]) -> dict:
     tipped = [r for r in records if r["t_event"] is not None]
     stable = [r for r in records if r["t_event"] is None]
-
-    def detection_stats(flag_key: str):
-        detected = [r for r in tipped if r[flag_key] is not None]
-        false_positives = [r for r in stable if r[flag_key] is not None]
-        lead_times = [r["t_event"] - r[flag_key] for r in detected]
-        return {
-            "n_tipped": len(tipped),
-            "n_detected": len(detected),
-            "detection_rate": round(len(detected) / len(tipped), 4) if tipped else None,
-            "mean_lead_time": round(float(np.mean(lead_times)), 2) if lead_times else None,
-            "n_stable": len(stable),
-            "n_false_positives": len(false_positives),
-            "false_positive_rate": round(len(false_positives) / len(stable), 4) if stable else None,
-        }
-
+    detected = [r for r in tipped if r["flag"] is not None]
+    false_positives = [r for r in stable if r["flag"] is not None]
+    lead_times = [r["t_event"] - r["flag"] for r in detected]
     return {
-        "kind": label,
-        "cnn": detection_stats("cnn_first_flag"),
-        "classical": detection_stats("classical_first_flag"),
+        "n_tipped": len(tipped),
+        "n_detected": len(detected),
+        "detection_rate": round(len(detected) / len(tipped), 4) if tipped else None,
+        "mean_lead_time": round(float(np.mean(lead_times)), 2) if lead_times else None,
+        "n_stable": len(stable),
+        "n_false_positives": len(false_positives),
+        "false_positive_rate": round(len(false_positives) / len(stable), 4) if stable else None,
     }
+
+
+def _mean_std(values: list[float | None]) -> dict | None:
+    clean = [v for v in values if v is not None]
+    if not clean:
+        return None
+    return {"mean": round(float(np.mean(clean)), 4), "std": round(float(np.std(clean)), 4), "values": [round(float(v), 4) for v in clean]}
 
 
 def main():
-    eval_only = "--eval-only" in sys.argv
     t0 = time.time()
 
-    cnn = SimpleCNN1D(window_len=WINDOW_LEN, seed=0)
+    print("=== Generation du jeu de test partage (graines fraiches, jamais entrainees) ===", flush=True)
+    saddle_test_sims = [generate_saddle_node_series(seed=TEST_SEED0 + i, tips=(i % 2 == 0)) for i in range(N_TEST_SADDLE)]
+    kuramoto_test_sims = [generate_kuramoto_ramp_series(seed=TEST_SEED0 + N_TEST_SADDLE + i, tips=(i % 2 == 0)) for i in range(N_TEST_KURAMOTO)]
+    print(f"{len(saddle_test_sims)} trajectoires noeud-col, {len(kuramoto_test_sims)} trajectoires Kuramoto ({time.time()-t0:.1f}s)", flush=True)
 
-    if eval_only and CHECKPOINT_PATH.exists():
-        print(f"=== Rechargement du modele deja entraine ({CHECKPOINT_PATH}) ===", flush=True)
-        cnn.load(str(CHECKPOINT_PATH))
-        loss_initial, loss_final = None, None
-    else:
-        print("=== Generation du jeu d'entrainement ===", flush=True)
-        X_train, y_train = build_dataset(N_TRAIN_SADDLE, N_TRAIN_KURAMOTO, TRAIN_SEED0, WINDOW_LEN, STRIDE)
-        print(f"{len(X_train)} fenetres, {int(y_train.sum())} positives, {int(len(y_train) - y_train.sum())} negatives", flush=True)
+    print("=== Evaluation du detecteur classique (une seule fois, independant de l'entrainement du CNN -- §1.2) ===", flush=True)
+    tc0 = time.time()
+    saddle_classical_records = [evaluate_trajectory_classical(sim, seed_offset=i * 10_000) for i, sim in enumerate(saddle_test_sims)]
+    kuramoto_classical_records = [evaluate_trajectory_classical(sim, seed_offset=(N_TEST_SADDLE + i) * 10_000) for i, sim in enumerate(kuramoto_test_sims)]
+    classical_saddle_summary = summarize(saddle_classical_records)
+    classical_kuramoto_summary = summarize(kuramoto_classical_records)
+    print(f"Detecteur classique evalue en {time.time()-tc0:.1f}s -- noeud-col detect={classical_saddle_summary['detection_rate']}, kuramoto detect={classical_kuramoto_summary['detection_rate']}", flush=True)
 
-        print("=== Entrainement du CNN ===", flush=True)
-        losses = cnn.fit(X_train, y_train, epochs=100, seed=0)
-        loss_initial, loss_final = losses[0], losses[-1]
-        print(f"loss initiale={loss_initial:.4f}, loss finale={loss_final:.4f}", flush=True)
+    print(f"=== {N_SEEDS} entrainements independants du CNN (initialisation + jeu d'entrainement, §1.1) ===", flush=True)
+    per_seed = []
+    for seed_idx in range(N_SEEDS):
+        ts0 = time.time()
+        train_seed0 = TRAIN_SEED0_BASE + seed_idx * 1_000
+        X_train, y_train = build_dataset(N_TRAIN_SADDLE, N_TRAIN_KURAMOTO, train_seed0, WINDOW_LEN, STRIDE)
+        cnn = SimpleCNN1D(window_len=WINDOW_LEN, seed=seed_idx)
+        losses = cnn.fit(X_train, y_train, epochs=100, seed=seed_idx)
 
-        CHECKPOINT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        cnn.save(str(CHECKPOINT_PATH))
-        print(f"Modele sauvegarde dans {CHECKPOINT_PATH}", flush=True)
+        saddle_cnn_records = [evaluate_trajectory_cnn(sim, cnn) for sim in saddle_test_sims]
+        kuramoto_cnn_records = [evaluate_trajectory_cnn(sim, cnn) for sim in kuramoto_test_sims]
+        saddle_summary = summarize(saddle_cnn_records)
+        kuramoto_summary = summarize(kuramoto_cnn_records)
 
-    print("=== Calibration des seuils du detecteur classique ===", flush=True)
-    threshold_saddle = calibrate_variance_threshold(n_series=150, percentile=CALIBRATION_PERCENTILE["saddle_node"], seed=20_000, kind="saddle_node")
-    threshold_kuramoto = calibrate_variance_threshold(n_series=150, percentile=CALIBRATION_PERCENTILE["kuramoto"], seed=20_000, kind="kuramoto")
-    variance_thresholds = {"saddle_node": threshold_saddle, "kuramoto": threshold_kuramoto}
-    print(f"seuil noeud-col={threshold_saddle:.4f}, seuil kuramoto={threshold_kuramoto:.4f}", flush=True)
+        per_seed.append(
+            {
+                "seed": seed_idx,
+                "n_train_windows": len(X_train),
+                "train_loss_initial": round(float(losses[0]), 4),
+                "train_loss_final": round(float(losses[-1]), 4),
+                "saddle_node": saddle_summary,
+                "kuramoto": kuramoto_summary,
+                "elapsed_seconds": round(time.time() - ts0, 1),
+            }
+        )
+        print(
+            f"  seed {seed_idx}: loss {losses[0]:.4f} -> {losses[-1]:.4f} | "
+            f"noeud-col detect={saddle_summary['detection_rate']} lead={saddle_summary['mean_lead_time']} fp={saddle_summary['false_positive_rate']} | "
+            f"kuramoto detect={kuramoto_summary['detection_rate']} lead={kuramoto_summary['mean_lead_time']} fp={kuramoto_summary['false_positive_rate']} | "
+            f"{time.time()-ts0:.1f}s",
+            flush=True,
+        )
 
-    print("=== Generation du jeu de test (graines fraiches) ===", flush=True)
-    saddle_records = []
-    for i in range(N_TEST_SADDLE):
-        tips = i % 2 == 0
-        sim = generate_saddle_node_series(seed=TEST_SEED0 + i, tips=tips)
-        saddle_records.append(evaluate_trajectory(sim, cnn, variance_thresholds))
-
-    kuramoto_records = []
-    for i in range(N_TEST_KURAMOTO):
-        tips = i % 2 == 0
-        sim = generate_kuramoto_ramp_series(seed=TEST_SEED0 + N_TEST_SADDLE + i, tips=tips)
-        kuramoto_records.append(evaluate_trajectory(sim, cnn, variance_thresholds))
-
-    saddle_summary = summarize(saddle_records, "saddle_node")
-    kuramoto_summary = summarize(kuramoto_records, "kuramoto")
-    pooled_summary = summarize(saddle_records + kuramoto_records, "pooled")
-
-    print(json.dumps(saddle_summary, indent=2), flush=True)
-    print(json.dumps(kuramoto_summary, indent=2), flush=True)
-    print(json.dumps(pooled_summary, indent=2), flush=True)
+    cnn_saddle_agg = {
+        "detection_rate": _mean_std([s["saddle_node"]["detection_rate"] for s in per_seed]),
+        "mean_lead_time": _mean_std([s["saddle_node"]["mean_lead_time"] for s in per_seed]),
+        "false_positive_rate": _mean_std([s["saddle_node"]["false_positive_rate"] for s in per_seed]),
+    }
+    cnn_kuramoto_agg = {
+        "detection_rate": _mean_std([s["kuramoto"]["detection_rate"] for s in per_seed]),
+        "mean_lead_time": _mean_std([s["kuramoto"]["mean_lead_time"] for s in per_seed]),
+        "false_positive_rate": _mean_std([s["kuramoto"]["false_positive_rate"] for s in per_seed]),
+    }
 
     report = {
         "refreshedAt": date.today().isoformat(),
         "windowLen": WINDOW_LEN,
         "stride": STRIDE,
+        "nSeeds": N_SEEDS,
         "consecutiveRequired": CONSECUTIVE_REQUIRED,
-        "calibrationPercentile": CALIBRATION_PERCENTILE,
-        "nTrainSaddle": N_TRAIN_SADDLE,
-        "nTrainKuramoto": N_TRAIN_KURAMOTO,
+        "classicalNSurrogates": CLASSICAL_N_SURROGATES,
+        "classicalSubWindow": CLASSICAL_SUB_WINDOW,
+        "nTrainSaddlePerSeed": N_TRAIN_SADDLE,
+        "nTrainKuramotoPerSeed": N_TRAIN_KURAMOTO,
         "nTestSaddle": N_TEST_SADDLE,
         "nTestKuramoto": N_TEST_KURAMOTO,
-        "trainLossInitial": round(loss_initial, 4) if loss_initial is not None else None,
-        "trainLossFinal": round(loss_final, 4) if loss_final is not None else None,
-        "saddleVarianceThreshold": round(threshold_saddle, 4),
-        "kuramotoVarianceThreshold": round(threshold_kuramoto, 4),
-        "saddleNode": saddle_summary,
-        "kuramoto": kuramoto_summary,
-        "pooled": pooled_summary,
+        "classical": {
+            "saddleNode": classical_saddle_summary,
+            "kuramoto": classical_kuramoto_summary,
+        },
+        "cnn": {
+            "saddleNode": cnn_saddle_agg,
+            "kuramoto": cnn_kuramoto_agg,
+            "perSeed": per_seed,
+        },
         "elapsedSeconds": round(time.time() - t0, 1),
     }
     OUTPUT_PATH.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")

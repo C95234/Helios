@@ -19,6 +19,7 @@ import Methode from "./pages/Methode.jsx";
 import CoursStatistiques from "./pages/CoursStatistiques.jsx";
 import SuitesRalentissement from "./pages/SuitesRalentissement.jsx";
 import HopfieldSocial from "./pages/HopfieldSocial.jsx";
+import CoursCNN from "./pages/CoursCNN.jsx";
 import Bibliographie from "./pages/Bibliographie.jsx";
 import JournalRecherche from "./pages/JournalRecherche.jsx";
 import Bilan from "./pages/Bilan.jsx";
@@ -51,6 +52,7 @@ export default function App() {
         <Route path="/methode/cours-statistiques" element={<CoursStatistiques />} />
         <Route path="/methode/suites-ralentissement-critique" element={<SuitesRalentissement />} />
         <Route path="/methode/hopfield" element={<HopfieldSocial />} />
+        <Route path="/methode/cnn-deep-learning" element={<CoursCNN />} />
         <Route path="/methode/bibliographie" element={<Bibliographie />} />
         <Route path="/journal" element={<JournalRecherche />} />
         <Route path="/bilan" element={<Bilan />} />

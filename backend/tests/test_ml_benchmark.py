@@ -3,13 +3,14 @@ import pytest
 
 from app.ml_benchmark import (
     SimpleCNN1D,
+    _kendall_tau_rows,
+    _rolling_ac1_batch,
+    _rolling_var_batch,
     build_dataset,
-    calibrate_variance_threshold,
     classical_verdict,
     generate_kuramoto_ramp_series,
     generate_saddle_node_series,
     make_windows,
-    window_tail_variance,
 )
 
 
@@ -108,48 +109,57 @@ def test_cnn_predict_proba_in_bounds():
     assert ((probs >= 0.0) & (probs <= 1.0)).all()
 
 
-def test_window_tail_variance_matches_hand_computation():
-    window = np.concatenate([np.array([1.0, -1.0] * 7 + [0.0]), np.array([5.0, -5.0] * 7 + [0.0])])
-    # 15 derniers points : 7x(+5), 7x(-5), 1x0 -- moyenne 0, somme des carres
-    # = 14*25 = 350, variance (ddof=1) = 350/14 = 25.0.
-    variance = window_tail_variance(window, sub_window=15)
-    assert variance == pytest.approx(25.0, rel=1e-6)
+def test_rolling_var_and_ac1_batch_match_reference_implementation():
+    # Meme verification que celle faite manuellement avant d'ecrire le module
+    # (voir commentaire de _rolling_ac1_batch) : la formule fermee vectorisee
+    # doit coincider avec statsmodels.acf / pandas .rolling().var() a la
+    # precision machine.
+    import pandas as pd
+    from app.stats.indicators import rolling_ac1, rolling_variance
+
+    rng = np.random.default_rng(3)
+    x = rng.normal(size=60)
+
+    ref_ac1 = rolling_ac1(pd.Series(x), 15).dropna().to_numpy()
+    fast_ac1 = _rolling_ac1_batch(x[None, :], 15)[0]
+    assert np.max(np.abs(ref_ac1 - fast_ac1)) < 1e-9
+
+    ref_var = rolling_variance(pd.Series(x), 15).dropna().to_numpy()
+    fast_var = _rolling_var_batch(x[None, :], 15)[0]
+    assert np.max(np.abs(ref_var - fast_var)) < 1e-9
 
 
-def test_classical_verdict_flags_high_tail_variance():
+def test_kendall_tau_rows_matches_scipy():
+    from scipy.stats import kendalltau
+
+    rng = np.random.default_rng(4)
+    batch = rng.normal(size=(10, 46))
+    fast = _kendall_tau_rows(batch)
+    ref = np.array([kendalltau(np.arange(46), row)[0] for row in batch])
+    assert np.max(np.abs(fast - ref)) < 1e-9
+
+
+def test_classical_verdict_flags_genuine_increasing_trend():
+    # Motif construit pour avoir une VRAIE tendance croissante de variance
+    # sur la fenetre (pas seulement un niveau eleve, §1.2 : le detecteur
+    # teste desormais une tendance, pas un simple seuil) : bruit dont
+    # l'amplitude grandit lineairement le long de la fenetre.
     rng = np.random.default_rng(0)
-    window = np.concatenate([rng.normal(scale=0.1, size=30), rng.normal(scale=3.0, size=30)])
-    assert classical_verdict(window, dt=1.0, variance_threshold=1.0) is True
+    t = np.linspace(0, 1, 60)
+    trend = rng.normal(size=60) * (0.2 + 3 * t)
+    assert classical_verdict(trend, n_surrogates=200, seed=0) is True
 
 
-def test_classical_verdict_does_not_flag_low_tail_variance():
-    rng = np.random.default_rng(1)
-    window = rng.normal(scale=0.1, size=60)
-    assert classical_verdict(window, dt=1.0, variance_threshold=1.0) is False
-
-
-def test_calibrate_variance_threshold_rejects_pooled_kind():
-    with pytest.raises(ValueError):
-        calibrate_variance_threshold(kind="both")
-
-
-@pytest.mark.parametrize("kind,generator", [("saddle_node", generate_saddle_node_series), ("kuramoto", generate_kuramoto_ramp_series)])
-def test_calibrated_threshold_gives_low_false_positive_rate_on_fresh_negatives(kind, generator):
-    threshold = calibrate_variance_threshold(n_series=60, percentile=95.0, seed=1, kind=kind)
-    assert np.isfinite(threshold) and threshold > 0
-
+def test_classical_verdict_rarely_flags_stationary_noise():
+    # Bruit stationnaire (pas de vraie tendance) : la grande majorite des
+    # fenetres ne doivent pas etre flaguees par le test de significativite
+    # (p<0.05 sur variance OU AC1 -- un peu plus que 5% par construction,
+    # mais tres loin de systematique).
     n_flagged = 0
-    n_checked = 0
-    for seed in range(5000, 5030):
-        sim = generator(seed=seed, tips=False)
-        if sim["t_event"] is not None:
-            continue  # bascule reelle par hasard, exclue
-        for w in make_windows(sim["series"], sim["dt"], None, window_len=60, stride=5):
-            n_checked += 1
-            if classical_verdict(w["window"], sim["dt"], variance_threshold=threshold):
-                n_flagged += 1
-    # Calibre au 95e percentile -- la grande majorite des fenetres
-    # individuelles ne doivent pas etre flaguees (le premier essai, un seuil
-    # devine a la main, flaguait 100% des trajectoires de controle sur les
-    # deux modeles -- voir docstring du module).
-    assert n_flagged / n_checked < 0.2
+    n_total = 30
+    for seed in range(n_total):
+        rng = np.random.default_rng(1000 + seed)
+        window = rng.normal(size=60)
+        if classical_verdict(window, n_surrogates=100, seed=seed):
+            n_flagged += 1
+    assert n_flagged / n_total < 0.3

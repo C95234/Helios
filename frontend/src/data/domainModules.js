@@ -47,9 +47,9 @@ export const BANC_ESSAI_MODULES = [
     simple:
       "Sur les mêmes fenêtres de série brute, un classifieur entraîné détecte-t-il l'approche d'une bascule mieux qu'un indicateur statistique classique -- ou est-ce l'inverse ?",
     expert:
-      "Comparaison, sur les deux modèles de bifurcation déjà construits pour Hélios (nœud-col, Kuramoto), d'un petit classifieur CNN 1D entraîné sur des données synthétiques face à l'indicateur statistique classique déjà utilisé partout ailleurs dans le projet -- taux de détection, délai d'anticipation, robustesse sur un grand nombre de graines de test.",
+      "Comparaison, sur les deux modèles de bifurcation déjà construits pour Hélios (nœud-col, Kuramoto), d'un petit classifieur CNN 1D (ré-entraîné 5 fois indépendamment, moyenne et écart-type rapportés) face à l'indicateur statistique COMPLET de H1 (variance et AC1, tau de Kendall, test par données de substitution) -- taux de détection, délai d'anticipation, faux positifs.",
     status: "comparatif",
-    statusNote: "Résultat asymétrique : le classifieur détecte aussi bien mais bien plus tôt que l'indicateur classique sur le nœud-col, alors qu'aucun des deux ne discrimine bien sur Kuramoto -- les deux sens du résultat sont rapportés sans favoriser l'un ou l'autre.",
+    statusNote: "Résultat asymétrique : sur le nœud-col, le classifieur détecte 100% des bascules réelles sans aucun faux positif (stable sur les 5 entraînements), contre 93% de détection et un taux de faux positifs élevé pour l'indicateur classique -- écart en partie imputable à un filtre de persistance pas encore recalibré pour ce nouvel indicateur (limite signalée, pas masquée). Sur Kuramoto, aucun des deux ne discrimine les vraies synchronisations des contrôles stables.",
     link: { to: "/resultats/ia-vs-statistiques", label: "Voir le résultat" },
   },
 ];

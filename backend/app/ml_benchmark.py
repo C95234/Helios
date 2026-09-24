@@ -26,9 +26,11 @@ modelisation.
 from __future__ import annotations
 
 import numpy as np
+from numpy.lib.stride_tricks import sliding_window_view
 
 from .kuramoto import order_parameter
 from .lyapunov_precedence import ring_weights, simulate_saddle_node
+from .stats.surrogates import phase_randomized_surrogate
 
 # -- Generateurs de series (echelle reduite pour la vitesse) ------------------
 
@@ -314,61 +316,92 @@ class SimpleCNN1D:
 
 
 # -- Detecteur classique de reference (meme fenetre, methode differente) ------
+#
+# Correction (cahier des charges "banc d'essai IA vs statistiques" §1.2) :
+# la premiere version comparait une variance de fin de fenetre a un seuil
+# calibre empiriquement -- un adversaire appauvri par rapport a ce que H1
+# utilise reellement ailleurs dans le projet (variance ET autocorrelation,
+# tau de Kendall, test de significativite par donnees de substitution,
+# §5.1/§5.4). Remplace ici par l'indicateur complet : `surrogate_test`
+# (stats/surrogates.py) applique DIRECTEMENT sur chaque fenetre de 60 points
+# (comme le CNN, le detecteur classique ne voit que cette fenetre, jamais
+# l'historique de la trajectoire) -- positif si la tendance de la variance
+# OU celle de l'AC1 glissante est significative (meme combinaison "OU" que
+# le module Fusion, routers/fusion.py).
+#
+# Adaptation Helios -- implementation vectorisee : `rolling_ac1`
+# (stats/indicators.py) appelle `statsmodels.tsa.stattools.acf` a l'interieur
+# d'un `pandas.rolling().apply()`, beaucoup trop lent pour etre repete sur les
+# ~1500 fenetres d'une trajectoire x des dizaines de trajectoires x une
+# centaine de surrogates par fenetre. `_rolling_ac1_batch` ci-dessous calcule
+# la MEME formule fermee que `acf(x, nlags=1, fft=False)` --
+# r_1 = sum((x_t-xbar)(x_{t+1}-xbar)) / sum((x_t-xbar)^2) -- verifiee
+# numeriquement identique a la reference statsmodels (ecart ~1e-16, precision
+# machine) mais vectorisee sur toutes les fenetres glissantes et tous les
+# surrogates d'un coup plutot qu'un appel Python par sous-fenetre.
 
 
-def window_tail_variance(window: np.ndarray, sub_window: int = 15) -> float:
-    """Variance des derniers `sub_window` points de la fenetre -- la
-    statistique que `classical_verdict` seuille.
-
-    Deuxieme essai, plus robuste que le premier (rapport de variance
-    premier/dernier bloc) : un RAPPORT de deux variances estimees sur
-    seulement 15 points chacune est une statistique a queue tres lourde
-    (proche d'un rapport de Fisher a faible degre de liberte) -- son 95e
-    percentile calibre sur un lot de series bougeait d'un facteur 4 selon
-    les graines de calibration utilisees (23,8 puis 5,49 sur deux lots
-    differents de meme taille), un signe classique d'instabilite
-    d'echantillonnage sur une statistique a queue lourde. Une variance
-    ABSOLUE (pas un rapport) comparee a un seuil calibre sur une grande
-    population de reference -- exactement le principe de
-    `detect_precedence` (ligne de base + k*ecart-type) -- est beaucoup
-    mieux comportee."""
-    return float(np.var(window[-sub_window:], ddof=1))
+def _rolling_var_batch(batch: np.ndarray, sub_window: int) -> np.ndarray:
+    """Variance glissante (ddof=1), vectorisee sur un lot de series de meme
+    longueur -- (n_series, window_len) -> (n_series, window_len-sub_window+1)."""
+    windows = sliding_window_view(batch, sub_window, axis=1)
+    return windows.var(axis=-1, ddof=1)
 
 
-def calibrate_variance_threshold(n_series: int = 150, sub_window: int = 15, percentile: float = 95.0, seed: int = 20_000, kind: str = "saddle_node") -> float:
-    """Calibre le seuil de `classical_verdict` empiriquement sur de vrais
-    controles negatifs d'UN SEUL modele, plutot qu'un seuil invente a la
-    main -- meme principe que `detect_precedence` (ligne de base + k*
-    ecart-type sur une vraie periode de reference).
-
-    `kind` doit toujours etre "saddle_node" ou "kuramoto" (jamais "both") :
-    un seuil unique calibre sur les deux modeles pooles a l'origine
-    donnait 0% de fausses alertes sur le nœud-col mais 100% sur Kuramoto
-    -- les deux systemes n'ont pas la meme distribution de bruit de base
-    (N=10 oscillateurs a couplage sous-critique fixe a des fluctuations
-    de taille finie bien plus grandes que le bruit gaussien du nœud-col).
-    `n_series` volontairement plus grand que le premier essai (150 contre
-    60) pour stabiliser l'estimation du percentile."""
-    if kind not in ("saddle_node", "kuramoto"):
-        raise ValueError('kind doit valoir "saddle_node" ou "kuramoto"')
-    generator = generate_saddle_node_series if kind == "saddle_node" else generate_kuramoto_ramp_series
-
-    variances = []
-    for i in range(n_series):
-        sim = generator(seed=seed + i, tips=False)
-        if sim["t_event"] is not None:
-            continue  # bascule reelle par hasard -- exclu de la calibration du controle negatif
-        for w in make_windows(sim["series"], sim["dt"], None, window_len=60, stride=5):
-            variances.append(window_tail_variance(w["window"], sub_window))
-    return float(np.percentile(variances, percentile))
+def _rolling_ac1_batch(batch: np.ndarray, sub_window: int) -> np.ndarray:
+    """AC1 glissante, formule fermee equivalente a `acf(x, nlags=1, fft=False)[1]`
+    (verifie numeriquement, voir commentaire ci-dessus), vectorisee comme
+    `_rolling_var_batch`."""
+    windows = sliding_window_view(batch, sub_window, axis=1)
+    xbar = windows.mean(axis=-1, keepdims=True)
+    dev = windows - xbar
+    num = np.sum(dev[..., :-1] * dev[..., 1:], axis=-1)
+    den = np.sum(dev**2, axis=-1)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(den > 0, num / den, np.nan)
 
 
-def classical_verdict(window: np.ndarray, dt: float, sub_window: int = 15, variance_threshold: float = 1.0) -> bool:
-    """Verdict "bascule proche" du detecteur classique sur la MEME fenetre
-    brute que celle vue par le CNN : variance absolue de la fin de la
-    fenetre comparee a un seuil -- meme mecanique de decision que
-    `detect_precedence` (lyapunov_precedence.py), appliquee ici a une
-    fenetre courte plutot qu'a une trajectoire complete.
-    `variance_threshold` doit venir de `calibrate_variance_threshold`, pas
-    d'une valeur devinee."""
-    return window_tail_variance(window, sub_window) > variance_threshold
+def _kendall_tau_rows(batch: np.ndarray) -> np.ndarray:
+    """Tau de Kendall (tau-a) de chaque ligne contre le temps (0..n-1),
+    vectorise sur toutes les lignes a la fois plutot qu'un appel
+    `scipy.stats.kendalltau` par ligne (mesure : ~350 microsecondes par appel
+    scipy, prohibitif repete sur ~1500 fenetres x une centaine de surrogates
+    x deux indicateurs par trajectoire). Le temps (x) est toujours 0..n-1,
+    strictement croissant et sans ex-aequo : tau-a et tau-b (la correction
+    d'ex-aequo de scipy, negligeable ici puisque les indicateurs sont des
+    flottants continus) coincident alors a la precision machine (verifie
+    numeriquement, ecart max ~5e-17 sur des donnees synthetiques). Concordance
+    calculee par comparaison de paires vectorisee (n*(n-1)/2 paires, n<=46
+    ici -- trivial en memoire)."""
+    n = batch.shape[1]
+    iu = np.triu_indices(n, k=1)
+    diff = batch[:, :, None] - batch[:, None, :]
+    pairwise_sign = diff[:, iu[0], iu[1]]  # sign(y_i - y_j) pour i<j
+    n_concordant_minus_discordant = -np.sum(np.sign(pairwise_sign), axis=1)
+    n_pairs = n * (n - 1) / 2
+    return n_concordant_minus_discordant / n_pairs
+
+
+def classical_verdict(window: np.ndarray, sub_window: int = 15, n_surrogates: int = 100, seed: int | None = None) -> bool:
+    """Verdict "bascule proche" du detecteur classique sur la fenetre brute :
+    tendance (tau de Kendall) de la variance glissante ET de l'AC1 glissante
+    A L'INTERIEUR de cette fenetre (46 positions pour une fenetre de 60 points
+    et sub_window=15), chacune testee contre des donnees de substitution a
+    phase aleatoire de la fenetre elle-meme -- exactement `surrogate_test`
+    (stats/surrogates.py), pas une nouvelle methode. Positif si la variance OU
+    l'AC1 est significative a 0,05 (meme combinaison que Fusion, routers/fusion.py)."""
+    rng = np.random.default_rng(seed)
+    surrogates = np.stack([phase_randomized_surrogate(window, rng) for _ in range(n_surrogates)])
+    batch = np.vstack([window[None, :], surrogates])  # ligne 0 = observe, le reste = surrogates
+
+    var_series = _rolling_var_batch(batch, sub_window)
+    ac1_series = _rolling_ac1_batch(batch, sub_window)
+    var_taus = _kendall_tau_rows(var_series)
+    ac1_taus = _kendall_tau_rows(ac1_series)
+
+    if np.isnan(var_taus[0]) and np.isnan(ac1_taus[0]):
+        return False
+
+    var_p = float(np.mean(var_taus[1:] >= var_taus[0])) if not np.isnan(var_taus[0]) else 1.0
+    ac1_p = float(np.mean(ac1_taus[1:] >= ac1_taus[0])) if not np.isnan(ac1_taus[0]) else 1.0
+    return var_p < 0.05 or ac1_p < 0.05
