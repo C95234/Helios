@@ -59,6 +59,12 @@ export default function IaVsStatistiquesResult() {
       resultText={
         <>
           <p>{IA_VS_STATS_ASYMMETRY_NOTE}</p>
+          <p className="text-muted">
+            Démonstrations complètes : <Link to="/methode/cours-statistiques#cnn-deep-learning">convolution,
+            rétropropagation et descente de gradient</Link> pour le classifieur ; <Link to="/methode/cours-statistiques#autocorrelation">variance
+            glissante</Link> et <Link to="/methode/cours-statistiques#kendall">tau de Kendall</Link> pour l'indicateur classique
+            (même méthode que H1, appliquée ici sur une fenêtre plutôt qu'une trajectoire complète).
+          </p>
 
           <ModelComparisonTable title="Nœud-col (§5.6quater) -- avantage net au classifieur" data={R.saddleNode} />
           <p className="text-muted">
@@ -84,7 +90,7 @@ export default function IaVsStatistiquesResult() {
           </p>
         </>
       }
-      methodLink={{ to: "/methode/cours-statistiques", label: "Voir le cours de statistiques (méthode classique de référence)" }}
+      methodLink={{ to: "/methode/cours-statistiques#cnn-deep-learning", label: "Voir la démonstration complète (convolution, rétropropagation, descente de gradient)" }}
       limits={[
         IA_VS_STATS_GUARDRAIL,
         "Modèles sources réutilisés à échelle réduite (réseaux plus petits, durée plus courte) pour permettre l'entraînement sur des milliers de fenêtres -- documenté comme Adaptation Hélios dans le code (backend/app/ml_benchmark.py), pas une nouvelle modélisation.",
