@@ -74,6 +74,19 @@ export default function Home() {
       </section>
 
       <section className="hypotheses-teaser">
+        <h2>L'œil humain contre la machine</h2>
+        <p>
+          Sur les mêmes signaux bruts, un classifieur de deep learning (CNN) détecte-t-il l'approche d'une
+          bascule mieux qu'un indicateur statistique classique -- ou est-ce l'inverse ? Un banc d'essai
+          transversal, distinct des trois domaines ci-dessus, avec un résultat asymétrique rapporté
+          honnêtement (net avantage à la machine sur un modèle, aucun avantage sur l'autre).
+        </p>
+        <Link to="/resultats/ia-vs-statistiques" className="cta secondary">
+          Voir le banc d'essai IA vs statistiques
+        </Link>
+      </section>
+
+      <section className="hypotheses-teaser">
         <h2>Ce que les tests donnent, une fois lancés à fond</h2>
         <p>
           H1, H2 et H3 testées sur un maximum de phénomènes réels disponibles, H4 sur plusieurs

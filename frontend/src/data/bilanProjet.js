@@ -9,8 +9,8 @@ export const SCORECARD = [
   { dim: "Rigueur statistique", verdict: "strong", label: "Solide", note: "Chaque indicateur vérifié contre une valeur de référence (statsmodels, calcul à la main) à ±1e-6. Tests par substitution/permutation, pas de p-value « brute »." },
   { dim: "Honnêteté scientifique", verdict: "strong", label: "Très solide", note: "Aucun verdict « confirmée » forcé. Une erreur de raisonnement gardée visible plutôt qu'effacée. H4 jamais confondue avec un test statistique." },
   { dim: "Couverture des tests", verdict: "mixed", label: "Correcte, mais limitée", note: "6 phénomènes pour H1/H3 (curatés à la main), 5 variables réelles pour H2 (chômage, défaillances, logements, créations, population). Sous le seuil de significativité pratique d'un vrai échantillon." },
-  { dim: "Résultats obtenus", verdict: "weak", label: "Majoritairement négatifs", note: "Aucune des 3 hypothèses réelles n'est confirmée sur ce round. H1 va à l'encontre du sens attendu dans 5 cas sur 6, H2 dans 3 des 5 variables testées." },
-  { dim: "Reproductibilité", verdict: "strong", label: "Bonne", note: "46 tests automatisés, scripts de recherche versionnés, déviations documentées dans le code lui-même, pas seulement en prose." },
+  { dim: "Résultats obtenus", verdict: "weak", label: "Majoritairement négatifs", note: "Aucune des 3 hypothèses réelles n'est confirmée sur ce round. H1 va à l'encontre du sens attendu dans 5 cas sur 6, H2 dans 2 des 5 variables testées." },
+  { dim: "Reproductibilité", verdict: "strong", label: "Bonne", note: "87 tests automatisés, scripts de recherche versionnés, déviations documentées dans le code lui-même, pas seulement en prose." },
   { dim: "Fidélité au cahier des charges", verdict: "mixed", label: "Presque complète", note: "§1-§7bis, §9, §11-§12 couverts. §8 (comptes, PostgreSQL, JWT) volontairement non implémenté -- écart assumé, pas oublié." },
 ];
 
