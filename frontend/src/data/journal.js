@@ -161,6 +161,32 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "correction-tendance-moran",
+    title: "9. Correction de tendance sur l'indice de Moran -- un second bug trouvé par la même revue externe",
+    simple:
+      "La même revue externe qui a audité la contribution ewstools (point 8) a trouvé un vrai bug dans le calcul de l'indice de Moran : un motif spatial dont l'AMPLITUDE se renforce dans le temps fait monter l'indice sans aucun vrai ralentissement critique. Ce bug touchait aussi le code interne d'Hélios (H2, H3), pas seulement la contribution externe. Corrigé en retirant une tendance lente par département avant tout calcul de tendance sur l'indice -- le verdict H2 change : 2 des 5 variables restent défavorables (contre 3 avant correction), les 3 autres deviennent non concluantes plutôt que défavorables.",
+    expertBlocks: [
+      {
+        text: "Déclencheur : Bruce Stephenson (mainteneur, `energyscholar`), en relisant la contribution `ewstools/spatial.py` (§1ter.1), a montré par la mesure (trois champs de test) qu'un gradient spatial statique donne un tau de Kendall d'environ -0,15 sur l'indice de Moran dans le temps, une dérive uniforme sans structure spatiale environ +0,05, mais un gradient spatial qui SE RENFORCE dans le temps donne environ +0,81 -- un faux positif net, sans aucun rapport avec un ralentissement critique. La cause : l'indice de Moran est centré spatialement (une dérive de la moyenne ne le change pas) mais pas temporellement -- rien ne protège contre une amplitude de motif spatial qui change lentement.",
+      },
+      {
+        text: "Vérification sur le code interne d'Hélios : `compute_network_moran_series` (backend/app/spatial_series.py), utilisé par H2 (test_h2, test_h2_aggregate) et H3 (historical_spatial_i), calculait l'indice de Moran directement sur le champ brut des variables Insee (chômage, défaillances, constructions, créations, population) sur des séries de 26 ans -- exactement le type de série où une dérive structurelle lente (divergence démographique ou économique entre départements) est plausible, indépendamment de tout signal précurseur.",
+      },
+      {
+        text: "Correction appliquée : `detrend_wide` (nouveau, spatial_series.py) retire une tendance lente par département par LOWESS avant de calculer l'indice de Moran utilisé pour tout test de tendance (`i_real_detrended`/`i_grid_detrended`) -- le champ brut reste utilisé uniquement pour l'affichage de la courbe et le test de significativité spatiale à un instant donné (qui n'a pas ce problème, puisqu'il ne teste pas une tendance temporelle).",
+      },
+      {
+        text: "Effet mesuré sur H2 (5 variables réelles, avant / après correction) : chômage neutre → neutre (inchangé), défaillances défavorable → défavorable (inchangé), constructions défavorable → défavorable (inchangé), créations défavorable → neutre (le signal disparaît), population défavorable → neutre (le signal disparaît). Verdict agrégé : 3/5 défavorables avant correction → 2/5 après. La conclusion qualitative de H2 ne change pas (pas de majorité favorable dans les deux cas), mais l'ampleur du signal défavorable était partiellement un artefact.",
+      },
+      {
+        text: "Un plancher de p-value (Davison & Hinkley 1997 ; North, Curtis & Sham 2002, +1 au numérateur et au dénominateur) a été ajouté au même moment au test de permutation de l'indice de Moran (backend/app/stats/moran.py) -- même bug, même correction que celle appliquée à la contribution ewstools.",
+      },
+      {
+        text: "Non traité pour l'instant : le module Fusion (indice de Moran sur les sondes magnétiques MAST, backend/app/routers/fusion.py) utilise la même fonction `morans_i` sans ce retrait de tendance. Risque jugé plus faible (une dérive de calibration de capteur sur quelques secondes de tir plutôt qu'une divergence structurelle sur 26 ans) mais pas nul -- signalé ici comme limite ouverte plutôt que silencieusement ignoré.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */

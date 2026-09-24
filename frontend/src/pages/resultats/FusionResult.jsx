@@ -153,6 +153,7 @@ export default function FusionResult() {
         "L'analyse temporelle du courant se limite aux ~400 derniers points avant la coupure (pas tout le tir) -- le courant plasma est échantillonné à ~2 kHz, et calculer l'autocorrélation glissante sur des milliers de points à chaque tirage de substitution serait ingérable ; les points les plus proches du quench sont les plus pertinents pour un signal précurseur de toute façon.",
         "Détection uniquement : ce module ne simule, ne conçoit ni ne propose aucun système de contrôle réel de plasma. Toute mention du RCA (H4) reste une note conceptuelle hors périmètre, jamais une conception fonctionnelle applicable à un vrai tokamak.",
         "Résultats présentés séparément du domaine socio-territorial (H1-H5), jamais combinés en un verdict unique.",
+        "L'indice de Moran sur les sondes magnétiques n'a pas reçu le retrait de tendance appliqué à H2/H3 suite à la revue externe (Journal §9) -- risque jugé plus faible sur quelques secondes de tir que sur 26 ans de données Insee, mais pas vérifié : limite ouverte plutôt que corrigée.",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
     >

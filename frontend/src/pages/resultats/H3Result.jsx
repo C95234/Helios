@@ -140,11 +140,12 @@ export default function H3Result() {
           <p className="text-muted">On compare le phénomène testé à chacun des trimestres comparables des 26 dernières années.</p>
         </>
       }
-      methodLink={{ to: "/methode/cours-statistiques#fisher", label: "Voir la démonstration (méthode de Fisher/Brown)" }}
+      methodLink={{ to: "/methode/cours-statistiques#fisher", label: "Voir la démonstration (méthode de Fisher, et pourquoi ce n'est pas la méthode de Brown)" }}
       limits={[
         "4 phénomènes calculables reste sous le seuil de 5 épisodes du §5.7 : résultat préliminaire.",
         "La composante spatiale est un instantané (le trimestre le plus proche), pas une tendance -- le chômage départemental n'est publié qu'au trimestre.",
         "La loi nulle jointe est calibrée par comparaison à l'historique réel 2000-2026 plutôt que par surrogates synthétiques couplés -- adaptation documentée.",
+        "Correction appliquée suite à une revue externe (Journal §9) : la composante spatiale est désormais l'indice de Moran sur les résidus après retrait de tendance par département, pas sur le champ brut -- les verdicts restent inchangés (1 favorable, 3 non concluants), les valeurs numériques ont légèrement changé.",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche (postulat testé en amont de H3)" }}
     >

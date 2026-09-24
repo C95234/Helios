@@ -133,8 +133,11 @@ async def test_h2(
     w_real = spatial["w_real"]
     w_grid = spatial["w_grid"]
 
-    real_trend = surrogate_trend_test(i_real, n_surrogates=n_surrogates, seed=100)
-    grid_trend = surrogate_trend_test(i_grid, n_surrogates=n_surrogates, seed=101)
+    # Tendance testee sur les residus post-LOWESS (§5.2), jamais sur le champ brut --
+    # un gradient qui se renforce dans le temps ferait sinon monter I_t sans aucun
+    # vrai ralentissement critique (bug trouve par la revue externe, §1ter.1).
+    real_trend = surrogate_trend_test(spatial["i_real_detrended"], n_surrogates=n_surrogates, seed=100)
+    grid_trend = surrogate_trend_test(spatial["i_grid_detrended"], n_surrogates=n_surrogates, seed=101)
 
     latest_values = wide.iloc[-1].to_numpy()
     real_snapshot = permutation_test(latest_values, w_real, n_permutations=n_permutations_snapshot, seed=42)
@@ -175,8 +178,8 @@ async def _analyze_variable(key: str, n_surrogates: int) -> H2VariableResult:
     cfg = VARIABLES[key]
     wide = await get_department_wide(cfg["connector"], start_period=cfg["start_period"], rolling_12=cfg["rolling_12"])
     spatial = compute_network_moran_series(wide)
-    real_trend = surrogate_trend_test(spatial["i_real"], n_surrogates=n_surrogates, seed=hash(key) % 1000)
-    grid_trend = surrogate_trend_test(spatial["i_grid"], n_surrogates=n_surrogates, seed=(hash(key) + 1) % 1000)
+    real_trend = surrogate_trend_test(spatial["i_real_detrended"], n_surrogates=n_surrogates, seed=hash(key) % 1000)
+    grid_trend = surrogate_trend_test(spatial["i_grid_detrended"], n_surrogates=n_surrogates, seed=(hash(key) + 1) % 1000)
     real_trend_out = _trend_out(real_trend)
     grid_trend_out = _trend_out(grid_trend)
     dates = spatial["dates"]

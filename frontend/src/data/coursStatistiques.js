@@ -335,7 +335,15 @@ export const COURS_SECTIONS = [
           { text: "$\\bar{x}=0$. Écarts : $d=(1,-1,1,-1)$ (inchangés). $S_0=6$ comme avant." },
           { tex: "\\text{Numérateur} = 2[(1)(-1)+(-1)(1)+(1)(-1)] = -6, \\qquad \\text{Dénominateur} = 4", block: true },
           { tex: "I = \\frac{4}{6}\\times\\frac{-6}{4} = -1", block: true },
-          { text: "$I=-1$ : corrélation spatiale négative parfaite, chaque territoire est systématiquement opposé à son voisin — la signature exacte d'un damier. Le test de significativité de $I$ suit le même principe par permutation que le §5 : mélanger $x$ entre les territoires (en gardant la structure du réseau fixe) et comparer $I_{\\text{obs}}$ à la distribution obtenue." },
+          { text: "$I=-1$ : corrélation spatiale négative parfaite, chaque territoire est systématiquement opposé à son voisin — la signature exacte d'un damier. Le test de significativité de $I$ suit le même principe par permutation que le §5 : mélanger $x$ entre les territoires (en gardant la structure du réseau fixe) et comparer $I_{\\text{obs}}$ à la distribution obtenue, avec un plancher explicite $p=\\frac{1+\\#\\{I_{\\text{surrogate}}\\ge I_{\\text{obs}}\\}}{1+M}$ (Davison & Hinkley 1997 ; North, Curtis & Sham 2002) plutôt que $\\#\\{\\dots\\}/M$ seul, qui peut tomber exactement à 0." },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Mise en garde trouvée par une revue externe : une tendance sur $I_t$ n'est pas toujours un vrai signal",
+        body: [
+          { text: "$I$ est centré spatialement (une dérive uniforme de la moyenne ne le change pas), mais pas temporellement. Un motif spatial dont l'AMPLITUDE se renforce dans le temps fait monter le tau de Kendall de $I_t$ sans aucun vrai ralentissement critique. Mesuré sur trois champs de test : dérive uniforme sans structure spatiale, $\\tau\\approx+0{,}05$ ; gradient spatial statique, $\\tau\\approx-0{,}15$ ; gradient qui se renforce dans le temps, $\\tau\\approx+0{,}81$ -- un faux positif net. Ce bug, trouvé par Bruce Stephenson en relisant la contribution d'Hélios au paquet ewstools, touchait aussi le code interne du projet (voir Journal §9) : corrigé en retirant une tendance lente par territoire (LOWESS) avant tout calcul de tendance sur $I_t$, jamais sur le champ brut." },
+          { text: "Nuance d'interprétation à ne jamais omettre : une hausse de $I_t$ n'est pas automatiquement un signe d'approche de bascule. Rietkerk et al. (2021) montrent que l'auto-organisation spatiale peut au contraire marquer une évasion de bascule plutôt qu'un rapprochement -- une hausse de $I_t$ est une invitation à modéliser pourquoi le motif se forme, jamais un résultat à lire seul." },
         ],
       },
     ],
@@ -404,7 +412,7 @@ export const COURS_SECTIONS = [
         type: "remarque",
         title: "Mise en garde essentielle",
         body: [
-          { text: "Toute cette section suppose les p-values indépendantes. Dans Hélios, l'indicateur temporel et l'indicateur spatial sont calculés sur le même système sous-jacent : ils sont corrélés. Utiliser directement la loi $\\chi^2(2k)$ sous-estime ou surestime alors le vrai taux de faux positifs. La méthode réellement utilisée (méthode empirique de Brown, Poole et al. 2016) remplace le seuil théorique $\\chi^2(2k)$ par un seuil calibré sur des données de substitution qui préservent la corrélation réelle entre les indicateurs — c'est un raffinement du principe démontré ici, pas une méthode différente." },
+          { text: "Toute cette section suppose les p-values indépendantes. Dans Hélios, l'indicateur temporel et l'indicateur spatial sont calculés sur le même système sous-jacent : ils sont corrélés. Utiliser directement la loi $\\chi^2(2k)$ sous-estime ou surestime alors le vrai taux de faux positifs. La méthode réellement utilisée par Hélios remplace le seuil théorique $\\chi^2(2k)$ par un seuil calibré directement sur l'historique réel (une adaptation empirique propre au projet, pas une implémentation d'une méthode publiée). Correction après revue externe : une version antérieure de cette page attribuait ce principe général à « la méthode empirique de Brown » -- en réalité, le polynôme de correction en $\\rho$ envisagé initialement est celui de Kost & McDermott (2002), et la vraie méthode de Brown (Poole et al. 2016) estime la covariance directement à partir des données plutôt que par une formule fermée. Voir /positionnement/ewstools pour l'historique de cette correction." },
         ],
       },
     ],
@@ -569,7 +577,7 @@ export const COURS_BILAN = [
   { notion: "Test par permutation", role: "Calculer une p-value sans supposer de loi théorique" },
   { notion: "Tau de Kendall", role: "Détecter une tendance monotone (module H1/H3)" },
   { notion: "Indice de Moran", role: "Indicateur précurseur spatial (module H2)" },
-  { notion: "Méthode de Fisher / Brown", role: "Combiner plusieurs indicateurs (module H3)" },
+  { notion: "Méthode de Fisher / Kost & McDermott", role: "Combiner plusieurs indicateurs (module H3)" },
   { notion: "Loi de puissance (MLE, test de plausibilité)", role: "Criticité auto-organisée (module H5)" },
   { notion: "Convolution 1D, rétropropagation, descente de gradient", role: "Classifieur du banc d'essai IA vs statistiques" },
 ];
@@ -587,4 +595,8 @@ export const COURS_REFERENCES = [
   "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). « Learning representations by back-propagating errors. » Nature, 323, 533-536.",
   "Kingma, D. P., & Ba, J. (2015). « Adam: A Method for Stochastic Optimization. » 3rd International Conference on Learning Representations (ICLR).",
   "Bury, T. M., Sujith, R. I., Pavithran, I., Scheffer, M., Lenton, T. M., Anand, M., & Bauch, C. T. (2021). « Deep learning for early warning signals of tipping points. » PNAS, 118(39), e2106140118.",
+  "Kost, J. T., & McDermott, M. P. (2002). « Combining dependent P-values. » Statistics & Probability Letters, 60(2), 183–190.",
+  "Rietkerk, M., Bastiaansen, R., Banerjee, S., van de Koppel, J., Baudena, M., & Rietkerk, F. (2021). « Evasion of tipping in complex systems through spatial pattern formation. » Science, 374(6564), eabj0359.",
+  "Davison, A. C., & Hinkley, D. V. (1997). Bootstrap Methods and their Application. Cambridge University Press.",
+  "North, B. V., Curtis, D., & Sham, P. C. (2002). « A note on the calculation of empirical P values from Monte Carlo procedures. » American Journal of Human Genetics, 71(2), 439–441.",
 ];

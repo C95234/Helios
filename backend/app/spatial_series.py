@@ -13,10 +13,27 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
+from statsmodels.nonparametric.smoothers_lowess import lowess
 
 from .connectors.insee_departments import InseeDepartmentSeriesConnector, UNEMPLOYMENT_CONNECTOR
 from .geo import department_weight_matrix, load_department_network, regular_grid_weight_matrix
 from .stats.moran import morans_i
+
+
+def detrend_wide(wide: pd.DataFrame, frac: float = 0.3) -> pd.DataFrame:
+    """Retire une tendance temporelle lente, departement par departement (LOWESS),
+    et retourne les residus -- cahier des charges Helios §5.2 : un motif spatial
+    dont l'AMPLITUDE se renforce dans le temps fait monter l'indice de Moran sans
+    aucun vrai ralentissement critique (bug trouve par Bruce Stephenson lors de la
+    revue de la contribution ewstools, §1ter.1 -- corrige ici dans l'implementation
+    interne d'Helios plutot que documente sans etre applique).
+    """
+    t = np.arange(len(wide), dtype=float)
+    residuals = pd.DataFrame(index=wide.index, columns=wide.columns, dtype=float)
+    for col in wide.columns:
+        smoothed = lowess(wide[col].to_numpy(), t, frac=frac, return_sorted=False)
+        residuals[col] = wide[col].to_numpy() - smoothed
+    return residuals
 
 
 class SpatialDataUnavailable(Exception):
@@ -64,7 +81,14 @@ async def get_department_unemployment_wide() -> pd.DataFrame:
 def compute_network_moran_series(wide: pd.DataFrame) -> dict:
     """I_t (indice de Moran sur le reseau reel) pour chaque periode disponible
     d'un DataFrame deja construit, plus tout ce qu'il faut pour recalculer une
-    grille de controle ou une coupe."""
+    grille de controle ou une coupe.
+
+    `i_real`/`i_grid` (bruts) restent inchanges pour l'affichage (courbe lisible,
+    memes valeurs qu'avant ce correctif). `i_real_detrended`/`i_grid_detrended`
+    (calcules sur les residus post-LOWESS, §5.2) sont ceux a utiliser pour tout
+    TEST DE TENDANCE -- jamais les bruts, qui peuvent monter par un pur artefact
+    de gradient qui se renforce dans le temps, sans aucun ralentissement critique.
+    """
     network = load_department_network()
     codes = list(wide.columns)
     w_real = department_weight_matrix(codes, network["adjacency"])
@@ -73,6 +97,10 @@ def compute_network_moran_series(wide: pd.DataFrame) -> dict:
     dates = wide.index  # DatetimeIndex, un par periode
     i_real = np.array([morans_i(wide.iloc[t].to_numpy(), w_real) for t in range(len(wide))])
     i_grid = np.array([morans_i(wide.iloc[t].to_numpy(), w_grid) for t in range(len(wide))])
+
+    residuals = detrend_wide(wide)
+    i_real_detrended = np.array([morans_i(residuals.iloc[t].to_numpy(), w_real) for t in range(len(residuals))])
+    i_grid_detrended = np.array([morans_i(residuals.iloc[t].to_numpy(), w_grid) for t in range(len(residuals))])
 
     return {
         "wide": wide,
@@ -83,6 +111,8 @@ def compute_network_moran_series(wide: pd.DataFrame) -> dict:
         "grid_shape": grid_shape,
         "i_real": i_real,
         "i_grid": i_grid,
+        "i_real_detrended": i_real_detrended,
+        "i_grid_detrended": i_grid_detrended,
         "network_names": network["names"],
     }
 

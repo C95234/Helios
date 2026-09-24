@@ -130,7 +130,7 @@ export const METHODS = {
         text: "Cette calibration empirique par l'historique réel préserve automatiquement toute corrélation réelle entre les deux composantes, sans supposer l'indépendance -- même objectif que l'étape 4 du §5.6, méthode différente, documentée comme telle.",
       },
       {
-        text: "Cadrage honnête : la construction générale (combiner des p-values corrélées via une distribution nulle empirique) n'est pas une originalité d'Hélios -- c'est la méthode empirique de Brown (Empirical Brown's Method, Poole et al., 2016), déjà publiée et implémentée. Ce que documente cette page est comment l'appliquer à notre cas (indicateur temporel + indicateur spatial) et pourquoi, faute d'un générateur de surrogates couplés adapté à nos données, la calibration ci-dessus s'appuie sur l'historique réel plutôt que sur des données de substitution synthétiques.",
+        text: "Cadrage honnête, corrigé après une revue externe : la construction générale (combiner des p-values corrélées) n'est pas une originalité d'Hélios, mais ce paragraphe combinait à tort deux techniques distinctes sous un seul nom. Le polynôme de correction en $\\rho$ mentionné dans les versions précédentes de cette page est celui de Kost & McDermott (2002), pas celui de Brown -- une erreur d'attribution trouvée par Bruce Stephenson en relisant la contribution d'Hélios au paquet ewstools (voir /positionnement/ewstools), corrigée ici après coup. La véritable méthode empirique de Brown (Empirical Brown's Method, Poole et al., 2016) estime la covariance des termes $-2\\ln(p_i)$ directement à partir des données plutôt que par une formule fermée. La calibration effectivement utilisée ci-dessus (comparaison directe à l'historique réel) ne reproduit ni l'une ni l'autre formule à l'identique -- c'est une adaptation empirique propre à Hélios, documentée comme telle plutôt que présentée comme une implémentation de l'une des deux méthodes publiées.",
       },
     ],
     detail:
@@ -139,6 +139,7 @@ export const METHODS = {
       "Fisher, R. A. (1925). Statistical Methods for Research Workers. Oliver and Boyd.",
       "Brown, M. B. (1975). « A method for combining non-independent, one-sided tests of significance. » Biometrics, 31(4), 987–992.",
       "Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). « Combining dependent P-values with an empirical adaptation of Brown's method. » Bioinformatics, 32(17), i430–i436.",
+      "Kost, J. T., & McDermott, M. P. (2002). « Combining dependent P-values. » Statistics & Probability Letters, 60(2), 183–190.",
     ],
   },
   kuramoto_h4: {
@@ -241,4 +242,8 @@ export const BIBLIOGRAPHY = [
   "Bury, T. M., Sujith, R. I., Pavithran, I., Scheffer, M., Lenton, T. M., Anand, M., & Bauch, C. T. (2021). « Deep learning for early warning signals of tipping points. » Proceedings of the National Academy of Sciences, 118(39), e2106140118.",
   "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). « Learning representations by back-propagating errors. » Nature, 323, 533-536.",
   "Kingma, D. P., & Ba, J. (2015). « Adam: A Method for Stochastic Optimization. » 3rd International Conference on Learning Representations (ICLR).",
+  "Kost, J. T., & McDermott, M. P. (2002). « Combining dependent P-values. » Statistics & Probability Letters, 60(2), 183–190.",
+  "Rietkerk, M., Bastiaansen, R., Banerjee, S., van de Koppel, J., Baudena, M., & Rietkerk, F. (2021). « Evasion of tipping in complex systems through spatial pattern formation. » Science, 374(6564), eabj0359.",
+  "Davison, A. C., & Hinkley, D. V. (1997). Bootstrap Methods and their Application. Cambridge University Press.",
+  "North, B. V., Curtis, D., & Sham, P. C. (2002). « A note on the calculation of empirical P values from Monte Carlo procedures. » American Journal of Human Genetics, 71(2), 439–441.",
 ];

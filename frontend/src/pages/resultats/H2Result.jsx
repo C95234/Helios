@@ -86,7 +86,7 @@ function NetworkBlock({ label, data, note, color }) {
 
       {expertMode && (
         <>
-          <p className="signal-title" style={{ marginTop: "0.75rem" }}>Tendance sur 26 ans (105 trimestres)</p>
+          <p className="signal-title" style={{ marginTop: "0.75rem" }}>Tendance sur 26 ans ({H2_RESULT.nQuarters} trimestres, résidus post-retrait de tendance -- §5.2)</p>
           <dl className="signal-stats">
             <div>
               <dt>tau de Kendall</dt>
@@ -224,7 +224,7 @@ export default function H2Result() {
       domain={{ name: "Société", to: "/resultats#societe" }}
       verdict={H2_AGGREGATE.verdict}
       episodesLabel={`${H2_AGGREGATE.nVariablesTested} variables réelles testées`}
-      summary="L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Testé sur 5 variables territoriales réelles (pas seulement le chômage) : 3 vont à l'encontre de H2 (la grille de contrôle montre une tendance significative, pas le réseau réel), 2 restent non concluantes, aucune ne va dans le sens de H2."
+      summary={`L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Testé sur 5 variables territoriales réelles (pas seulement le chômage), après retrait de tendance par département (§5.2 -- voir la mise en garde ci-dessous) : ${H2_AGGREGATE.nAgainst} vont à l'encontre de H2 (la grille de contrôle montre une tendance significative, pas le réseau réel), ${H2_AGGREGATE.nNeutral} restent non concluantes, aucune ne va dans le sens de H2.`}
       postulateSimple={H2_DATA.simple}
       postulateExpert={H2_DATA.expert}
       resultText={
@@ -297,11 +297,12 @@ export default function H2Result() {
         "5 variables réelles, pas 5 épisodes indépendants au sens du §5.7 : ce sont 5 mesures différentes sur le même territoire et à peu près la même période, pas 5 systèmes territoriaux distincts -- un indice plus robuste qu'une seule variable, mais pas l'équivalent de 5 réplications indépendantes.",
         "Fréquences et couvertures différentes selon la variable (chômage et logements en cumul 12 mois, créations d'entreprises en cumul 12 mois faute de variante CVS au niveau département, population en annuel sur 52 points seulement) -- pas directement comparables entre elles en rigueur statistique.",
         "La grille de contrôle replace les mêmes valeurs dans un ordre arbitraire, pas selon une géographie fictive alternative construite exprès.",
+        "Correction appliquée suite à une revue externe (contribution ewstools, §1ter.1) : la tendance de l'indice de Moran est désormais testée sur les résidus après retrait d'une tendance lente par département (LOWESS), pas sur le champ brut -- un motif spatial dont l'amplitude se renforce dans le temps ferait sinon monter l'indice sans aucun vrai ralentissement critique. Cette correction a fait disparaître le signal \"défavorable\" que montraient 3 des 5 variables avant retrait de tendance (2 le montrent encore après correction).",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
     >
       <p className="lede">
-        Calculé sur les 105 trimestres disponibles (2000-2026) plutôt que sur un seul instantané — un
+        Calculé sur les {H2_RESULT.nQuarters} trimestres disponibles (2000-2026) plutôt que sur un seul instantané — un
         indicateur sur une seule date n'aurait rien de significatif statistiquement.
       </p>
 

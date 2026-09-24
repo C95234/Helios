@@ -54,7 +54,10 @@ def permutation_test(
         permuted = rng.permutation(values)
         null_values[i] = morans_i(permuted, weights)
 
-    p_value = float(np.mean(null_values >= observed))
+    # Plancher standard (Davison & Hinkley 1997 ; North, Curtis & Sham 2002) : sans le +1
+    # au numerateur et au denominateur, la p-value peut tomber exactement a 0 -- meme bug
+    # que celui trouve par Bruce Stephenson dans la contribution ewstools (§1ter.1).
+    p_value = float((1 + np.sum(null_values >= observed)) / (1 + n_permutations))
     return {
         "observed_i": observed,
         "p_value": p_value,

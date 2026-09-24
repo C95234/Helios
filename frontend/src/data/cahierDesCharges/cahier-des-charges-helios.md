@@ -119,25 +119,51 @@ publié pour combler un vide constaté.
 
 ### 1ter.1 Contribution à `ewstools`
 
-Deux modules ont été développés pour combler un manque identifié dans
-`ewstools` (bibliothèque Python de référence pour les signaux
-précurseurs, publiée dans le *Journal of Open Source Software*) : un
-indicateur spatial (indice de Moran, absent du paquet) et une
-combinaison d'indicateurs corrélés (méthode empirique de Brown, absente
-aussi). 13 tests ajoutés, tous passants, aucune régression sur les 44
-tests existants du paquet.
+**Historique réel (mis à jour après la revue complète)** : le module
+spatial (indice de Moran, `ewstools/spatial.py`) a été soumis avec un
+second module de combinaison de p-values corrélées. Une revue détaillée
+de Bruce Stephenson (`energyscholar`, collaborateur du dépôt) a conduit
+à :
+- **Un vrai bug trouvé et corrigé** : le test de tendance existant était
+  en réalité un contrôle négatif mal étiqueté — un gradient spatial qui
+  se renforce dans le temps fait monter l'indice de Moran sans aucun
+  vrai ralentissement critique. Corrigé par une recette de retrait de
+  tendance documentée dans le module, avec contrôle positif et négatif
+  livrés.
+- **Un plancher de p-value ajouté** (la p-value par permutation pouvait
+  tomber exactement à 0, ce qui n'a pas de sens statistique — corrigé
+  par la correction standard $+1$ au numérateur et au dénominateur).
+- **Le second module (combinaison de p-values) retiré de cette PR**,
+  sur une base de périmètre plutôt que de qualité : un `CONTRIBUTING.md`
+  publié entre-temps par Bruce et Thomas Bury restreint le paquet aux
+  indicateurs EWS eux-mêmes, pas aux méthodes statistiques générales.
+  Deux bugs réels y ont aussi été trouvés à cette occasion (voir §5.6,
+  corrections déjà répercutées dans l'implémentation interne d'Hélios).
+- **Trois suivis optionnels traités quand même** : fonction utilitaire
+  `lattice_weights()`, pointeur d'interopérabilité vers
+  `esda.moran.Moran`, note sur la période de référence.
+
+**Décompte final vérifié** : 19 nouveaux tests, 50 passés + 1 ignoré au
+total, 0 régression sur les 32 tests préexistants.
+
+**Statut actuel** : en attente de l'approbation formelle du propriétaire
+du code, **Thomas Bury** — la revue de fond (Bruce) est intégralement
+traitée, il ne manque que la validation finale nécessaire à la fusion.
 
 **Page dédiée à créer** (liée depuis la page "Positionnement
 scientifique", §1bis) :
 1. Ce qui a été identifié comme manquant et pourquoi (contenu de
-   `CONTRIBUTION_spatial_significance.md`).
-2. Le code et les tests, avec lien vers le dépôt (fork public).
+   `CONTRIBUTION_spatial_significance.md`, à mettre à jour pour retirer
+   toute mention du module de combinaison de p-values, retiré depuis).
+2. Le code et les tests, avec lien vers le dépôt (fork public) et la
+   pull request elle-même (`ThomasMBury/ewstools#482`).
 3. Les pistes d'usage déjà rédigées (recherche, industrie, services
    publics).
 4. **Un statut affiché honnêtement et tenu à jour**, jamais présenté
    comme acquis avant de l'être réellement :
-   - `Soumis (pull request ouverte)` — dès que la PR est envoyée ;
-   - `En attente de revue` — tant que le mainteneur n'a pas répondu ;
+   - `Soumis (pull request ouverte)` ;
+   - `Revue reçue, corrections appliquées, en attente d'approbation du
+     propriétaire du code` — statut actuel, à afficher tel quel ;
    - `Accepté` / `Fusionné` — seulement une fois réellement mérgé dans
      le dépôt officiel `ThomasMBury/ewstools` ;
    - `Non retenu` — si c'est le cas, affiché sans être masqué, avec la
@@ -282,6 +308,39 @@ dans le temps indique une synchronisation croissante entre territoires
 voisins, signal précurseur documenté en écologie spatiale (Kéfi et al.,
 Dakos et al.).
 
+**Garde-fou méthodologique, trouvé lors de la revue externe (§1ter.1)** :
+$I_t$ est calculé sur le champ brut à chaque instant — une dérive
+uniforme de la moyenne ne le change pas (il est centré spatialement),
+mais un motif spatial dont l'amplitude se renforce dans le temps fait
+monter le tau de Kendall de $I_t$ **sans aucun vrai ralentissement
+critique**. Mesuré sur trois champs de test : dérive uniforme sans
+structure spatiale, $\tau \approx +0{,}05$ ; gradient spatial statique,
+$\tau \approx -0{,}15$ ; gradient qui se renforce dans le temps,
+$\tau \approx +0{,}81$ — un faux positif net. **Obligatoire avant tout
+calcul de tendance sur $I_t$** : retirer une tendance temporelle propre à
+chaque territoire (lissage gaussien ou LOWESS, unité par unité) et
+calculer $I_t$ sur les résidus, pas sur le champ brut. Cette correction
+retire les motifs qui varient lentement, mais **ne retire pas** une
+hausse de l'amplitude de fluctuations spatialement cohérentes par
+rapport au bruit propre à chaque unité — un effet distinct qui nécessite
+une période de référence plutôt qu'un simple retrait de tendance
+(Dakos et al. 2010, Fig. 6a-b, documentent deux autres causes de hausse
+de $I_t$ sans changement de proximité à une transition : connectivité
+croissante et hétérogénéité environnementale croissante).
+
+**Nuance d'interprétation, à ne jamais omettre** : une hausse de $I_t$
+n'est pas automatiquement un signe d'approche de bascule. Rietkerk et al.
+(*Science*, 2021) montrent que l'auto-organisation spatiale peut au
+contraire marquer une **évasion** de bascule plutôt qu'un rapprochement —
+une hausse de $I_t$ est une invitation à modéliser *pourquoi* le motif se
+forme, jamais un résultat à lire seul.
+
+**Test de significativité par permutation** : comme au §5.4, mais avec
+un plancher explicite sur la p-value — $p = \dfrac{1+\#\{I_{\text{surrogate}} \geq I_{\text{obs}}\}}{1+M}$
+(Davison & Hinkley, 1997 ; North, Curtis & Sham, 2002), jamais
+$p=\#\{\dots\}/M$ seul, qui peut tomber exactement à 0 et suggérer une
+significativité artificiellement absolue.
+
 ### 5.3 Fusion multi-fréquence (nowcasting)
 
 Modèle à espace d'états :
@@ -312,7 +371,10 @@ littérature : la quasi-totalité des études EWS spatiaux sont validées sur
 des grilles régulières idéalisées, pas sur des réseaux réels irréguliers
 comme les communes françaises) : l'indice de Moran se comporte
 différemment sur le réseau réel (tailles et topologie hétérogènes) que
-sur une grille régulière de contrôle de même taille.
+sur une grille régulière de contrôle de même taille. **Calculé sur les
+résidus après retrait de tendance, jamais sur le champ brut** (§5.2) —
+sinon un test de robustesse réseau réel vs grille risque de confondre
+un artefact de gradient avec une vraie différence de comportement.
 
 **H3 — Indicateur joint** : combiner une tendance temporelle
 significative ET une tendance spatiale significative réduit les faux
@@ -330,14 +392,25 @@ stabilité plutôt que d'approcher une bascule unique.
 
 ### 5.6 Modèle formel pour H3 — statistique jointe
 
-**Cadrage honnête** : cette construction n'est pas une originalité du
-projet — c'est une méthode déjà publiée et implémentée, la **méthode
-empirique de Brown** (Empirical Brown's Method, Poole et al., 2016), qui
-combine des p-values corrélées via une distribution nulle empirique.
-Ce que fait ce paragraphe est de documenter comment l'appliquer à notre
-cas (indicateur temporel + indicateur spatial), pas de la reconstruire
-comme si elle était nouvelle. Utiliser directement l'implémentation
-existante (packages disponibles) est préférable à la ré-implémenter.
+**Cadrage honnête, corrigé** : cette construction n'est pas une
+originalité du projet — et une revue externe (voir §1ter.1) a montré
+qu'elle n'était même pas nommée correctement. Ce paragraphe combine en
+réalité deux techniques distinctes, à ne pas confondre :
+- Le polynôme de correction utilisé à l'étape 4 ci-dessous
+  ($3{,}263\rho + 0{,}710\rho^2 + 0{,}027\rho^3$) est celui de **Kost &
+  McDermott (2002)**, pas celui de Brown.
+- La **méthode empirique de Brown** (Empirical Brown's Method, Poole et
+  al., 2016) est une technique différente : elle estime la covariance
+  des termes $-2\ln(p_i)$ **empiriquement à partir des données**
+  (transformation ECDF), plutôt que par une formule fermée en $\rho$.
+
+Les deux poursuivent le même objectif (corriger Fisher pour des
+indicateurs corrélés) mais ne sont pas interchangeables, et notre
+formule est celle de Kost & McDermott, pas celle de Brown — une erreur
+d'attribution trouvée par Bruce Stephenson en relisant la contribution
+au paquet `ewstools` (§1ter.1), corrigée ici après coup. Utiliser
+directement une implémentation existante et correctement nommée reste
+préférable à la ré-implémenter.
 
 **Construction** :
 
@@ -352,13 +425,25 @@ existante (packages disponibles) est préférable à la ré-implémenter.
    (elle suppose l'indépendance des indicateurs, hypothèse fausse ici :
    variance, autocorrélation et indice de Moran sont calculés sur le même
    système sous-jacent).
-4. Calibrer $T$ empiriquement : générer $M$ jeux de données de
-   substitution qui préservent la corrélation croisée entre les séries
-   (surrogates à phase aléatoire appliqués simultanément à l'ensemble des
-   séries couplées, pas indicateur par indicateur), recalculer
-   $T_{surrogate}$ sur chacun, puis :
-   $$p_{joint} = \frac{\#\{T_{surrogate} \geq T_{observé}\}}{M}$$
-5. Ce $p_{joint}$ est le verdict testé pour H3 (§7), avec la même règle
+4. Calibrer $T$ par la correction de Kost & McDermott (2002) : ajuster
+   les degrés de liberté effectifs via le facteur $c$ dérivé du polynôme
+   ci-dessus appliqué à la corrélation $\rho$ estimée entre chaque paire
+   d'indicateurs (voir la démonstration ci-dessous). Alternative
+   équivalente mais plus coûteuse : générer $M$ jeux de données de
+   substitution préservant la corrélation croisée et calculer
+   $p_{joint} = \#\{T_{surrogate} \geq T_{observé}\}/M$ directement.
+5. **Correctif obligatoire, trouvé par la revue externe** : la
+   correction de l'étape 4 est **anti-conservatrice quand les
+   indicateurs sont corrélés négativement** — jusqu'à 37 fois trop
+   permissive en cas d'anti-corrélation parfaite, 11 fois à $\rho=-0{,}8$.
+   La contribution du polynôme en $\rho$ doit être **plafonnée à 0**
+   (jamais négative) avant d'ajuster les degrés de liberté effectifs :
+   une corrélation négative entre indicateurs ne doit jamais rendre le
+   test plus permissif que Fisher indépendant, seulement moins
+   permissif ou équivalent. Vérifier que le résultat coïncide exactement
+   avec Fisher indépendant dans le cas limite d'une anti-corrélation
+   parfaite (test de non-régression à ajouter).
+6. Ce $p_{joint}$ est le verdict testé pour H3 (§7), avec la même règle
    de prudence : jamais de "confirmée" sur un seul épisode.
 
 **Démonstration (contenu obligatoire du mode expert)** : sous H0, si les
@@ -371,8 +456,18 @@ théorique de la $\chi^2(2k)$ : la covariance entre les termes
 $-2\ln(p_i)$ n'est plus nulle, donc utiliser le seuil théorique sous- ou
 sur-estime le vrai taux de faux positifs selon le signe de cette
 covariance. C'est exactement pourquoi l'étape 4 remplace le seuil
-théorique par un seuil empirique — la démonstration doit montrer ce
-raisonnement, pas seulement l'affirmer.
+théorique par un seuil corrigé — la démonstration doit montrer ce
+raisonnement, pas seulement l'affirmer, et doit maintenant inclure
+pourquoi le plafonnement de l'étape 5 est nécessaire (une covariance
+négative réduirait artificiellement la variance de $T$ sous le seuil
+théorique sans plafonnement, rendant le test trop généreux plutôt que
+trop prudent).
+
+**Garde-fou de traçabilité** : ce module doit citer Kost & McDermott
+(2002) comme source de la formule utilisée, et Poole et al. (2016)
+séparément comme méthode alternative si une implémentation empirique
+(plutôt que par polynôme fermé) est un jour préférée — ne jamais
+attribuer cette formule précise à Brown seul.
 
 ### 5.6bis Résultat préliminaire — l'indicateur temporel précède-t-il toujours le spatial ?
 
@@ -791,11 +886,14 @@ exactement l'existant sur de nouvelles données.
 
 **Méthode** : la grille ECEi (20×8) est un réseau spatial régulier —
 elle remplace directement le réseau territorial du §6 dans le calcul de
-l'indice de Moran (§5.2), sans modification de la formule. Le signal
-temporel d'un capteur (ou de la moyenne des capteurs) remplace la série
-Insee du §5.1. Les épisodes de disruption connus (répertoriés dans
-DisruptionBench) servent de vérité terrain, au même titre que les
-épisodes historiques du §5.7.
+l'indice de Moran (§5.2), sans modification de la formule — **y compris
+le retrait de tendance sur les résidus avant calcul**, particulièrement
+important ici : un plasma qui dérive thermiquement produit exactement le
+type de gradient spatial qui se renforce dans le temps et fausse $I_t$
+si on l'applique au champ brut (§5.2). Le signal temporel d'un capteur
+(ou de la moyenne des capteurs) remplace la série Insee du §5.1. Les
+épisodes de disruption connus (répertoriés dans DisruptionBench) servent
+de vérité terrain, au même titre que les épisodes historiques du §5.7.
 
 **Cadrage honnête** : la quasi-totalité des travaux publiés sur la
 prédiction de disruption utilisent des modèles d'apprentissage profond
@@ -1106,7 +1204,8 @@ exacte dans l'interface (mode expert), pas seulement d'un nom d'auteur :
 - Dakos, V., Carpenter, S. R., Brock, W. A., Ellison, A. M., Guttal, V., Ives, A. R., Kéfi, S., Livina, V., Seekell, D. A., van Nes, E. H., & Scheffer, M. (2012). "Methods for Detecting Early Warnings of Critical Transitions in Time Series Illustrated Using Simulated Ecological Data." *PLoS ONE*, 7(7), e41010.
 - Fisher, R. A. (1925). *Statistical Methods for Research Workers*. Oliver and Boyd.
 - Brown, M. B. (1975). "A method for combining non-independent, one-sided tests of significance." *Biometrics*, 31(4), 987–992.
-- Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). "Combining dependent P-values with an empirical adaptation of Brown's method." *Bioinformatics*, 32(17), i430–i436. — méthode directement réutilisée pour H3 (Empirical Brown's Method), pas reconstruite.
+- Poole, W., Gibbs, D. L., Shmulevich, I., Bernard, B., & Knijnenburg, T. A. (2016). "Combining dependent P-values with an empirical adaptation of Brown's method." *Bioinformatics*, 32(17), i430–i436. — méthode alternative citée au §5.6, non utilisée directement (voir Kost & McDermott ci-dessous pour la formule réellement employée).
+- Kost, J. T., & McDermott, M. P. (2002). "Combining dependent P-values." *Statistics & Probability Letters*, 60(2), 183–190. — source réelle du polynôme de correction utilisé au §5.6 ; attribution corrigée après une revue externe qui l'avait initialement mal nommée "méthode de Brown".
 - Legault, V., Pu, Y., Weinans, E., & Cohen, A. A. (2024). "Application of early warning signs to physiological contexts: a comparison of multivariate indices in patients on long-term hemodialysis." *Frontiers in Network Physiology*, 4, 1299162. — source de la comparaison variance/autocorrélation citée au §5.6quater.
 - Bak, P., Tang, C., & Wiesenfeld, K. (1987). "Self-organized criticality: An explanation of the 1/f noise." *Physical Review Letters*, 59(4), 381–384. — fondement théorique de H5.
 - Clauset, A., Shalizi, C. R., & Newman, M. E. J. (2009). "Power-Law Distributions in Empirical Data." *SIAM Review*, 51(4), 661–703. — méthode d'estimation et de test utilisée pour H5 (§5.9.1-5.9.2).
@@ -1124,6 +1223,9 @@ exacte dans l'interface (mode expert), pas seulement d'un nom d'auteur :
 - Hebb, D. O. (1949). *The Organization of Behavior*. — règle d'apprentissage citée au §7quinquies (domaine Mémoire collective).
 - Hopfield, J. J. (1982). "Neural networks and physical systems with emergent collective computational abilities." *PNAS*, 79(8), 2554–2558. — modèle fondateur du domaine Mémoire collective (§7quinquies), prix Nobel de physique 2024.
 - Amit, D. J., Gutfreund, H., & Sompolinsky, H. (1985). "Storing infinite numbers of patterns in a spin-glass model of neural networks." *Physical Review Letters*, 55(14), 1530–1533. — borne de capacité citée au §7quinquies et dans `hopfieldkit`.
+- Rietkerk, M., Bastiaansen, R., Banerjee, S., van de Koppel, J., Baudena, M., & Rietkerk, F. (2021). "Evasion of tipping in complex systems through spatial pattern formation." *Science*, 374(6564), eabj0359. — nuance d'interprétation sur l'indice de Moran (§5.2, §7ter) trouvée lors de la revue externe : l'auto-organisation spatiale peut signaler une évasion de bascule plutôt qu'une approche.
+- Davison, A. C., & Hinkley, D. V. (1997). *Bootstrap Methods and their Application*. Cambridge University Press. — convention du plancher de p-value ($+1$ au numérateur et au dénominateur) pour les tests par permutation, appliquée au §5.2 et §5.4.
+- North, B. V., Curtis, D., & Sham, P. C. (2002). "A note on the calculation of empirical P values from Monte Carlo procedures." *American Journal of Human Genetics*, 71(2), 439–441. — même convention, seconde source citée lors de la revue externe.
 
 **Règle de citation** : aucune formule ou démonstration affichée en mode
 expert ne doit apparaître sans la référence correspondante visible dans

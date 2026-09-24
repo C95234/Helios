@@ -1,32 +1,32 @@
 {
-  "refreshedAt": "2026-09-04",
+  "refreshedAt": "2026-09-24",
   "phenomena": [
     {
       "label": "Mouvement social 2018 (« gilets jaunes »)",
       "tau": 0.966,
-      "moran": 0.36,
-      "pJoint": 0.04,
+      "moran": 0.286,
+      "pJoint": 0.02,
       "sig": true
     },
     {
       "label": "Tension sanitaire 2020 (premier confinement)",
       "tau": 0.143,
-      "moran": 0.347,
-      "pJoint": 0.704,
+      "moran": 0.178,
+      "pJoint": 0.687,
       "sig": false
     },
     {
       "label": "Climat social recent (fenetre glissante la plus recente)",
       "tau": 0.062,
-      "moran": 0.362,
-      "pJoint": 0.535,
+      "moran": 0.316,
+      "pJoint": 0.442,
       "sig": false
     },
     {
       "label": "Mouvement social contre la réforme des retraites 2023",
       "tau": 0.733,
-      "moran": 0.383,
-      "pJoint": 0.112,
+      "moran": 0.371,
+      "pJoint": 0.091,
       "sig": false
     }
   ],

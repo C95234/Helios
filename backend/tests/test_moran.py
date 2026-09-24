@@ -69,3 +69,19 @@ def test_permutation_test_null_mean_matches_theoretical_expectation():
     result = permutation_test(values, weights, n_permutations=2000, seed=1)
     expected_null_mean = -1 / (n - 1)
     assert result["null_mean"] == pytest.approx(expected_null_mean, abs=0.05)
+
+
+def test_permutation_test_p_value_never_exactly_zero():
+    # Meme bug que celui trouve par Bruce Stephenson dans la contribution ewstools
+    # (Journal §9) : sans plancher, p = #{null >= observed}/M peut tomber exactement
+    # a 0 sur un champ tres structure. Reproduit ici sur un gradient net (le meme
+    # type de champ que celui utilise dans la revue externe).
+    n = 8
+    values = np.arange(n, dtype=float)
+    weights = np.zeros((n, n))
+    for i in range(n - 1):
+        weights[i, i + 1] = weights[i + 1, i] = 1
+
+    result = permutation_test(values, weights, n_permutations=500, seed=0)
+    assert result["p_value"] > 0.0
+    assert result["p_value"] == pytest.approx(1 / 501, abs=1e-9) or result["p_value"] >= 1 / 501

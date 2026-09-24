@@ -60,7 +60,10 @@ async def test_h3(
 
     national_series = national_df.set_index("date")["valeur"]
     quarterly_dates = spatial["dates"]
-    i_real = pd.Series(spatial["i_real"], index=quarterly_dates)
+    # Residus post-LOWESS (§5.2), jamais le champ brut -- une derive structurelle du
+    # chomage departemental ferait sinon paraitre les trimestres recents systematiquement
+    # plus "extremes en rang" sans rapport avec un vrai signal precurseur (§1ter.1).
+    i_real = pd.Series(spatial["i_real_detrended"], index=quarterly_dates)
 
     historical_national_tau = national_tau_per_window_end(national_series, quarterly_dates, window_months, insee_window)
 
