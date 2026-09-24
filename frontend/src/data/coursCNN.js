@@ -42,16 +42,30 @@ export const CNN_SECTIONS = [
         type: "definition",
         title: "Architecture utilisée dans le banc d'essai",
         body: [
-          { text: "Le classifieur comparé à l'indicateur classique (page Résultat du banc d'essai) empile deux couches de convolution (8 puis 16 filtres, noyau de taille 5) chacune suivie d'un ReLU et d'un sous-échantillonnage par maximum (\"max pooling\", divise la longueur par 2 en gardant la valeur la plus forte de chaque paire), puis aplatit le résultat en un vecteur passé à deux couches pleinement connectées (32 puis 1 sortie) :" },
-          { tex: "\\text{Conv}_8 \\to \\text{ReLU} \\to \\text{Pool}_2 \\to \\text{Conv}_{16} \\to \\text{ReLU} \\to \\text{Pool}_2 \\to \\text{Aplatir} \\to \\text{Dense}_{32} \\to \\text{ReLU} \\to \\text{Dense}_1", block: true },
-          { text: "Volontairement modeste (2 couches de convolution, quelques milliers de paramètres) -- pas une reproduction de l'architecture de Bury et al. (2021), qui empile davantage de couches et vise en plus à identifier le type de bifurcation. Code exact : backend/app/ml_benchmark.py, classe SimpleCNN1D." },
+          { text: "Le classifieur comparé à l'indicateur classique (page Résultat du banc d'essai) reprend l'architecture réelle de Bury et al. (2021) -- code source complet publié (github.com/ThomasMBury/deep-early-warnings-pnas), lu directement plutôt que reconstruit de mémoire : une couche de convolution (50 filtres, noyau de taille 12) suivie d'un ReLU, d'un abandon aléatoire (\"dropout\", 10% des activations mises à zéro à chaque passage pour limiter le surapprentissage) et d'un sous-échantillonnage par maximum, puis deux couches LSTM (mémoire court-terme, 50 puis 10 cellules) qui traitent la séquence dans le temps, chacune suivie d'un dropout, avant une couche de sortie :" },
+          { tex: "\\text{Conv}_{50} \\to \\text{ReLU} \\to \\text{Dropout} \\to \\text{Pool}_2 \\to \\text{LSTM}_{50} \\to \\text{Dropout} \\to \\text{LSTM}_{10} \\to \\text{Dropout} \\to \\text{Dense}_1", block: true },
+          { text: "Seule différence assumée avec l'architecture originale : une sortie Dense(1, sigmoïde) plutôt que Dense(4, softmax) -- Bury et al. classent le TYPE de bifurcation (fold, Hopf, transcritique ou nul, 4 classes) sur un grand nombre de modèles génériques, tandis que le banc d'essai teste seulement \"bascule proche ou non\" sur les 2 modèles déjà construits (nœud-col, Kuramoto) -- une tâche plus simple qui ne justifie pas 4 sorties. Code exact : backend/app/ml_benchmark.py, classe CnnLstmClassifier." },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Ce qui n'est PAS repris de Bury et al. -- une échelle d'entraînement adaptée",
+        body: [
+          { text: "Bury et al. entraînent sur 200 000 séquences de longueur 500 à 1500, pendant 1500 passages complets des données. Mesuré directement sur le matériel de ce projet : une seule passe sur 95 000 fenêtres de longueur 60 (déjà plus courtes) prend déjà environ 150 secondes -- l'échelle originale y prendrait des heures par modèle, multiplié par les 10 modèles de l'ensemble. Le jeu d'entraînement et le nombre de passages sont donc réduits, et l'entraînement se fait par mini-lots plutôt qu'en un seul bloc (Bury et al. utilisent eux-mêmes des lots de 1000 exemples -- seule leur taille change ici). Aucune prétention de reproduire leurs résultats publiés à l'identique : l'objectif est de tester la MÊME architecture sur de nouveaux modèles et de nouvelles données, pas de battre leurs chiffres." },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Un biais connu, testé plutôt qu'évité",
+        body: [
+          { text: "Un co-auteur de Bury et al. a publié une critique méthodologique du prétraitement de ce type de classifieur (Dablander & Bury, 2021) : entraîné sur des séries qui approchent une vraie bifurcation, un tel réseau peut aussi classer à tort un simple processus AR(1) stationnaire (aucune bifurcation, juste de la persistance temporelle) comme \"proche d'une bascule\". Le banc d'essai teste directement ce biais -- l'ensemble des 10 modèles est appliqué à des séries AR(1) synthétiques (plusieurs niveaux de persistance) et le taux de fenêtres flaguées à tort est rapporté sur la page de résultat, pas seulement mentionné comme une limite théorique." },
         ],
       },
       {
         type: "exemple",
         title: "Une passe avant complète, à la main, sur un réseau jouet",
         body: [
-          { text: "Pour suivre le calcul de bout en bout sans planche à calculer, on réduit l'architecture ci-dessus à une seule couche de convolution (un filtre, pas huit) suivie d'un ReLU, d'un max pooling, puis d'une couche dense à une sortie -- même enchaînement d'opérations, en miniature." },
+          { text: "L'architecture réelle ci-dessus (convolution + LSTM) est trop grande pour un calcul à la main -- une seule cellule LSTM implique déjà quatre portes et plusieurs matrices de poids. Pour suivre le calcul de bout en bout sans planche à calculer, on illustre ici seulement la partie convolutive sur un réseau miniature : une couche de convolution (un filtre, pas 50) suivie d'un ReLU, d'un max pooling, puis directement d'une couche dense à une sortie (sans LSTM) -- même enchaînement d'opérations que le début de l'architecture réelle, en miniature." },
           { text: "Entrée $x=(1,3,-1,2,0,1)$ ($n=6$). Filtre de convolution $w^{(1)}=(1,0,-1)$, biais $b^{(1)}=0$, padding $p=1$ (le même filtre \"détecteur de pic\" que ci-dessus). Série complétée : $(0,1,3,-1,2,0,1,0)$." },
           { tex: "y^{(1)} = (-3,\\ 2,\\ 1,\\ -1,\\ 1,\\ 0)", block: true },
           { text: "ReLU : les valeurs négatives passent à 0." },
@@ -181,5 +195,6 @@ export const CNN_REFERENCES = [
   "Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). « Learning representations by back-propagating errors. » Nature, 323, 533-536.",
   "Kingma, D. P., & Ba, J. (2015). « Adam: A Method for Stochastic Optimization. » 3rd International Conference on Learning Representations (ICLR).",
   "Bury, T. M., Sujith, R. I., Pavithran, I., Scheffer, M., Lenton, T. M., Anand, M., & Bauch, C. T. (2021). « Deep learning for early warning signals of tipping points. » Proceedings of the National Academy of Sciences, 118(39), e2106140118.",
+  "Dablander, F., & Bury, T. M. (2021). « Deep learning for tipping points: Preprocessing matters. » Proceedings of the National Academy of Sciences, 118(40), e2115605118.",
   "Gardner, E. (1988). « The space of interactions in neural network models. » Journal of Physics A, 21(1), 257–270.",
 ];

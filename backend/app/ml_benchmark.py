@@ -216,81 +216,140 @@ def build_dataset(
     return X_all[keep_idx], y_all[keep_idx]
 
 
-# -- Classifieur (PyTorch, CPU, volontairement modeste) ------------------------
+# -- Classifieur (PyTorch, CPU) -- architecture adaptee de Bury et al. (2021) --
+#
+# Correction (cahier des charges "banc d'essai IA vs statistiques" §1.1) : la
+# premiere version etait "un petit CNN 1D, pas une reproduction de
+# l'architecture de Bury et al." -- un choix documente comme provisoire. Le
+# code d'entrainement complet de Bury et al. est publie
+# (github.com/ThomasMBury/deep-early-warnings-pnas, dl_train/DL_training.py,
+# recupere et lu directement, pas reimplemente de memoire) : l'architecture
+# reelle est Conv1D(50 filtres, noyau 12) -> Dropout(0,10) -> MaxPool(2) ->
+# LSTM(50) -> Dropout(0,10) -> LSTM(10) -> Dropout(0,10) -> Dense, entrainee
+# avec Adam(lr=0,0005). Reprise ici telle quelle pour la partie traitement du
+# signal (les memes hyperparametres exacts : filtres, taille de noyau,
+# tailles de memoire LSTM, taux de dropout, taux d'apprentissage).
+#
+# Ce qui CHANGE necessairement, documente honnetement (§1.1 : "reproduire
+# fidelement... jamais pretendre faire mieux") :
+# - Sortie Dense(4, softmax) -> Dense(1, sigmoid) : Bury et al. classent le
+#   TYPE de bifurcation (fold/Hopf/transcritical/nul, 4 classes) sur un tres
+#   grand nombre de modeles generiques ; Helios teste seulement "bascule
+#   proche ou non" sur les 2 modeles deja construits (noeud-col, Kuramoto) --
+#   une tache differente, plus simple, qui ne justifie pas 4 sorties.
+# - Echelle d'entrainement drastiquement reduite : Bury et al. entrainent sur
+#   200 000 sequences de longueur 500-1500 pendant 1500 epoques en
+#   entrainement pleine-batch -- verifie directement sur ce materiel (une
+#   seule epoque pleine-batch a 8 000 fenetres de longueur 60 a deja pris
+#   ~21s, l'echelle de Bury et al. y prendrait des heures par modele). Le jeu
+#   d'entrainement et le nombre d'epoques sont donc reduits (voir
+#   train_and_compare_classifier.py), et l'entrainement se fait par
+#   mini-lots plutot qu'en pleine-batch -- Bury et al. utilisent egalement un
+#   entrainement par lots (batch_size=1000), la mecanique n'est donc pas
+#   nouvelle, seule sa taille est adaptee a notre echelle de donnees.
 
 
-class SimpleCNN1D:
-    """Petit CNN 1D pour classification binaire "bascule proche / non" sur
-    une fenetre brute. Volontairement modeste : pas une reproduction de
-    l'architecture de Bury et al. (2021), juste assez pour la comparaison
-    (§3bis : "pas besoin de reproduire l'architecture exacte")."""
+class CnnLstmClassifier:
+    """Classifieur CNN-LSTM binaire "bascule proche / non" -- architecture
+    adaptee de Bury et al. (2021), voir le commentaire de module ci-dessus."""
+
+    FILTERS = 50
+    KERNEL_SIZE = 12
+    LSTM1_UNITS = 50
+    LSTM2_UNITS = 10
+    DROPOUT = 0.10
 
     def __init__(self, window_len: int, seed: int = 0):
         import torch
         import torch.nn as nn
 
         torch.manual_seed(seed)
-
-        # Note : une premiere version utilisait un AdaptiveAvgPool1d(1) final,
-        # qui moyenne tout le canal en un seul nombre et efface donc OU dans
-        # la fenetre se trouve un signal montant -- exactement l'information
-        # utile pour detecter une approche de bascule. Remplace par un
-        # flatten apres pooling local (MaxPool1d), qui garde une notion de
-        # position le long de la fenetre.
-        n_flat = 16 * (window_len // 4)
+        filters, kernel, lstm1, lstm2, dropout = (
+            self.FILTERS,
+            self.KERNEL_SIZE,
+            self.LSTM1_UNITS,
+            self.LSTM2_UNITS,
+            self.DROPOUT,
+        )
 
         class _Net(nn.Module):
             def __init__(self):
                 super().__init__()
-                self.conv1 = nn.Conv1d(1, 8, kernel_size=5, padding=2)
-                self.pool1 = nn.MaxPool1d(2)
-                self.conv2 = nn.Conv1d(8, 16, kernel_size=5, padding=2)
-                self.pool2 = nn.MaxPool1d(2)
-                self.fc1 = nn.Linear(n_flat, 32)
-                self.fc2 = nn.Linear(32, 1)
+                self.conv = nn.Conv1d(1, filters, kernel_size=kernel, padding=kernel // 2)
+                self.dropout1 = nn.Dropout(dropout)
+                self.pool = nn.MaxPool1d(2)
+                self.lstm1 = nn.LSTM(filters, lstm1, batch_first=True)
+                self.dropout2 = nn.Dropout(dropout)
+                self.lstm2 = nn.LSTM(lstm1, lstm2, batch_first=True)
+                self.dropout3 = nn.Dropout(dropout)
+                self.fc = nn.Linear(lstm2, 1)
 
             def forward(self, x):
-                x = self.pool1(torch.relu(self.conv1(x)))
-                x = self.pool2(torch.relu(self.conv2(x)))
-                x = x.flatten(start_dim=1)
-                x = torch.relu(self.fc1(x))
-                return self.fc2(x).squeeze(-1)
+                # x : (batch, 1, window_len)
+                x = torch.relu(self.conv(x))
+                x = self.dropout1(x)
+                x = self.pool(x)  # (batch, filters, window_len//~2)
+                x = x.transpose(1, 2)  # (batch, seq, filters) -- LSTM batch_first
+                x, _ = self.lstm1(x)  # equivalent de return_sequences=True (Keras)
+                x = self.dropout2(x)
+                _, (h, _) = self.lstm2(x)  # equivalent de return_sequences=False : dernier etat cache
+                x = self.dropout3(h[-1])
+                return self.fc(x).squeeze(-1)
 
         self.torch = torch
         self.net = _Net()
 
-    def fit(self, X: np.ndarray, y: np.ndarray, epochs: int = 30, lr: float = 1e-3, seed: int = 0) -> list[float]:
+    def fit(
+        self,
+        X: np.ndarray,
+        y: np.ndarray,
+        epochs: int = 30,
+        lr: float = 0.0005,
+        batch_size: int = 256,
+        seed: int = 0,
+    ) -> list[float]:
+        """Entrainement par mini-lots (Bury et al. utilisent aussi des lots,
+        batch_size=1000 -- adapte ici a la taille reduite de notre jeu de
+        donnees, voir le commentaire de module). Une "perte" par epoque =
+        moyenne des pertes de mini-lots de cette epoque."""
         torch = self.torch
         torch.manual_seed(seed)
+        rng = np.random.default_rng(seed)
+
         mean, std = X.mean(), X.std() + 1e-8
         X_norm = (X - mean) / std
         self._mean, self._std = mean, std
 
         X_t = torch.tensor(X_norm, dtype=torch.float32).unsqueeze(1)
         y_t = torch.tensor(y, dtype=torch.float32)
+        n = len(y_t)
 
         # pos_weight contrebalance le desequilibre residuel (~4:1 negatif
         # apres le sous-echantillonnage de build_dataset) -- sans lui, le
-        # classifieur apprend un signal reel (verifie : proba moyenne plus
-        # haute sur les positifs) mais jamais assez pour franchir le seuil
-        # de decision a 0,5.
+        # classifieur apprend un signal reel mais jamais assez fort pour
+        # franchir le seuil de decision a 0,5 (verifie empiriquement).
         n_pos = float(y_t.sum())
-        n_neg = float(len(y_t) - n_pos)
+        n_neg = float(n - n_pos)
         pos_weight = torch.tensor(n_neg / max(n_pos, 1.0))
 
         optimizer = torch.optim.Adam(self.net.parameters(), lr=lr)
         loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
-        losses = []
+        epoch_losses = []
         self.net.train()
         for _ in range(epochs):
-            optimizer.zero_grad()
-            logits = self.net(X_t)
-            loss = loss_fn(logits, y_t)
-            loss.backward()
-            optimizer.step()
-            losses.append(float(loss.item()))
-        return losses
+            order = rng.permutation(n)
+            batch_losses = []
+            for start in range(0, n, batch_size):
+                idx = order[start : start + batch_size]
+                optimizer.zero_grad()
+                logits = self.net(X_t[idx])
+                loss = loss_fn(logits, y_t[idx])
+                loss.backward()
+                optimizer.step()
+                batch_losses.append(float(loss.item()))
+            epoch_losses.append(float(np.mean(batch_losses)))
+        return epoch_losses
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         torch = self.torch
@@ -307,7 +366,7 @@ class SimpleCNN1D:
         d'evaluation, qui ne concerne que l'inference."""
         self.torch.save({"state_dict": self.net.state_dict(), "mean": self._mean, "std": self._std}, path)
 
-    def load(self, path: str) -> "SimpleCNN1D":
+    def load(self, path: str) -> "CnnLstmClassifier":
         checkpoint = self.torch.load(path, weights_only=False)
         self.net.load_state_dict(checkpoint["state_dict"])
         self._mean = checkpoint["mean"]

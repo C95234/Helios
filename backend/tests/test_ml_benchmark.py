@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from app.ml_benchmark import (
-    SimpleCNN1D,
+    CnnLstmClassifier,
     _kendall_tau_rows,
     _rolling_ac1_batch,
     _rolling_var_batch,
@@ -80,21 +80,21 @@ def test_build_dataset_shapes_and_balance():
 
 def test_cnn_training_reduces_loss():
     X, y = build_dataset(n_saddle=6, n_kuramoto=6, seed0=42, window_len=60, stride=5, negative_ratio=4.0)
-    cnn = SimpleCNN1D(window_len=60, seed=0)
+    cnn = CnnLstmClassifier(window_len=60, seed=0)
     losses = cnn.fit(X, y, epochs=20, seed=0)
     assert losses[-1] < losses[0]
 
 
 def test_cnn_save_load_round_trip(tmp_path):
     X, y = build_dataset(n_saddle=6, n_kuramoto=6, seed0=42, window_len=60, stride=5, negative_ratio=4.0)
-    cnn = SimpleCNN1D(window_len=60, seed=0)
+    cnn = CnnLstmClassifier(window_len=60, seed=0)
     cnn.fit(X, y, epochs=10, seed=0)
     probs_before = cnn.predict_proba(X[:20])
 
     checkpoint = tmp_path / "model.pt"
     cnn.save(str(checkpoint))
 
-    reloaded = SimpleCNN1D(window_len=60, seed=1)  # graine differente -- doit quand meme reproduire apres load
+    reloaded = CnnLstmClassifier(window_len=60, seed=1)  # graine differente -- doit quand meme reproduire apres load
     reloaded.load(str(checkpoint))
     probs_after = reloaded.predict_proba(X[:20])
 
@@ -103,7 +103,7 @@ def test_cnn_save_load_round_trip(tmp_path):
 
 def test_cnn_predict_proba_in_bounds():
     X, y = build_dataset(n_saddle=6, n_kuramoto=6, seed0=42, window_len=60, stride=5, negative_ratio=4.0)
-    cnn = SimpleCNN1D(window_len=60, seed=0)
+    cnn = CnnLstmClassifier(window_len=60, seed=0)
     cnn.fit(X, y, epochs=10, seed=0)
     probs = cnn.predict_proba(X[:20])
     assert ((probs >= 0.0) & (probs <= 1.0)).all()

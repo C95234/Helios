@@ -26,9 +26,10 @@ reelles) :
   calibrer un tel filtre pour des fenetres quotidiennes tres chevauchantes
   demanderait son propre travail de calibration, non fait ici -- le taux de
   fenetres individuellement positives est rapporte tel quel, sans lissage.
-- Ensemble des 5 modeles deja entraines (§1.1) plutot qu'un seul : probabilite
-  moyenne des 5 seeds, vote majoritaire pour le verdict par fenetre --
-  coherent avec la logique multi-graines du reste du banc d'essai.
+- Ensemble des 10 modeles CNN-LSTM entraines ici (§1.1, architecture adaptee
+  de Bury et al.) plutot qu'un seul : probabilite moyenne des 10 seeds pour
+  le verdict par fenetre -- coherent avec la logique d'ensemble de Bury et
+  al. eux-memes, reprise pour tout le banc d'essai.
 
 Calcul hors-ligne. Sortie : JSON dans
 frontend/src/data/results/ia_vs_stats_real_h1.json
@@ -47,7 +48,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from app.connectors.wikipedia import WikipediaPageviewsConnector  # noqa: E402
-from app.ml_benchmark import SimpleCNN1D, build_dataset  # noqa: E402
+from app.ml_benchmark import CnnLstmClassifier, build_dataset  # noqa: E402
 from app.phenomena import PHENOMENA  # noqa: E402
 
 OUTPUT_PATH = (
@@ -61,9 +62,11 @@ OUTPUT_PATH = (
 
 WINDOW_LEN = 60
 REAL_STRIDE = 1
-N_SEEDS = 5
-N_TRAIN_SADDLE = 50
-N_TRAIN_KURAMOTO = 50
+N_SEEDS = 10
+N_TRAIN_SADDLE = 10
+N_TRAIN_KURAMOTO = 10
+FIT_EPOCHS = 25
+FIT_BATCH_SIZE = 256
 TRAIN_SEED0_BASE = 10_000  # memes graines que le run principal (§1), pour rejouer les memes modeles
 
 # Verdict H1 deja publie (nSocSig/nSoc, outcome) -- frontend/src/data/results/h1.json,
@@ -78,26 +81,43 @@ H1_PUBLISHED = {
 }
 
 
-def train_ensemble() -> list[SimpleCNN1D]:
+CHECKPOINT_DIR = Path(__file__).resolve().parent.parent / "app" / "data" / "ia_vs_stats_ensemble"
+
+
+def train_ensemble() -> list[CnnLstmClassifier]:
+    """Recharge les 10 modeles deja entraines par train_and_compare_classifier.py
+    (§1.1) si leurs checkpoints existent -- evite un second entrainement complet
+    (~40 minutes) pour rejouer exactement le meme ensemble sur les donnees reelles.
+    Sinon, entraine depuis zero (memes graines/hyperparametres)."""
     models = []
+    all_checkpoints_exist = all((CHECKPOINT_DIR / f"seed_{i}.pt").exists() for i in range(N_SEEDS))
+    if all_checkpoints_exist:
+        print(f"  {N_SEEDS} checkpoints deja entraines trouves ({CHECKPOINT_DIR}), rechargement...", flush=True)
+        for seed_idx in range(N_SEEDS):
+            cnn = CnnLstmClassifier(window_len=WINDOW_LEN, seed=seed_idx)
+            cnn.load(str(CHECKPOINT_DIR / f"seed_{seed_idx}.pt"))
+            models.append(cnn)
+        return models
+
+    print("  Aucun checkpoint complet trouve, entrainement depuis zero...", flush=True)
     for seed_idx in range(N_SEEDS):
         t0 = time.time()
         train_seed0 = TRAIN_SEED0_BASE + seed_idx * 1_000
         X_train, y_train = build_dataset(N_TRAIN_SADDLE, N_TRAIN_KURAMOTO, train_seed0, WINDOW_LEN, 5)
-        cnn = SimpleCNN1D(window_len=WINDOW_LEN, seed=seed_idx)
-        losses = cnn.fit(X_train, y_train, epochs=100, seed=seed_idx)
+        cnn = CnnLstmClassifier(window_len=WINDOW_LEN, seed=seed_idx)
+        losses = cnn.fit(X_train, y_train, epochs=FIT_EPOCHS, batch_size=FIT_BATCH_SIZE, seed=seed_idx)
         print(f"  modele {seed_idx} : loss {losses[0]:.4f} -> {losses[-1]:.4f} ({time.time()-t0:.1f}s)", flush=True)
         models.append(cnn)
     return models
 
 
-def ensemble_predict(models: list[SimpleCNN1D], windows: np.ndarray) -> np.ndarray:
+def ensemble_predict(models: list[CnnLstmClassifier], windows: np.ndarray) -> np.ndarray:
     """Probabilite moyenne des N_SEEDS modeles sur un lot de fenetres deja normalisees."""
     probs = np.stack([m.predict_proba(windows) for m in models])
     return probs.mean(axis=0)
 
 
-async def analyze_phenomenon(key: str, models: list[SimpleCNN1D], wiki: WikipediaPageviewsConnector) -> dict:
+async def analyze_phenomenon(key: str, models: list[CnnLstmClassifier], wiki: WikipediaPageviewsConnector) -> dict:
     spec = PHENOMENA[key]
     combined = await wiki.fetch_combined(spec["wiki_articles"], spec["start"], spec["end"])
     if combined.empty or len(combined) < WINDOW_LEN + 4:

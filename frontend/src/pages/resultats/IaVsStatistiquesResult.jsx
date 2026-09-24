@@ -52,6 +52,48 @@ function SlidingWindowSchema() {
   );
 }
 
+function Ar1ValidityCheck({ ar1 }) {
+  if (!ar1) return null;
+  const phis = Object.keys(ar1.perPhi);
+  return (
+    <>
+      <h3>Validité sur des séries sans bifurcation (§1.1bis)</h3>
+      <p className="text-muted">
+        Un co-auteur de Bury a montré que ce type de classifieur peut classer à tort un simple processus AR(1)
+        stationnaire (aucune bifurcation, juste de la persistance temporelle) comme "proche d'une bascule"
+        (Dablander &amp; Bury, 2021). Test direct : l'ensemble des {R.nSeeds} modèles appliqué à des séries AR(1)
+        synthétiques, sans aucune vraie bifurcation.
+      </p>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th>Persistance (φ)</th>
+              <th>Fenêtres flaguées à tort</th>
+              <th>Probabilité moyenne</th>
+            </tr>
+          </thead>
+          <tbody>
+            {phis.map((phi) => (
+              <tr key={phi}>
+                <td>{phi}</td>
+                <td>{ar1.perPhi[phi].n_flagged}/{ar1.perPhi[phi].n} ({Math.round(ar1.perPhi[phi].flagged_fraction * 100)}%)</td>
+                <td>{ar1.perPhi[phi].mean_probability}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-muted">
+        Global : {Math.round(ar1.overallFlaggedFraction * 100)}% des {ar1.nTotal} fenêtres AR(1) (toutes valeurs de φ
+        confondues) flaguées à tort comme "proche d'une bascule" -- rapporté tel quel, dans les deux sens possibles :
+        un taux élevé confirmerait le biais documenté par Dablander &amp; Bury sur cette adaptation aussi ; un taux
+        faible ne prouverait pas son absence sur toute forme de série non stationnaire, seulement sur ce test précis.
+      </p>
+    </>
+  );
+}
+
 function ModelComparisonTable({ title, simple, classical, cnn, nSeeds }) {
   return (
     <>
@@ -145,7 +187,7 @@ export default function IaVsStatistiquesResult() {
       domain={{ name: "Banc d'essai transversal", to: "/resultats#banc-dessai" }}
       verdict="comparatif"
       episodesLabel={`${nTest} réalisations de test partagées, ${R.nSeeds} entraînements indépendants du classifieur`}
-      summary="Thomas Bury (mainteneur d'ewstools, avec Marten Scheffer) a montré qu'un classifieur de deep learning entraîné sur des séries simulées peut détecter l'approche d'une bascule. Ce banc d'essai compare, sur les deux modèles de bifurcation déjà construits pour Hélios, un petit classifieur CNN à l'indicateur statistique COMPLET déjà utilisé pour H1 (variance et autocorrélation glissantes, tau de Kendall, test par données de substitution) -- jamais une version appauvrie construite pour l'occasion. Le classifieur est ré-entraîné plusieurs fois (initialisation et données différentes à chaque fois) pour mesurer sa propre variabilité, jamais un seul chiffre présenté comme définitif."
+      summary="Thomas Bury (mainteneur d'ewstools, avec Marten Scheffer) a montré qu'un classifieur de deep learning entraîné sur des séries simulées peut détecter l'approche d'une bascule -- code et architecture publiés. Ce banc d'essai adapte cette architecture (CNN-LSTM) aux deux modèles de bifurcation déjà construits pour Hélios, et la compare à l'indicateur statistique COMPLET déjà utilisé pour H1 (variance et autocorrélation glissantes, tau de Kendall, test par données de substitution) -- jamais une version appauvrie construite pour l'occasion. Le classifieur est ré-entraîné en ensemble de plusieurs modèles indépendants (la méthode de robustesse de Bury et al. eux-mêmes) pour mesurer sa propre variabilité, jamais un seul chiffre présenté comme définitif."
       postulateSimple="Sur les mêmes fenêtres de série brute, un classifieur entraîné détecte-t-il l'approche d'une bascule plus tôt, plus souvent, ou de façon plus fiable qu'un indicateur statistique classique déjà interprétable -- ou est-ce l'inverse ?"
       postulateExpert={IA_VS_STATS_METHOD_NOTE}
       resultText={
@@ -163,11 +205,14 @@ export default function IaVsStatistiquesResult() {
 
           <div className="disclaimer">
             <p>
-              <strong>Correction de rigueur appliquée à cette page</strong> (cahier des charges dédié) : la version
-              précédente rapportait un seul entraînement et comparait le classifieur à une version appauvrie de
-              l'indicateur classique (une simple variance de fin de fenêtre contre un seuil). Les deux défauts sont
-              corrigés : le classifieur est maintenant ré-entraîné {R.nSeeds} fois de façon indépendante (moyenne ±
-              écart-type rapportés ci-dessous), et l'indicateur classique utilise désormais l'indicateur complet de
+              <strong>Corrections de rigueur appliquées à cette page</strong> (cahiers des charges dédiés,
+              successifs) : la version initiale rapportait un seul entraînement d'un petit CNN simplifié, comparé à
+              une version appauvrie de l'indicateur classique (une simple variance de fin de fenêtre contre un
+              seuil). Trois corrections cumulées depuis : (1) le classifieur reprend désormais l'architecture
+              réelle de Bury et al. (2021) -- CNN-LSTM, code source publié lu directement, voir{" "}
+              <Link to="/methode/cnn-deep-learning">la démonstration complète</Link> ; (2) il est ré-entraîné en
+              ensemble de {R.nSeeds} modèles indépendants (moyenne ± écart-type rapportés ci-dessous), la méthode
+              de robustesse de Bury et al. eux-mêmes ; (3) l'indicateur classique utilise l'indicateur complet de
               H1, testé pour sa significativité par données de substitution -- une comparaison à armes égales.
             </p>
           </div>
@@ -187,6 +232,8 @@ export default function IaVsStatistiquesResult() {
             cnn={R.cnn.kuramoto}
             nSeeds={R.nSeeds}
           />
+
+          <Ar1ValidityCheck ar1={R.ar1Validity} />
 
           <p className="text-muted">
             {R.nTrainSaddlePerSeed + R.nTrainKuramotoPerSeed} réalisations d'entraînement par seed, {nTest}{" "}
