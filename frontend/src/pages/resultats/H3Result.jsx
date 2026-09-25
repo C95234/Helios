@@ -138,6 +138,12 @@ export default function H3Result() {
             </table>
           </div>
           <p className="text-muted">On compare le phénomène testé à chacun des trimestres comparables des 26 dernières années.</p>
+          <div className="cross-link-note">
+            Un classifieur de deep learning à deux branches (IA) a aussi été testé sur cette même question
+            (anomalie jointe temporelle+spatiale) -- il domine largement la méthode classique sur des données
+            simulées, mais s'accorde avec elle pour ne rien détecter sur ces mêmes phénomènes réels. Voir{" "}
+            <Link to="/resultats/ia-vs-statistiques#extension-h3">le résultat du banc d'essai IA vs statistiques pour H3</Link>.
+          </div>
         </>
       }
       methodLink={{ to: "/methode/cours-statistiques#fisher", label: "Voir la démonstration (méthode de Fisher, et pourquoi ce n'est pas la méthode de Brown)" }}

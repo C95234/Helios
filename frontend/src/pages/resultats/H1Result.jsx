@@ -319,6 +319,11 @@ export default function H1Result() {
             qu'une réfutation de l'hypothèse elle-même. Voir le détail complet sur{" "}
             <Link to="/bilan">la page Bilan</Link>.
           </p>
+          <div className="cross-link-note">
+            Un classifieur de deep learning (IA) a aussi été testé sur ces 6 mêmes épisodes réels, en comparaison
+            directe avec l'indicateur statistique ci-dessus -- voir{" "}
+            <Link to="/resultats/ia-vs-statistiques#extension-h1">le résultat du banc d'essai IA vs statistiques pour H1</Link>.
+          </div>
         </>
       }
       methodLink={{ to: "/methode/cours-statistiques#autocorrelation", label: "Voir la démonstration (autocorrélation, tests par substitution)" }}

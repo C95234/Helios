@@ -143,7 +143,14 @@ function RealH1Extension() {
   const { phenomena, nSeeds, windowLen } = REAL_H1;
   return (
     <>
-      <h3>Extension aux données réelles -- domaine Société (§2.1)</h3>
+      <h3 id="extension-h1">Extension aux données réelles -- domaine Société (§2.1)</h3>
+      <p>
+        <strong>En bref :</strong> le classifieur (IA) et l'indicateur classique de H1 vont dans le même sens sur les
+        6 épisodes réels -- le taux de fenêtres flaguées par l'IA suit à peu près le nombre de signaux sociaux déjà
+        trouvés par la méthode classique. Mais un test de robustesse (ci-dessus) montre que ce même classifieur se
+        trompe aussi facilement sur des séries qui n'ont AUCUNE bascule -- cette ressemblance ne prouve donc pas
+        qu'il détecte vraiment quelque chose.
+      </p>
       <p className="text-muted">
         Le classifieur a appris à repérer une bascule sur des modèles simulés (nœud-col, Kuramoto) -- fait-il mieux
         que rien du tout sur les mêmes épisodes réels qui ont déjà donné des résultats majoritairement négatifs pour
@@ -183,7 +190,12 @@ function RealFusionExtension() {
   const { shots, nSeeds, windowLen, stride, summary } = REAL_FUSION;
   return (
     <>
-      <h3>Extension aux données réelles -- domaine Fusion nucléaire (§2.4)</h3>
+      <h3 id="extension-fusion">Extension aux données réelles -- domaine Fusion nucléaire (§2.4)</h3>
+      <p>
+        <strong>En bref :</strong> le classifieur ne distingue pas les tirs qui vont réellement disrupter de ceux qui
+        restent stables -- il réagit même en moyenne un peu PLUS aux tirs stables, l'inverse de ce qu'on attendrait
+        d'un vrai signal précurseur. Un résultat négatif net, rapporté tel quel.
+      </p>
       <p className="text-muted">
         Même ensemble de {nSeeds} modèles, jamais ré-entraîné -- appliqué cette fois à la batterie curatée de 20 tirs
         réels MAST déjà utilisée par le module Fusion (10 disruptés, 10 stables), fenêtre de {windowLen} points
@@ -225,7 +237,12 @@ function RealH2Extension() {
   const { nSeeds, nNodes, nTestSnapshots, classical, cnn, realData } = REAL_H2;
   return (
     <>
-      <h3>Extension aux données réelles -- domaine Société, réseau (§2.2)</h3>
+      <h3 id="extension-h2">Extension aux données réelles -- domaine Société, réseau (§2.2)</h3>
+      <p>
+        <strong>En bref :</strong> ici, c'est la méthode statistique classique (l'indice de Moran) qui gagne
+        nettement contre le classifieur IA -- à la fois sur des données simulées et sur les vraies données de
+        chômage départemental. L'IA ne bat pas toujours les statistiques classiques : ce cas le montre clairement.
+      </p>
       <p className="text-muted">
         H2 pose une question spatiale, pas temporelle : un classifieur entraîné à reconnaître le réseau réel des{" "}
         {nNodes} départements (plutôt qu'une grille de contrôle de même taille) fait-il mieux que l'indice de Moran
@@ -265,7 +282,13 @@ function RealH3Extension() {
   const { nSeeds, phenomena, classical, cnn } = REAL_H3;
   return (
     <>
-      <h3>Extension aux données réelles -- domaine Société, indicateur joint (§2.3)</h3>
+      <h3 id="extension-h3">Extension aux données réelles -- domaine Société, indicateur joint (§2.3)</h3>
+      <p>
+        <strong>En bref :</strong> sur des données simulées, le classifieur IA fait bien mieux que la méthode
+        statistique classique. Mais sur les 6 cas réels déjà testés par H3, les deux méthodes tombent d'accord :
+        aucune ne détecte quoi que ce soit. Gagner sur des données simulées ne garantit donc pas de gagner sur de
+        vraies données.
+      </p>
       <p className="text-muted">
         H3 demande une entrée double, propre à ce cas : un classifieur à deux branches (une temporelle, une
         spatiale, fusionnées avant la décision) détecte-t-il mieux une anomalie JOINTE (les deux signaux anormaux en

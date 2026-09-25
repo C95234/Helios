@@ -355,6 +355,15 @@ code {
   font-weight: 600;
 }
 
+.cross-link-note {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+}
+
 .error {
   color: var(--color-warn);
 }

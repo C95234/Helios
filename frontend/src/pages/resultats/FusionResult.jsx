@@ -143,6 +143,12 @@ export default function FusionResult() {
           <p className="text-muted">
             Détail complet sur <Link to="/bilan">la page Bilan</Link>.
           </p>
+          <div className="cross-link-note">
+            Un classifieur de deep learning (IA) a aussi été testé sur cette même batterie de 20 tirs -- il ne
+            distingue pas les tirs qui disruptent de ceux qui restent stables (il réagit même un peu plus aux tirs
+            stables). Voir{" "}
+            <Link to="/resultats/ia-vs-statistiques#extension-fusion">le résultat du banc d'essai IA vs statistiques pour la Fusion</Link>.
+          </div>
         </>
       }
       methodLink={{ to: "/methode/cours-statistiques", label: "Voir le cours de statistiques (méthodes communes à H1/H2)" }}

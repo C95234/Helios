@@ -290,6 +290,11 @@ export default function H2Result() {
             trimestres, sans une seule exception -- pas ce que H2 teste formellement (la tendance), mais une
             différence structurelle systématique. Voir le détail sur <Link to="/bilan">la page Bilan</Link>.
           </p>
+          <div className="cross-link-note">
+            Un classifieur de deep learning (IA) a aussi été testé sur cette même tâche (réseau réel vs grille de
+            contrôle) -- il fait moins bien que l'indice de Moran ci-dessus, dans les deux sens testés. Voir{" "}
+            <Link to="/resultats/ia-vs-statistiques#extension-h2">le résultat du banc d'essai IA vs statistiques pour H2</Link>.
+          </div>
         </>
       }
       methodLink={{ to: "/methode/cours-statistiques#moran", label: "Voir la démonstration (indice de Moran)" }}
