@@ -216,6 +216,26 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "cnn-real-fusion-extension",
+    title: "11. Extension aux données réelles -- domaine Fusion nucléaire : un résultat négatif, dans le sens inverse de celui espéré",
+    simple:
+      "Le même ensemble de 10 classifieurs (§10), jamais ré-entraîné, appliqué cette fois aux 20 tirs réels MAST déjà utilisés par le module Fusion (10 disruptés, 10 stables). Résultat net et négatif : tous les tirs sont flagués sur le critère binaire, et surtout, le taux de fenêtres flaguées est en moyenne PLUS élevé sur les tirs stables (98%) que sur les tirs qui disruptent réellement (70%) -- l'inverse de ce qu'un vrai signal précurseur produirait.",
+    expertBlocks: [
+      {
+        text: "Méthode (backend/scripts/apply_classifier_to_real_fusion.py) : ensemble des 10 modèles rechargé depuis les checkpoints déjà entraînés au §10 (aucun ré-entraînement), fenêtre de 60 points glissée avec un pas de 5 (le courant plasma MAST est échantillonné bien plus densément que l'attention Wikipédia quotidienne de H1, d'où un pas différent de celui utilisé pour l'extension à H1) sur la fenêtre pré-quench (ou pré-fin-de-tir pour un tir stable) déjà isolée par `detect_quench` -- même logique de découpage que routers/fusion.py, réutilisée directement. Chaque fenêtre centrée-réduite par sa propre moyenne/écart-type.",
+      },
+      {
+        text: "Résultat brut : sur le critère binaire \"au moins une fenêtre flaguée\", les 10 tirs disruptés ET les 10 tirs stables sont tous flagués (10/10 -- 10/10) -- comme lors du tout premier essai sur H1 avant la correction d'architecture (§10). Mais contrairement à ce premier essai sur H1 qui était plat partout, ici le taux de fenêtres flaguées varie réellement : 46,4% à 100% sur les tirs disruptés (moyenne 69,7%, probabilité moyenne 0,622), et 91,3% à 100% sur les tirs stables (moyenne 98,3%, probabilité moyenne 0,742).",
+      },
+      {
+        text: "Lecture honnête : la variation existe, mais va dans le sens INVERSE de celui espéré d'un précurseur -- l'ensemble réagit en moyenne PLUS fortement aux tirs qui ne disruptent jamais qu'à ceux qui disruptent réellement. Aucune explication de confort retenue : ceci n'a pas été testé comme une hypothèse de détection de stabilité, ce serait spéculer au-delà de ce qui a été mesuré. Combiné au test de validité AR(1) du §10 (78% de fenêtres sans bifurcation flaguées à tort sur ce même ensemble), la lecture la plus prudente est que ce classifieur, dans cette adaptation et à cette échelle, ne généralise pas de façon fiable à un signal réel de tokamak.",
+      },
+      {
+        text: "Complète la réponse à \"testé sur toutes les hypothèses ?\" pour le volet transversal IA vs statistiques : les deux extensions à données réelles déjà faites par ce chantier (§2.1 Société/H1, §2.4 Fusion) sont maintenant publiées ; §2.2 (H2, classifieur spatial) et §2.3 (H3, fusion double flux) restent à construire -- architectures différentes, pas une simple réapplication de cet ensemble.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */

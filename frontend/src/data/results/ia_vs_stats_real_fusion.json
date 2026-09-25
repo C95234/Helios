@@ -1,0 +1,216 @@
+{
+  "refreshedAt": "2026-09-24",
+  "nSeeds": 10,
+  "windowLen": 60,
+  "stride": 5,
+  "shots": [
+    {
+      "shot_id": 28461,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 48,
+      "flagged_fraction": 0.6957,
+      "mean_probability": 0.5991,
+      "max_probability": 0.9929,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28463,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 41,
+      "flagged_fraction": 0.5942,
+      "mean_probability": 0.5878,
+      "max_probability": 0.993,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28465,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 41,
+      "flagged_fraction": 0.5942,
+      "mean_probability": 0.558,
+      "max_probability": 0.9927,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28467,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 33,
+      "flagged_fraction": 0.4783,
+      "mean_probability": 0.5242,
+      "max_probability": 0.9928,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28542,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.7406,
+      "max_probability": 0.9931,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28544,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 32,
+      "flagged_fraction": 0.4638,
+      "mean_probability": 0.5236,
+      "max_probability": 0.9926,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19045,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 63,
+      "flagged_fraction": 0.913,
+      "mean_probability": 0.7374,
+      "max_probability": 0.9908,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19054,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 60,
+      "flagged_fraction": 0.8696,
+      "mean_probability": 0.7245,
+      "max_probability": 0.9912,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19056,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 56,
+      "flagged_fraction": 0.8116,
+      "mean_probability": 0.6762,
+      "max_probability": 0.9928,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19061,
+      "disrupted_published": true,
+      "n_windows": 69,
+      "n_flagged": 38,
+      "flagged_fraction": 0.5507,
+      "mean_probability": 0.55,
+      "max_probability": 0.9925,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28476,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 68,
+      "flagged_fraction": 0.9855,
+      "mean_probability": 0.7377,
+      "max_probability": 0.9159,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28478,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.7639,
+      "max_probability": 0.9157,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28484,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 68,
+      "flagged_fraction": 0.9855,
+      "mean_probability": 0.7271,
+      "max_probability": 0.9327,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28486,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.7343,
+      "max_probability": 0.9039,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28488,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.77,
+      "max_probability": 0.9449,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28492,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.7539,
+      "max_probability": 0.9379,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 28553,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 68,
+      "flagged_fraction": 0.9855,
+      "mean_probability": 0.7195,
+      "max_probability": 0.9636,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 25414,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 69,
+      "flagged_fraction": 1.0,
+      "mean_probability": 0.7467,
+      "max_probability": 0.9217,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19039,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 66,
+      "flagged_fraction": 0.9565,
+      "mean_probability": 0.7374,
+      "max_probability": 0.9011,
+      "cnn_detects_anything": true
+    },
+    {
+      "shot_id": 19043,
+      "disrupted_published": false,
+      "n_windows": 69,
+      "n_flagged": 63,
+      "flagged_fraction": 0.913,
+      "mean_probability": 0.7305,
+      "max_probability": 0.9199,
+      "cnn_detects_anything": true
+    }
+  ],
+  "summary": {
+    "nShotsAnalyzed": 20,
+    "nDisrupted": 10,
+    "nStable": 10,
+    "nDisruptedWithCnnFlag": 10,
+    "nStableWithCnnFlag": 10
+  },
+  "elapsedSeconds": 32.9
+}

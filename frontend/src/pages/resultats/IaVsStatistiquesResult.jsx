@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
 import { IA_VS_STATS_ASYMMETRY_NOTE, IA_VS_STATS_GUARDRAIL, IA_VS_STATS_METHOD_NOTE, IA_VS_STATS_RESULT as R } from "../../data/iaVsStatistiques.js";
 import { IA_VS_STATS_REAL_H1 as REAL_H1, IA_VS_STATS_REAL_H1_NOTE, IA_VS_STATS_REAL_H1_RESULT_NOTE } from "../../data/iaVsStatsRealH1.js";
+import { IA_VS_STATS_REAL_FUSION as REAL_FUSION, IA_VS_STATS_REAL_FUSION_NOTE, IA_VS_STATS_REAL_FUSION_RESULT_NOTE } from "../../data/iaVsStatsRealFusion.js";
 
 function pct(x) {
   return x === null || x === undefined ? "n/a" : `${Math.round(x * 100)}%`;
@@ -176,6 +177,48 @@ function RealH1Extension() {
   );
 }
 
+function RealFusionExtension() {
+  const { shots, nSeeds, windowLen, stride, summary } = REAL_FUSION;
+  return (
+    <>
+      <h3>Extension aux données réelles -- domaine Fusion nucléaire (§2.4)</h3>
+      <p className="text-muted">
+        Même ensemble de {nSeeds} modèles, jamais ré-entraîné -- appliqué cette fois à la batterie curatée de 20 tirs
+        réels MAST déjà utilisée par le module Fusion (10 disruptés, 10 stables), fenêtre de {windowLen} points
+        glissée avec un pas de {stride} sur le courant plasma pré-quench.
+      </p>
+      <p className="text-muted">{IA_VS_STATS_REAL_FUSION_NOTE}</p>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th>Tir</th>
+              <th>Publié (Fusion)</th>
+              <th>Fenêtres flaguées</th>
+              <th>Probabilité moyenne</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shots.map((s) => (
+              <tr key={s.shot_id}>
+                <td>{s.shot_id}</td>
+                <td>{s.disrupted_published ? "disrupté" : "stable"}</td>
+                <td>{s.error ? "n/a" : `${s.n_flagged}/${s.n_windows} (${Math.round(s.flagged_fraction * 100)}%)`}</td>
+                <td>{s.error ? s.error : s.mean_probability}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-muted">
+        Critère binaire "au moins une fenêtre flaguée" : {summary.nDisruptedWithCnnFlag}/{summary.nDisrupted} tirs
+        disruptés, {summary.nStableWithCnnFlag}/{summary.nStable} tirs stables -- sans intérêt discriminant (tous
+        flagués). {IA_VS_STATS_REAL_FUSION_RESULT_NOTE}
+      </p>
+    </>
+  );
+}
+
 export default function IaVsStatistiquesResult() {
   const nTest = R.nTestSaddle + R.nTestKuramoto;
 
@@ -243,6 +286,8 @@ export default function IaVsStatistiquesResult() {
           </p>
 
           <RealH1Extension />
+
+          <RealFusionExtension />
         </>
       }
       methodLink={{ to: "/methode/cnn-deep-learning", label: "Voir la démonstration complète (convolution, rétropropagation, descente de gradient)" }}
@@ -254,9 +299,10 @@ export default function IaVsStatistiquesResult() {
         "Le classifieur est entraîné sur les deux modèles combinés, avec un seuil de décision unique (comme le ferait un utilisateur qui n'aurait pas de modèle spécifique à disposition) -- un classifieur entraîné spécifiquement sur un seul modèle ferait probablement mieux sur celui-ci, mais n'a pas été testé ici.",
         "Échelle réduite par rapport à la version idéale du protocole (jeu d'entraînement et de test plus petits que ce qu'un budget de calcul illimité permettrait) -- un compromis documenté pour que le ré-entraînement multi-graines (§1.1) reste exécutable en un temps raisonnable, pas une limite de méthode.",
         "Jamais combiné aux verdicts des trois domaines (Société, Fusion nucléaire, Mémoire collective) : ce banc d'essai est transversal, pas un module de plus dans l'un d'eux.",
-        "Extension aux données réelles (§2.1) : aucun filtre de persistance appliqué (contrairement à l'évaluation sur données simulées) -- le taux de fenêtres flaguées est un taux brut, fenêtre par fenêtre, pas un nombre d'alertes soutenues dans le temps. La normalisation par fenêtre (moyenne/écart-type propres à chaque fenêtre de 60 jours, plutôt que la normalisation globale du jeu d'entraînement) est une adaptation nécessaire pour un signal d'échelle complètement différente des séries simulées, pas une méthode validée par ailleurs.",
+        "Extension aux données réelles (§2.1, §2.4) : aucun filtre de persistance appliqué (contrairement à l'évaluation sur données simulées) -- le taux de fenêtres flaguées est un taux brut, fenêtre par fenêtre, pas un nombre d'alertes soutenues dans le temps. La normalisation par fenêtre (moyenne/écart-type propres à chaque fenêtre, plutôt que la normalisation globale du jeu d'entraînement) est une adaptation nécessaire pour un signal d'échelle complètement différente des séries simulées, pas une méthode validée par ailleurs.",
+        "Sur la batterie MAST réelle (§2.4), le taux de fenêtres flaguées est en moyenne PLUS élevé sur les tirs stables (98,3%) que sur les tirs disruptés (69,7%) -- un résultat inversé par rapport à ce qui serait attendu d'un vrai précurseur, rapporté sans explication de confort plutôt que masqué ou réinterprété a posteriori.",
       ]}
-      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (§10 -- extension aux données réelles)" }}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (§10-11 -- extension aux données réelles)" }}
       showLiveSection={false}
     >
       <p className="lede">
