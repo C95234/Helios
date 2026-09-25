@@ -274,6 +274,10 @@ function RealH2Extension() {
         </table>
       </div>
       <p className="text-muted">{IA_VS_STATS_REAL_H2_RESULT_NOTE}</p>
+      <p className="text-muted">
+        Démonstration complète (propagation sur un graphe, exemple calculé à la main) :{" "}
+        <Link to="/methode/cnn-deep-learning#convolution-graphe">voir la section dédiée</Link>.
+      </p>
     </>
   );
 }
@@ -336,6 +340,10 @@ function RealH3Extension() {
         </table>
       </div>
       <p className="text-muted">{IA_VS_STATS_REAL_H3_RESULT_NOTE}</p>
+      <p className="text-muted">
+        Démonstration complète (fusion des deux branches, exemple calculé à la main) :{" "}
+        <Link to="/methode/cnn-deep-learning#fusion-double-flux">voir la section dédiée</Link>.
+      </p>
     </>
   );
 }

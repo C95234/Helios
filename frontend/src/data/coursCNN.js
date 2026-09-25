@@ -189,6 +189,107 @@ export const CNN_SECTIONS = [
       },
     ],
   },
+  {
+    id: "convolution-graphe",
+    number: 4,
+    title: "Convolution de graphe (le classifieur spatial de H2)",
+    blocks: [
+      {
+        type: "definition",
+        title: "Pourquoi une convolution de GRAPHE plutôt qu'un CNN 2D",
+        body: [
+          { text: "H2 (§2.2 du banc d'essai) pose une question spatiale, pas temporelle : un instantané par département, pas une fenêtre glissante. Un CNN 2D classique suppose une grille régulière où chaque case a des voisins fixes (haut/bas/gauche/droite) -- exactement ce qui manque ici : les départements n'ont pas de coordonnées géographiques disponibles dans le projet (seule leur liste de voisins directs, l'adjacence, est connue), et rasteriser sur une carte fabriquerait une géométrie arbitraire plutôt que d'utiliser la vraie structure. La généralisation directe d'une convolution à un graphe IRRÉGULIER est un réseau de convolution de graphe (GCN, Kipf & Welling, 2017) : au lieu de faire glisser un noyau sur des positions voisines fixes, chaque nœud combine sa propre valeur avec celle de ses VRAIS voisins, tels que définis par la matrice d'adjacence." },
+        ],
+      },
+      {
+        type: "definition",
+        title: "Propagation spectrale normalisée",
+        body: [
+          { text: "Pour un graphe de matrice d'adjacence $A$ ($n$ nœuds), on ajoute d'abord une boucle propre à chaque nœud (il doit voir sa propre valeur, pas seulement celle de ses voisins) : $\\tilde A = A + I$. Le degré (nombre de connexions, boucle incluse) du nœud $i$ est $\\tilde d_i = \\sum_j \\tilde A_{ij}$. La matrice de propagation normalisée -- celle qui remplace le \"glissement du noyau\" d'un CNN classique -- est :" },
+          { tex: "\\hat A = D^{-1/2}\\tilde A D^{-1/2}, \\qquad \\hat A_{ij} = \\frac{\\tilde A_{ij}}{\\sqrt{\\tilde d_i \\tilde d_j}}", block: true },
+          { text: "où $D=\\text{diag}(\\tilde d_1,\\dots,\\tilde d_n)$. Cette normalisation (par la racine carrée du produit des degrés plutôt qu'une simple moyenne) évite qu'un nœud très connecté n'écrase les autres dans la somme -- une couche complète calcule ensuite $H' = \\text{ReLU}(\\hat A\\, X\\, \\Theta)$ : chaque valeur $X$ est d'abord projetée par des poids appris $\\Theta$ (comme le ferait une couche dense), PUIS propagée aux voisins via $\\hat A$, exactement comme une convolution 1D propage l'information locale via son noyau (Section 1)." },
+        ],
+      },
+      {
+        type: "exemple",
+        title: "Propagation calculée à la main sur un petit graphe",
+        body: [
+          { text: "Même graphe-chaîne que l'exemple de référence de l'indice de Moran (cours de statistiques) : 4 nœuds en chaîne $1-2-3-4$, valeurs $x=(1,2,3,4)$. Matrice d'adjacence et degrés (boucle propre incluse) :" },
+          { table: { headers: ["", "1", "2", "3", "4", "degré total"], rows: [["1", "1", "1", "0", "0", "2"], ["2", "1", "1", "1", "0", "3"], ["3", "0", "1", "1", "1", "3"], ["4", "0", "0", "1", "1", "2"]] } },
+          { text: "La matrice de propagation normalisée $\\hat A=D^{-1/2}\\tilde A D^{-1/2}$ (ex. $\\hat A_{12}=1/\\sqrt{2\\times3}=1/\\sqrt6\\approx0{,}4082$) :" },
+          { tex: "\\hat A \\approx \\begin{pmatrix} 0{,}5 & 0{,}4082 & 0 & 0 \\\\ 0{,}4082 & 0{,}3333 & 0{,}3333 & 0 \\\\ 0 & 0{,}3333 & 0{,}3333 & 0{,}4082 \\\\ 0 & 0 & 0{,}4082 & 0{,}5 \\end{pmatrix}", block: true },
+          { text: "Projection par un poids scalaire appris $\\theta=2$, biais $b=-4$ (une seule caractéristique par nœud ici, comme le classifieur spatial réel qui reçoit une valeur brute par département) : $\\text{proj} = \\theta x + b = (-2,\\ 0,\\ 2,\\ 4)$. Propagation $\\hat A \\cdot \\text{proj}$ :" },
+          { tex: "h_1 \\approx 0{,}5\\times(-2) + 0{,}4082\\times0 = -1", block: true },
+          { tex: "h_2 \\approx 0{,}4082\\times(-2) + 0{,}3333\\times0 + 0{,}3333\\times2 \\approx -0{,}1498", block: true },
+          { tex: "h_3 \\approx 0{,}3333\\times0 + 0{,}3333\\times2 + 0{,}4082\\times4 \\approx 2{,}2997, \\qquad h_4 \\approx 0{,}4082\\times2 + 0{,}5\\times4 \\approx 2{,}8165", block: true },
+          { text: "Après ReLU, les deux premières valeurs (négative et quasi nulle) sont mises à 0 -- les nœuds 1 et 2, en périphérie de la chaîne et projetés à des valeurs basses, n'activent rien ici, alors que les nœuds 3 et 4 restent actifs :" },
+          { tex: "h \\approx (0,\\ 0,\\ 2{,}2997,\\ 2{,}8165)", block: true },
+          { text: "L'architecture réelle (backend/app/spatial_ml.py) fait ce calcul DEUX FOIS sur le MÊME instantané -- une fois avec l'adjacence du réseau réel, une fois avec celle d'une grille de contrôle -- puis regroupe chaque résultat par une moyenne ET un maximum sur tous les nœuds (moyenne $\\approx1{,}2790$, maximum $\\approx2{,}8165$ ici), avant de concaténer les deux branches pour la décision finale. Jamais la topologie d'origine donnée explicitement en entrée -- seule la valeur brute $x$ l'est, comme le CNN-LSTM temporel ne voit que la fenêtre brute (Section 2)." },
+        ],
+      },
+      {
+        type: "code",
+        title: "Vérification de la propagation",
+        body: [
+          {
+            code: "import numpy as np\nA = np.array([[0,1,0,0],[1,0,1,0],[0,1,0,1],[0,0,1,0]], dtype=float)\nAtilde = A + np.eye(4)\nd = Atilde.sum(axis=1)\nDinv_sqrt = np.diag(1/np.sqrt(d))\nAhat = Dinv_sqrt @ Atilde @ Dinv_sqrt\nx = np.array([1., 2., 3., 4.])\nproj = 2*x - 4\nh = np.maximum(0, Ahat @ proj)\nprint(h)\n# [0.         0.         2.29973271 2.81649658]",
+          },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Rétropropagation : rien de nouveau à démontrer",
+        body: [
+          { text: "$\\hat A\\, X\\, \\Theta$ n'est qu'une succession de produits matriciels, exactement comme $w^{(1)} * x$ pour la convolution 1D (Section 1) -- la règle de la chaîne appliquée à la rétropropagation de la Section 3 s'y applique sans aucune modification : le gradient par rapport à $\\Theta$ se calcule en multipliant le gradient sortant par $\\hat A^\\top$ puis par $X$, exactement comme le gradient du filtre de convolution se calculait en multipliant par l'entrée décalée. Aucune nouvelle dérivation n'est nécessaire ici -- seule la matrice qui multiplie l'entrée change (un noyau glissant devient une matrice de propagation fixe), pas le principe." },
+        ],
+      },
+    ],
+  },
+  {
+    id: "fusion-double-flux",
+    number: 5,
+    title: "Fusion double flux (le classifieur joint de H3)",
+    blocks: [
+      {
+        type: "definition",
+        title: "Deux branches, une décision commune",
+        body: [
+          { text: "H3 (§2.3 du banc d'essai) pose une question à ENTRÉE DOUBLE : la tendance temporelle nationale ET l'indice de Moran spatial sont-ils anormaux EN MÊME TEMPS ? Ni le CNN-LSTM temporel seul (Section 2) ni la convolution de graphe seule (Section 4) ne voit les deux canaux à la fois -- le classifieur joint (backend/app/h3_ml.py) calcule donc un EMBEDDING (un résumé numérique en quelques nombres) par branche, puis les concatène avant une seule couche de décision :" },
+          { tex: "e_{\\text{temporel}} = \\text{CNN-LSTM}(x_{\\text{fenêtre}}) \\in \\mathbb{R}^{10}, \\qquad e_{\\text{spatial}} = [\\text{moyenne}(h),\\ \\text{max}(h)] \\in \\mathbb{R}^{2}", block: true },
+          { tex: "p = \\sigma\\big(w_{\\text{tête}} \\cdot [e_{\\text{temporel}} \\,;\\, e_{\\text{spatial}}] + b_{\\text{tête}}\\big)", block: true },
+          { text: "où $[\\,;\\,]$ dénote la concaténation (les deux vecteurs mis bout à bout). C'est une fusion TARDIVE (chaque branche traite son propre canal jusqu'au bout avant que les deux ne se rencontrent), la plus simple qui réponde à la question posée -- pas une fusion précoce (mélanger les deux canaux dès le départ) ni une attention croisée (chaque branche qui \"regarde\" l'autre), deux architectures plus sophistiquées mais non demandées ici." },
+        ],
+      },
+      {
+        type: "exemple",
+        title: "Fusion calculée à la main, à partir des deux exemples précédents",
+        body: [
+          { text: "Réutilise directement les résultats déjà obtenus : la sortie de la partie convolutive du réseau jouet temporel (Section 2, avant sa propre couche dense), $h_{\\text{temp}}=(2,\\,1,\\,1)$, comme embedding temporel simplifié ; et la moyenne/maximum de la propagation de graphe de la Section 4, $e_{\\text{spatial}}=(1{,}2790,\\ 2{,}8165)$. Concaténation :" },
+          { tex: "e = [2,\\ 1,\\ 1,\\ 1{,}2790,\\ 2{,}8165]", block: true },
+          { text: "Couche de décision (poids $w_{\\text{tête}}=(0{,}2,\\,-0{,}3,\\,0{,}1,\\,0{,}5,\\,-0{,}2)$, biais $b_{\\text{tête}}=0{,}1$, choisis arbitrairement pour l'exemple) :" },
+          { tex: "z = 0{,}2\\times2 - 0{,}3\\times1 + 0{,}1\\times1 + 0{,}5\\times1{,}2790 - 0{,}2\\times2{,}8165 + 0{,}1 \\approx 0{,}3762", block: true },
+          { tex: "p = \\sigma(0{,}3762) \\approx 0{,}5930", block: true },
+          { text: "Le réseau prédit une probabilité de 59,3% d'anomalie jointe -- ni proche de 0 ni proche de 1, ce que des poids choisis arbitrairement pour l'illustration donnent naturellement (les vrais poids sont appris par entraînement, voir la Section 3, exactement la même mécanique de descente de gradient)." },
+        ],
+      },
+      {
+        type: "code",
+        title: "Vérification de la fusion",
+        body: [
+          {
+            code: "import numpy as np\ne_temporal = np.array([2., 1., 1.])\ne_spatial = np.array([1.2790391023624612, 2.8164965809277254])\ne = np.concatenate([e_temporal, e_spatial])\nw_head = np.array([0.2, -0.3, 0.1, 0.5, -0.2])\nb_head = 0.1\nz = w_head @ e + b_head\np = 1 / (1 + np.exp(-z))\nprint(z, p)\n# 0.3762202349956856 0.592961147082116",
+          },
+        ],
+      },
+      {
+        type: "remarque",
+        title: "Le gradient se sépare, il ne se réinvente pas",
+        body: [
+          { text: "La rétropropagation à travers une fusion tardive n'ajoute qu'une seule étape nouvelle par rapport à la Section 3 : au moment de remonter le gradient à travers la concaténation, le vecteur $\\frac{dL}{de}$ (de même dimension que $e$) se SÉPARE simplement en deux morceaux -- les 10 premières composantes repartent dans la branche temporelle, les 2 dernières dans la branche spatiale -- chacune ensuite rétropropagée indépendamment par la même règle de la chaîne déjà démontrée (Section 3 pour la branche temporelle, remarque de la Section 4 pour la branche spatiale). Aucune nouvelle dérivation n'est nécessaire : fusionner deux flux ne change que l'endroit où le graphe de calcul se sépare en deux, pas les règles de dérivation elles-mêmes." },
+        ],
+      },
+    ],
+  },
 ];
 
 export const CNN_REFERENCES = [
@@ -197,4 +298,5 @@ export const CNN_REFERENCES = [
   "Bury, T. M., Sujith, R. I., Pavithran, I., Scheffer, M., Lenton, T. M., Anand, M., & Bauch, C. T. (2021). « Deep learning for early warning signals of tipping points. » Proceedings of the National Academy of Sciences, 118(39), e2106140118.",
   "Dablander, F., & Bury, T. M. (2021). « Deep learning for tipping points: Preprocessing matters. » Proceedings of the National Academy of Sciences, 118(40), e2115605118.",
   "Gardner, E. (1988). « The space of interactions in neural network models. » Journal of Physics A, 21(1), 257–270.",
+  "Kipf, T. N., & Welling, M. (2017). « Semi-Supervised Classification with Graph Convolutional Networks. » 5th International Conference on Learning Representations (ICLR).",
 ];

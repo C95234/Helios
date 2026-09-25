@@ -7,9 +7,10 @@ export default function CoursCNN() {
     <div className="page page-cours">
       <h1>Réseaux de neurones convolutifs et rétropropagation</h1>
       <p className="lede">
-        Démonstration complète -- pas seulement la formule finale -- du classifieur de deep learning utilisé
-        dans le <Link to="/resultats/ia-vs-statistiques">banc d'essai IA vs statistiques</Link> : convolution,
-        passe avant sur un exemple jouet calculé à la main, puis rétropropagation et descente de gradient,
+        Démonstration complète -- pas seulement la formule finale -- des trois architectures utilisées dans le{" "}
+        <Link to="/resultats/ia-vs-statistiques">banc d'essai IA vs statistiques</Link> : le CNN-LSTM temporel
+        (convolution, passe avant, rétropropagation et descente de gradient sur un exemple jouet), la
+        convolution de graphe (classifieur spatial de H2) et la fusion double flux (classifieur joint de H3) --
         chaque résultat vérifié par le code.
       </p>
       <p className="text-muted">

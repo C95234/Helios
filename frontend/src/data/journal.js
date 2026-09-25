@@ -291,6 +291,26 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "cnn-course-graph-and-fusion-sections",
+    title: "14. Cours complet pour les deux nouvelles architectures (convolution de graphe, fusion double flux)",
+    simple:
+      "Le cours dédié au classifieur du banc d'essai (§10) ne couvrait que le CNN-LSTM temporel. Deux nouvelles sections l'étendent : une pour la convolution de graphe (classifieur spatial de H2, §12) et une pour la fusion double flux (classifieur joint de H3, §13) -- définitions, exemple calculé à la main, vérifié par le code, comme les sections déjà existantes.",
+    expertBlocks: [
+      {
+        text: "Section 4 (convolution de graphe) : justifie d'abord le choix d'une architecture de GRAPHE plutôt qu'un CNN 2D classique -- les départements n'ont pas de coordonnées géographiques disponibles dans le projet (seule l'adjacence l'est), rasteriser sur une carte fabriquerait une géométrie arbitraire. Démonstration complète de la propagation spectrale normalisée (Kipf & Welling, 2017) sur le même graphe-chaîne à 4 nœuds déjà utilisé comme exemple de référence pour l'indice de Moran (cours de statistiques) -- continuité délibérée plutôt qu'un nouvel exemple isolé.",
+      },
+      {
+        text: "Section 5 (fusion double flux) : formalise la fusion tardive (deux embeddings concaténés avant une seule couche de décision), avec un exemple qui réutilise directement les résultats numériques déjà obtenus dans les sections précédentes (la sortie convolutive du réseau jouet temporel, la propagation de graphe de la section 4) plutôt que d'inventer de nouvelles valeurs.",
+      },
+      {
+        text: "Aucune nouvelle dérivation de rétropropagation : les deux sections notent explicitement que la règle de la chaîne déjà démontrée (§10, section 3) s'applique sans modification -- une propagation de graphe n'est qu'un produit matriciel de plus, une fusion tardive ne fait que séparer le gradient en deux morceaux à la concaténation. Conforme à la consigne du cahier des charges de réutiliser le même niveau de rigueur plutôt que dupliquer l'explication de base de la descente de gradient.",
+      },
+      {
+        text: "Complète le §3 du cahier des charges le plus récent (\"une section par architecture utilisée : CNN-LSTM, CNN spatial, fusion double flux\") -- reste hors périmètre : §2.5 (H5, explicitement optionnel) et §4 (pédagogie non-initiés), déjà en grande partie traité séparément suite à une demande directe de vérification.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */

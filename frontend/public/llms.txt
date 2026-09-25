@@ -41,7 +41,7 @@ territoires agrégés.
 - [Cours de statistiques appliquées](/methode/cours-statistiques): définitions, démonstrations complètes et exercices corrigés pour chaque outil statistique utilisé (variance, corrélation, tests par permutation, tau de Kendall, indice de Moran, méthode de Fisher/Kost & McDermott, loi de puissance).
 - [Des suites au ralentissement critique](/methode/suites-ralentissement-critique): construction progressive du modèle mathématique depuis les suites numériques de terminale.
 - [Réseaux de Hopfield et groupes sociaux](/methode/hopfield): définitions, démonstration complète de convergence (fonction d'énergie), et calcul de la capacité de mémoire, exercices corrigés — support théorique du domaine Mémoire collective.
-- [Réseaux de neurones convolutifs et rétropropagation](/methode/cnn-deep-learning): convolution, passe avant sur un exemple jouet, rétropropagation et descente de gradient -- support théorique du banc d'essai IA vs statistiques.
+- [Réseaux de neurones convolutifs et rétropropagation](/methode/cnn-deep-learning): convolution, passe avant sur un exemple jouet, rétropropagation et descente de gradient, plus la convolution de graphe (classifieur spatial de H2) et la fusion double flux (classifieur joint de H3) -- support théorique du banc d'essai IA vs statistiques.
 - [Bibliographie complète](/methode/bibliographie): toutes les références citées, jamais un nom d'auteur seul.
 
 ## Journal de recherche
