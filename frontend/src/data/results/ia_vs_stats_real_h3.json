@@ -1,0 +1,111 @@
+{
+  "refreshedAt": "2026-09-25",
+  "nSeeds": 10,
+  "nNodes": 94,
+  "windowLen": 60,
+  "nTrainRunsPerClass": 10,
+  "nTestRunsPerClass": 15,
+  "nTestPairs": 2250,
+  "nTestPositive": 450,
+  "classical": {
+    "accuracy": 0.8404
+  },
+  "cnn": {
+    "perSeed": [
+      {
+        "seed": 0,
+        "accuracy": 0.9916
+      },
+      {
+        "seed": 1,
+        "accuracy": 0.9907
+      },
+      {
+        "seed": 2,
+        "accuracy": 0.9924
+      },
+      {
+        "seed": 3,
+        "accuracy": 0.9907
+      },
+      {
+        "seed": 4,
+        "accuracy": 0.9751
+      },
+      {
+        "seed": 5,
+        "accuracy": 0.9916
+      },
+      {
+        "seed": 6,
+        "accuracy": 0.9889
+      },
+      {
+        "seed": 7,
+        "accuracy": 0.992
+      },
+      {
+        "seed": 8,
+        "accuracy": 0.9916
+      },
+      {
+        "seed": 9,
+        "accuracy": 0.9862
+      }
+    ],
+    "meanAccuracy": 0.9891,
+    "stdAccuracy": 0.005,
+    "ensembleAccuracy": 0.992
+  },
+  "phenomena": [
+    {
+      "key": "gilets_jaunes_2018",
+      "label": "Mouvement social 2018 (« gilets jaunes »)",
+      "nearest_spatial_quarter": "2019-04-01",
+      "cnn_probability_joint_anomaly": 0.041,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    },
+    {
+      "key": "confinement_2020",
+      "label": "Tension sanitaire 2020 (premier confinement)",
+      "nearest_spatial_quarter": "2020-07-01",
+      "cnn_probability_joint_anomaly": 0.0449,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    },
+    {
+      "key": "chomage_recent",
+      "label": "Climat social recent (fenetre glissante la plus recente)",
+      "nearest_spatial_quarter": "2026-04-01",
+      "cnn_probability_joint_anomaly": 0.0475,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    },
+    {
+      "key": "attentats_2015",
+      "label": "Attentats du 13 novembre 2015",
+      "nearest_spatial_quarter": "2016-04-01",
+      "cnn_probability_joint_anomaly": 0.0602,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    },
+    {
+      "key": "reforme_retraites_2023",
+      "label": "Mouvement social contre la réforme des retraites 2023",
+      "nearest_spatial_quarter": "2023-07-01",
+      "cnn_probability_joint_anomaly": 0.0548,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    },
+    {
+      "key": "attentat_nice_2016",
+      "label": "Attentat de Nice, juillet 2016",
+      "nearest_spatial_quarter": "2016-10-01",
+      "cnn_probability_joint_anomaly": 0.0578,
+      "cnn_flagged": false,
+      "classical_flagged": false
+    }
+  ],
+  "elapsedSeconds": 36.8
+}

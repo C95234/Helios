@@ -1,0 +1,67 @@
+{
+  "refreshedAt": "2026-09-25",
+  "nSeeds": 10,
+  "nNodes": 94,
+  "nTrainRunsPerClass": 10,
+  "nTestRunsPerClass": 15,
+  "nTestSnapshots": 3148,
+  "classical": {
+    "accuracy": 0.9053
+  },
+  "cnn": {
+    "perSeed": [
+      {
+        "seed": 0,
+        "accuracy": 0.8428
+      },
+      {
+        "seed": 1,
+        "accuracy": 0.8396
+      },
+      {
+        "seed": 2,
+        "accuracy": 0.8339
+      },
+      {
+        "seed": 3,
+        "accuracy": 0.8412
+      },
+      {
+        "seed": 4,
+        "accuracy": 0.8355
+      },
+      {
+        "seed": 5,
+        "accuracy": 0.8412
+      },
+      {
+        "seed": 6,
+        "accuracy": 0.8421
+      },
+      {
+        "seed": 7,
+        "accuracy": 0.8367
+      },
+      {
+        "seed": 8,
+        "accuracy": 0.8202
+      },
+      {
+        "seed": 9,
+        "accuracy": 0.8272
+      }
+    ],
+    "meanAccuracy": 0.836,
+    "stdAccuracy": 0.0069,
+    "ensembleAccuracy": 0.8409
+  },
+  "realData": {
+    "nPeriods": 106,
+    "periodStart": "2000-01-01",
+    "periodEnd": "2026-04-01",
+    "meanProbabilityRealNetwork": 0.6895,
+    "fractionClassifiedRealNetworkCnn": 0.7736,
+    "fractionClassifiedRealNetworkClassical": 0.9906
+  },
+  "elapsedSeconds": 855.4
+}

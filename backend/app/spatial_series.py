@@ -113,6 +113,7 @@ def compute_network_moran_series(wide: pd.DataFrame) -> dict:
         "i_grid": i_grid,
         "i_real_detrended": i_real_detrended,
         "i_grid_detrended": i_grid_detrended,
+        "residuals": residuals,
         "network_names": network["names"],
     }
 

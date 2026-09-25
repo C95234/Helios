@@ -92,3 +92,18 @@ def test_precedence_batch_reproducible_with_seed():
     b = run_precedence_batch(W, "diffusive", n_reps=4, seed0=99)
     assert a["n_precedence"] == b["n_precedence"]
     assert a["advance_var"] == b["advance_var"]
+
+
+def test_return_snapshots_does_not_change_existing_outputs():
+    # §2.2 : l'option ajoutee pour le classifieur spatial ne doit rien changer
+    # au comportement existant (xbar/moran_instant/t_escape) quand elle est
+    # desactivee (par defaut) -- et doit rester coherente avec lui quand elle
+    # est activee (meme trajectoire, memes graines).
+    W = ring_weights(20)
+    baseline = simulate_saddle_node(W, seed=5, t_max=100)
+    with_snapshots = simulate_saddle_node(W, seed=5, t_max=100, return_snapshots=True, snapshot_stride=20)
+    assert np.allclose(baseline["xbar"], with_snapshots["xbar"])
+    assert with_snapshots["t_escape"] == baseline["t_escape"]
+    assert "x_snapshots" in with_snapshots
+    assert with_snapshots["x_snapshots"].shape[1] == 20  # une valeur par noeud
+    assert with_snapshots["x_snapshots"].shape[0] > 0

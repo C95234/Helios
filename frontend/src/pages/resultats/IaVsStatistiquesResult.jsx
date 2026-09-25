@@ -3,6 +3,8 @@ import ResultPageTemplate from "../../components/ResultPageTemplate.jsx";
 import { IA_VS_STATS_ASYMMETRY_NOTE, IA_VS_STATS_GUARDRAIL, IA_VS_STATS_METHOD_NOTE, IA_VS_STATS_RESULT as R } from "../../data/iaVsStatistiques.js";
 import { IA_VS_STATS_REAL_H1 as REAL_H1, IA_VS_STATS_REAL_H1_NOTE, IA_VS_STATS_REAL_H1_RESULT_NOTE } from "../../data/iaVsStatsRealH1.js";
 import { IA_VS_STATS_REAL_FUSION as REAL_FUSION, IA_VS_STATS_REAL_FUSION_NOTE, IA_VS_STATS_REAL_FUSION_RESULT_NOTE } from "../../data/iaVsStatsRealFusion.js";
+import { IA_VS_STATS_REAL_H2 as REAL_H2, IA_VS_STATS_REAL_H2_NOTE, IA_VS_STATS_REAL_H2_RESULT_NOTE } from "../../data/iaVsStatsRealH2.js";
+import { IA_VS_STATS_REAL_H3 as REAL_H3, IA_VS_STATS_REAL_H3_NOTE, IA_VS_STATS_REAL_H3_RESULT_NOTE } from "../../data/iaVsStatsRealH3.js";
 
 function pct(x) {
   return x === null || x === undefined ? "n/a" : `${Math.round(x * 100)}%`;
@@ -219,6 +221,102 @@ function RealFusionExtension() {
   );
 }
 
+function RealH2Extension() {
+  const { nSeeds, nNodes, nTestSnapshots, classical, cnn, realData } = REAL_H2;
+  return (
+    <>
+      <h3>Extension aux données réelles -- domaine Société, réseau (§2.2)</h3>
+      <p className="text-muted">
+        H2 pose une question spatiale, pas temporelle : un classifieur entraîné à reconnaître le réseau réel des{" "}
+        {nNodes} départements (plutôt qu'une grille de contrôle de même taille) fait-il mieux que l'indice de Moran
+        pour cette tâche de discrimination -- puis, appliqué à la vraie série de chômage départemental, reconnaît-il
+        bien cette dernière comme provenant du réseau réel ?
+      </p>
+      <p className="text-muted">{IA_VS_STATS_REAL_H2_NOTE}</p>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Classifieur spatial (graphe, {nSeeds} entraînements)</th>
+              <th>Indice de Moran (sans paramètre appris)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Accuracy sur {nTestSnapshots} instantanés simulés de test (réseau réel vs grille)</td>
+              <td>{pctMeanStd({ mean: cnn.meanAccuracy, std: cnn.stdAccuracy })} -- ensemble : {pct(cnn.ensembleAccuracy)}</td>
+              <td>{pct(classical.accuracy)}</td>
+            </tr>
+            <tr>
+              <td>Trimestres réels ({realData.nPeriods}, {realData.periodStart} à {realData.periodEnd}) reconnus "réseau réel"</td>
+              <td>{pct(realData.fractionClassifiedRealNetworkCnn)} (probabilité moyenne {realData.meanProbabilityRealNetwork})</td>
+              <td>{pct(realData.fractionClassifiedRealNetworkClassical)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-muted">{IA_VS_STATS_REAL_H2_RESULT_NOTE}</p>
+    </>
+  );
+}
+
+function RealH3Extension() {
+  const { nSeeds, phenomena, classical, cnn } = REAL_H3;
+  return (
+    <>
+      <h3>Extension aux données réelles -- domaine Société, indicateur joint (§2.3)</h3>
+      <p className="text-muted">
+        H3 demande une entrée double, propre à ce cas : un classifieur à deux branches (une temporelle, une
+        spatiale, fusionnées avant la décision) détecte-t-il mieux une anomalie JOINTE (les deux signaux anormaux en
+        même temps) que la méthode empirique de Brown/Kost &amp; McDermott déjà utilisée par H3 ?
+      </p>
+      <p className="text-muted">{IA_VS_STATS_REAL_H3_NOTE}</p>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Classifieur double-entrée ({nSeeds} entraînements)</th>
+              <th>Baseline classique (tendance + Moran)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Accuracy sur paires simulées de test</td>
+              <td>{pctMeanStd({ mean: cnn.meanAccuracy, std: cnn.stdAccuracy })} -- ensemble : {pct(cnn.ensembleAccuracy)}</td>
+              <td>{pct(classical.accuracy)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="table-scroll">
+        <table className="agg-table">
+          <thead>
+            <tr>
+              <th>Phénomène</th>
+              <th>Probabilité d'anomalie jointe (classifieur)</th>
+              <th>Verdict classifieur</th>
+              <th>Verdict baseline classique</th>
+            </tr>
+          </thead>
+          <tbody>
+            {phenomena.map((p) => (
+              <tr key={p.key}>
+                <td>{p.label}</td>
+                <td>{p.error ? p.error : p.cnn_probability_joint_anomaly}</td>
+                <td>{p.error ? "n/a" : p.cnn_flagged ? "anomalie jointe" : "rien détecté"}</td>
+                <td>{p.error ? "n/a" : p.classical_flagged ? "anomalie jointe" : "rien détecté"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-muted">{IA_VS_STATS_REAL_H3_RESULT_NOTE}</p>
+    </>
+  );
+}
+
 export default function IaVsStatistiquesResult() {
   const nTest = R.nTestSaddle + R.nTestKuramoto;
 
@@ -287,6 +385,10 @@ export default function IaVsStatistiquesResult() {
 
           <RealH1Extension />
 
+          <RealH2Extension />
+
+          <RealH3Extension />
+
           <RealFusionExtension />
         </>
       }
@@ -301,8 +403,10 @@ export default function IaVsStatistiquesResult() {
         "Jamais combiné aux verdicts des trois domaines (Société, Fusion nucléaire, Mémoire collective) : ce banc d'essai est transversal, pas un module de plus dans l'un d'eux.",
         "Extension aux données réelles (§2.1, §2.4) : aucun filtre de persistance appliqué (contrairement à l'évaluation sur données simulées) -- le taux de fenêtres flaguées est un taux brut, fenêtre par fenêtre, pas un nombre d'alertes soutenues dans le temps. La normalisation par fenêtre (moyenne/écart-type propres à chaque fenêtre, plutôt que la normalisation globale du jeu d'entraînement) est une adaptation nécessaire pour un signal d'échelle complètement différente des séries simulées, pas une méthode validée par ailleurs.",
         "Sur la batterie MAST réelle (§2.4), le taux de fenêtres flaguées est en moyenne PLUS élevé sur les tirs stables (98,3%) que sur les tirs disruptés (69,7%) -- un résultat inversé par rapport à ce qui serait attendu d'un vrai précurseur, rapporté sans explication de confort plutôt que masqué ou réinterprété a posteriori.",
+        "Le classifieur spatial (§2.2, réseau vs grille) n'a pas d'architecture publiée de référence à reproduire (contrairement au CNN-LSTM temporel) -- une architecture légère conçue pour ce banc d'essai, jamais validée par ailleurs, et faute de coordonnées géographiques disponibles pour les départements, une convolution de GRAPHE plutôt qu'une carte rasterisée. Sur cette tâche, elle fait moins bien que l'indice de Moran, dans les deux sens testés (instantanés simulés ET vraie série de chômage) -- rapporté tel quel, un résultat net en faveur de la méthode statistique classique.",
+        "Le classifieur double-entrée (§2.3, H3) est, à l'inverse, nettement meilleur que la baseline classique sur la tâche simulée (99,2% contre 84,0%) -- mais sur les 6 phénomènes réels, les deux méthodes s'accordent pour ne rien détecter, ce qui ne permet ni de confirmer ni d'infirmer cet avantage sur données réelles à cette échelle.",
       ]}
-      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (§10-11 -- extension aux données réelles)" }}
+      journalLink={{ to: "/journal", label: "Voir le Journal de recherche (§10-13 -- extension aux données réelles)" }}
       showLiveSection={false}
     >
       <p className="lede">

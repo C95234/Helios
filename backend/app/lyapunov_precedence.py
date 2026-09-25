@@ -94,11 +94,20 @@ def simulate_saddle_node(
     mu_rate: float = 0.005,
     coupling: str = "diffusive",
     seed: int = 0,
+    return_snapshots: bool = False,
+    snapshot_stride: int = 50,
 ) -> dict:
     """Bifurcation noeud-col par noeud, couplee sur le reseau de poids W, avec bruit.
 
     coupling="diffusive" : dx_i = (mu(t) + x_i^2 - beta*(Lx)_i) dt + sigma dW_i (§5.6quater)
     coupling="contagion"  : dx_i = (mu(t) + x_i^2 + beta*sum_j W_ij*tanh(x_j-x_i)) dt + sigma dW_i (§5.6quinquies)
+
+    `return_snapshots=True` (§2.2, classifieur spatial H2) : conserve aussi
+    l'etat COMPLET par noeud x(t) (pas seulement sa moyenne `xbar`), sous-
+    echantillonne tous les `snapshot_stride` pas pour rester leger -- inutile
+    pour tous les usages existants (H1/H3, qui ne regardent que la moyenne
+    du reseau et l'indice de Moran instantane), donc desactive par defaut,
+    aucun changement de comportement pour eux.
     """
     n = W.shape[0]
     L = laplacian(W)
@@ -108,6 +117,7 @@ def simulate_saddle_node(
 
     xbar_hist = np.empty(n_steps)
     moran_hist = np.empty(n_steps)
+    snapshots = [] if return_snapshots else None
     t_escape = None
     steps_run = n_steps
 
@@ -123,6 +133,8 @@ def simulate_saddle_node(
         x = x + dx
         xbar_hist[k] = x.mean()
         moran_hist[k] = morans_i_instant(x, W)
+        if return_snapshots and k % snapshot_stride == 0:
+            snapshots.append(x.copy())
         if np.any(np.abs(x) > ESCAPE_THRESHOLD):
             t_escape = t
             steps_run = k + 1
@@ -130,7 +142,10 @@ def simulate_saddle_node(
 
     xbar_hist, moran_hist = xbar_hist[:steps_run], moran_hist[:steps_run]
     times = np.arange(steps_run) * dt
-    return {"times": times, "xbar": xbar_hist, "moran_instant": moran_hist, "t_escape": t_escape}
+    result = {"times": times, "xbar": xbar_hist, "moran_instant": moran_hist, "t_escape": t_escape}
+    if return_snapshots:
+        result["x_snapshots"] = np.array(snapshots)
+    return result
 
 
 def detect_precedence(

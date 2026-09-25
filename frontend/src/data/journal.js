@@ -236,6 +236,61 @@ export const JOURNAL_SECTIONS = [
       },
     ],
   },
+  {
+    id: "spatial-classifier-h2",
+    title: "12. Classifieur spatial pour H2 : l'indice de Moran gagne la comparaison, dans les deux sens testés",
+    simple:
+      "Nouvelle architecture (pas celle de Bury et al., qui ne traite qu'une série temporelle) : un classifieur de convolution de graphe entraîné à reconnaître le réseau réel des départements plutôt qu'une grille de contrôle. Résultat net et honnête : l'indice de Moran, sans aucun paramètre appris, fait mieux que ce classifieur -- sur des instantanés simulés (90,5% contre 84,1%) ET sur la vraie série de chômage départemental (99,1% contre 77,4% de trimestres correctement reconnus comme \"réseau réel\").",
+    expertBlocks: [
+      {
+        text: "Pourquoi une nouvelle architecture (backend/app/spatial_ml.py) : H2 pose une question spatiale (une carte de territoires), pas temporelle -- le CNN-LSTM de §1.1 ne s'applique pas tel quel. Faute de coordonnées géographiques pour les départements (`app/geo.py` ne contient que l'adjacence, vérifié avant de choisir cette voie), une rasterisation 2D façon carte n'est pas possible sans fabriquer une géométrie arbitraire -- la généralisation retenue est un réseau de convolution de GRAPHE (Kipf & Welling, 2017) : deux branches de propagation (une par topologie candidate, réelle et grille), appliquées au MÊME instantané brut centré par sa propre moyenne, jamais la topologie d'origine donnée explicitement en entrée.",
+      },
+      {
+        text: "Donnée d'entraînement : la même dynamique de bifurcation nœud-col déjà utilisée pour §5.6quater/quinquies et §1.1 (`simulate_saddle_node`, généralisée à n'importe quelle matrice de poids), couplée une fois sur le VRAI réseau des 94 départements (topologie dérivée de la vraie série Insee, avant de générer la moindre donnée synthétique, pour que le nombre de nœuds et leur identité restent cohérents entre entraînement et application réelle), une fois sur une grille de contrôle de même taille -- label = quelle topologie a produit l'instantané.",
+      },
+      {
+        text: "Baseline classique à armes égales : prédit \"réseau réel\" si l'indice de Moran instantané calculé avec l'adjacence réelle est plus élevé que celui calculé avec la grille de contrôle, sur le même instantané -- sans aucun paramètre appris, exactement ce que le test statistique de H2 fait déjà (comparer les deux topologies sur la même donnée).",
+      },
+      {
+        text: "Résultat sur 3148 instantanés de test simulés (graines jamais vues à l'entraînement) : indice de Moran 90,5% de bonnes réponses ; ensemble de 10 classifieurs spatiaux 84,1% (83,6% ± 0,7% individuellement, écart-type faible -- les 10 entraînements sont cohérents entre eux, contrairement au Kuramoto de §10). Un résultat net, dans le même sens que le §1 du cahier des charges anticipait explicitement (\"l'IA peut très bien perdre la comparaison\").",
+      },
+      {
+        text: "Effet sur les données réelles (106 trimestres de chômage départemental, 2000 à 2026, résidus détrendés §5.2) : le classifieur reconnaît 77,4% des trimestres comme \"réseau réel\" (probabilité moyenne 0,69), la règle de Moran 99,1% -- puisque ces données proviennent authentiquement du réseau réel, la règle de Moran est donc presque toujours correcte, le classifieur se trompe sur près d'un quart des trimestres. Cohérent avec son accuracy plus faible sur le test simulé : le classifieur généralise moins bien que la formule fermée de Moran, dans les deux évaluations.",
+      },
+      {
+        text: "Non fait : rasterisation 2D avec de vraies coordonnées géographiques (nécessiterait de récupérer des centroïdes de départements, une nouvelle source de données, non fait ici) ; comparaison à une architecture de graphe plus profonde (plusieurs couches de convolution) qui pourrait réduire l'écart avec Moran -- non tentée, cette architecture est délibérément légère comme le demande le cahier des charges (§2.2, \"CNN 2D léger\").",
+      },
+    ],
+  },
+  {
+    id: "dual-branch-classifier-h3",
+    title: "13. Classifieur double-entrée pour H3 : nette victoire sur données simulées, accord total (négatif) sur données réelles",
+    simple:
+      "Troisième nouvelle architecture (après le CNN-LSTM temporel §10 et le classifieur spatial §12) : un classifieur à deux branches (une temporelle, une spatiale, fusionnées) pour détecter si les deux signaux sont anormaux EN MÊME TEMPS -- la question propre à H3. Sur des paires simulées, il domine largement une baseline classique (99,2% contre 84,0%). Sur les 6 phénomènes réels déjà testés par H3, les deux méthodes s'accordent parfaitement : aucune anomalie jointe détectée nulle part.",
+    expertBlocks: [
+      {
+        text: "Architecture (backend/app/h3_ml.py, `DualBranchFusionClassifier`) : une branche temporelle (Conv1D + LSTM, plus légère que le CNN-LSTM de §10 puisqu'elle ne reproduit pas Bury et al., qui ne traite qu'un seul flux) et une branche spatiale (la même convolution de graphe que §12, réseau réel uniquement -- la question n'est plus \"réel ou grille ?\" mais \"anomalie jointe sur le réel\"), fusionnées par une seule couche de décision -- une fusion tardive, la plus simple qui réponde à la consigne du cahier des charges (§2.3).",
+      },
+      {
+        text: "Donnée d'entraînement : la MÊME trajectoire simulée (`simulate_saddle_node`, couplée sur le vrai réseau des départements, §12) fournit à la fois la moyenne du réseau xbar(t) (branche temporelle, fenêtre de 60 pas) et les instantanés par nœud (branche spatiale) -- les deux canaux sont donc toujours synchrones par construction, jamais deux jeux de données appairés artificiellement. Label = anomalie jointe si la fenêtre se termine dans les 150 derniers pas avant une vraie bascule.",
+      },
+      {
+        text: "Correction appliquée avant de figer ce résultat : la première évaluation de l'ensemble donnait une accuracy de 80,0% en ensemble contre ~99% pour chaque modèle pris individuellement -- une incohérence qui a révélé un bug de normalisation (l'évaluation en ensemble appliquait par erreur la normalisation \"par fenêtre\" prévue pour les données réelles, au lieu de la normalisation globale figée à l'entraînement, sur le jeu de test SIMULÉ). Corrigé en séparant clairement les deux chemins d'évaluation (`ensemble_predict` pour les données simulées, `ensemble_predict_real_data` pour l'application réelle) -- sans ce contrôle de cohérence entre accuracy individuelle et accuracy d'ensemble, ce bug serait passé inaperçu et un chiffre faux aurait été publié.",
+      },
+      {
+        text: "Résultat sur 2250 paires de test simulées (450 anomalies jointes, 1800 négatives, graines jamais vues à l'entraînement) : baseline classique (tendance de Kendall au-dessus de sa médiane ET indice de Moran au-dessus de sa médiane, sur le même lot) 84,0% ; ensemble de 10 classifieurs 99,2% (98,9% ± 0,5% individuellement) -- un avantage net et cohérent, cette fois en faveur du classifieur, à l'inverse du résultat de §12 sur H2.",
+      },
+      {
+        text: "Effet sur les 6 phénomènes réels déjà testés par H3 (fenêtre nationale de 60 mois se terminant à la date de fin du phénomène, instantané spatial du trimestre le plus proche) : probabilité d'anomalie jointe entre 4,1% et 6,0% pour les six -- aucun ne dépasse le seuil de 50%, et la baseline classique ne détecte rien non plus sur aucun des six. Accord total entre les deux méthodes, et cohérent avec le verdict déjà publié de H3 sur données réelles (majoritairement non concluant).",
+      },
+      {
+        text: "Interprétation honnête : un classifieur qui domine largement une baseline sur une tâche simulée peut très bien ne rien détecter du tout sur des données réelles à une échelle et une source complètement différentes -- ni une confirmation ni une réfutation de H3 elle-même, ce banc d'essai reste transversal et jamais combiné au verdict statistique propre de H3.",
+      },
+      {
+        text: "Complète la couverture du §2 du cahier des charges le plus récent : §2.1 (H1), §2.2 (H2), §2.3 (H3) et §2.4 (Fusion) sont maintenant tous les quatre construits, exécutés sur de vraies données et publiés -- seul §2.5 (H5, explicitement optionnel et de priorité 2 dans le document) reste non traité.",
+      },
+    ],
+  },
 ];
 
 /** §7bis, point 7 -- état d'avancement du protocole de généralisation. */
