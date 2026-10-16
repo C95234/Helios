@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import zlib
+
 import pandas as pd
 from fastapi import APIRouter, HTTPException, Query
 
@@ -82,6 +84,19 @@ def _snapshot_out(result: dict) -> MoranTestOut:
     )
 
 
+def _stable_seed(key: str) -> int:
+    """Graine deterministe par variable. `hash(str)` change a CHAQUE lancement de Python
+    (PYTHONHASHSEED aleatoire) : l'ancienne graine `hash(key) % 1000` rendait l'agregat H2
+    irreproductible d'un rafraichissement a l'autre."""
+    return zlib.crc32(key.encode("utf-8")) % 1000
+
+
+def _robust_significant(trend: TrendTestOut) -> bool:
+    """Significatif ET pas a la limite du seuil : une p-value a moins de 2 erreurs-types
+    Monte-Carlo de 0.05 ne tranche pas, le tirage aleatoire decide a sa place."""
+    return trend.significant_at_0_05 and not trend.borderline
+
+
 def _outcome(real_sig: bool, grid_sig: bool) -> str:
     if real_sig and not grid_sig:
         return "favorable"
@@ -91,7 +106,7 @@ def _outcome(real_sig: bool, grid_sig: bool) -> str:
 
 
 def _verdict(real_trend: TrendTestOut, grid_trend: TrendTestOut) -> str:
-    outcome = _outcome(real_trend.significant_at_0_05, grid_trend.significant_at_0_05)
+    outcome = _outcome(_robust_significant(real_trend), _robust_significant(grid_trend))
     if outcome == "favorable":
         return (
             "Sur 26 ans, la synchronisation spatiale (indice de Moran) suit une tendance significative sur "
@@ -117,7 +132,7 @@ def _verdict(real_trend: TrendTestOut, grid_trend: TrendTestOut) -> str:
 
 @router.get("/h2", response_model=H2Response)
 async def test_h2(
-    n_surrogates: int = Query(default=500, ge=100, le=2000),
+    n_surrogates: int = Query(default=2000, ge=100, le=20000),
     n_permutations_snapshot: int = Query(default=300, ge=100, le=1000),
 ):
     try:
@@ -178,8 +193,8 @@ async def _analyze_variable(key: str, n_surrogates: int) -> H2VariableResult:
     cfg = VARIABLES[key]
     wide = await get_department_wide(cfg["connector"], start_period=cfg["start_period"], rolling_12=cfg["rolling_12"])
     spatial = compute_network_moran_series(wide)
-    real_trend = surrogate_trend_test(spatial["i_real_detrended"], n_surrogates=n_surrogates, seed=hash(key) % 1000)
-    grid_trend = surrogate_trend_test(spatial["i_grid_detrended"], n_surrogates=n_surrogates, seed=(hash(key) + 1) % 1000)
+    real_trend = surrogate_trend_test(spatial["i_real_detrended"], n_surrogates=n_surrogates, seed=_stable_seed(key))
+    grid_trend = surrogate_trend_test(spatial["i_grid_detrended"], n_surrogates=n_surrogates, seed=_stable_seed(key) + 1)
     real_trend_out = _trend_out(real_trend)
     grid_trend_out = _trend_out(grid_trend)
     dates = spatial["dates"]
@@ -191,12 +206,12 @@ async def _analyze_variable(key: str, n_surrogates: int) -> H2VariableResult:
         period_end=dates[-1].strftime("%Y-%m-%d"),
         real_trend=real_trend_out,
         grid_trend=grid_trend_out,
-        outcome=_outcome(real_trend_out.significant_at_0_05, grid_trend_out.significant_at_0_05),
+        outcome=_outcome(_robust_significant(real_trend_out), _robust_significant(grid_trend_out)),
     )
 
 
 @router.get("/h2/aggregate", response_model=H2AggregateResponse)
-async def test_h2_aggregate(n_surrogates: int = Query(default=300, ge=100, le=1000)):
+async def test_h2_aggregate(n_surrogates: int = Query(default=1000, ge=100, le=20000)):
     """Rejoue le test H2 (reseau reel vs grille de controle) sur 5 variables
     territoriales reelles au lieu du seul chomage -- miroir de
     /hypotheses/h1/aggregate."""
@@ -225,9 +240,11 @@ async def test_h2_aggregate(n_surrogates: int = Query(default=300, ge=100, le=10
             "pas le réseau réel) -- majorité défavorable."
         )
     else:
+        n_borderline = sum(1 for r in results if r.real_trend.borderline or r.grid_trend.borderline)
+        borderline_note = f" (dont {n_borderline} à la limite du seuil de 0,05, non retenue(s) comme significative(s))" if n_borderline else ""
         verdict = (
             f"Sur {len(results)} variables réelles testées, {n_favorable} favorables, {n_against} "
-            f"défavorables, {n_neutral} non concluantes -- pas de majorité claire dans un sens ou l'autre."
+            f"défavorables, {n_neutral} non concluantes{borderline_note} -- pas de majorité claire dans un sens ou l'autre."
         )
 
     return H2AggregateResponse(

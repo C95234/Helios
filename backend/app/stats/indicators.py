@@ -30,9 +30,28 @@ def _lag1_autocorr(window_values: np.ndarray) -> float:
 
 
 def rolling_ac1(values: pd.Series, window: int) -> pd.Series:
+    """AC1 glissant, vectorise sur toutes les fenetres a la fois.
+
+    Meme valeur que `_lag1_autocorr` (statsmodels `acf(nlags=1, fft=False)`) fenetre par
+    fenetre -- somme des produits d'ecarts consecutifs sur somme des carres des ecarts a la
+    moyenne de la fenetre -- verifie a 1e-12 pres (tests/test_indicators.py), mais ~100x
+    plus rapide : l'ancienne boucle statsmodels par fenetre limitait les tests par donnees de
+    substitution a 50-60 surrogats, trop peu pour trancher une p-value proche de 0.05.
+    """
     if window < 3:
         raise ValueError("La fenetre glissante doit contenir au moins 3 points pour l'AC1")
-    return values.rolling(window=window, min_periods=window).apply(_lag1_autocorr, raw=True)
+    x = values.to_numpy(dtype=float)
+    out = np.full(len(x), np.nan)
+    if len(x) >= window:
+        windows = np.lib.stride_tricks.sliding_window_view(x, window)
+        deviations = windows - windows.mean(axis=1, keepdims=True)
+        numerator = (deviations[:, :-1] * deviations[:, 1:]).sum(axis=1)
+        denominator = (deviations * deviations).sum(axis=1)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            ac1 = numerator / denominator
+        ac1[np.std(windows, axis=1) == 0] = np.nan  # meme garde-fou que _lag1_autocorr
+        out[window - 1:] = ac1
+    return pd.Series(out, index=values.index)
 
 
 def kendall_trend(indicator: pd.Series) -> tuple[float, int]:

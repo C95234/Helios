@@ -39,6 +39,13 @@ def phase_randomized_surrogate(values: np.ndarray, rng: np.random.Generator) -> 
     return surrogate + values.mean()
 
 
+def _permutation_p_value(n_at_least_as_extreme: int, n_surrogates: int) -> float:
+    """p-value de Monte-Carlo avec plancher standard (Davison & Hinkley 1997 ; North, Curtis &
+    Sham 2002) : (1 + k) / (1 + n). Sans le +1, la p-value peut valoir exactement 0 et est
+    biaisee vers le bas de ~1/n -- 0.02 pour les 50 surrogats utilises jusqu'ici par Fusion."""
+    return float((1 + n_at_least_as_extreme) / (1 + n_surrogates))
+
+
 def surrogate_test(
     values: pd.Series,
     window: int,
@@ -81,9 +88,9 @@ def surrogate_test(
     if len(valid) == 0:
         p_value = None
     elif one_sided_increase:
-        p_value = float(np.mean(valid >= observed_tau))
+        p_value = _permutation_p_value(int(np.sum(valid >= observed_tau)), len(valid))
     else:
-        p_value = float(np.mean(np.abs(valid) >= abs(observed_tau)))
+        p_value = _permutation_p_value(int(np.sum(np.abs(valid) >= abs(observed_tau))), len(valid))
 
     return {
         "indicator": indicator,
@@ -110,7 +117,10 @@ def surrogate_trend_test(
     observed_tau, n_points = kendall_trend(pd.Series(clean))
 
     if np.isnan(observed_tau) or n_points < 4:
-        return {"observed_tau": None, "p_value": None, "n_surrogates": 0, "n_points": n_points, "significant_at_0_05": False}
+        return {
+            "observed_tau": None, "p_value": None, "n_surrogates": 0, "n_points": n_points,
+            "significant_at_0_05": False, "p_value_se": None, "borderline": False,
+        }
 
     rng = np.random.default_rng(seed)
     surrogate_taus = np.empty(n_surrogates)
@@ -123,14 +133,21 @@ def surrogate_trend_test(
     if len(valid) == 0:
         p_value = None
     elif one_sided_increase:
-        p_value = float(np.mean(valid >= observed_tau))
+        p_value = _permutation_p_value(int(np.sum(valid >= observed_tau)), len(valid))
     else:
-        p_value = float(np.mean(np.abs(valid) >= abs(observed_tau)))
+        p_value = _permutation_p_value(int(np.sum(np.abs(valid) >= abs(observed_tau))), len(valid))
 
+    # Erreur-type Monte-Carlo de la p-value (binomiale) : tant que 0.05 est a moins de
+    # 2 erreurs-types de p, le cote du seuil ou tombe p depend du tirage aleatoire, pas
+    # des donnees -- "a la limite" (voir Journal §15 : la p-value "grille" de H2/logements
+    # autorisés vaut 0.052, mais passait sous 0.05 dans 38% des tirages a 500 surrogats).
+    p_se = float(np.sqrt(p_value * (1 - p_value) / len(valid))) if p_value is not None and len(valid) else None
     return {
         "observed_tau": observed_tau,
         "p_value": p_value,
         "n_surrogates": int(len(valid)),
         "n_points": n_points,
         "significant_at_0_05": bool(p_value is not None and p_value < 0.05),
+        "p_value_se": p_se,
+        "borderline": bool(p_se is not None and abs(p_value - 0.05) <= 2 * p_se),
     }

@@ -223,13 +223,13 @@ async def test_h1(
     phenomenon: str,
     insee_window: int = Query(default=4, ge=4, le=24),
     wiki_window: int = Query(default=14, ge=7, le=60),
-    n_surrogates: int = Query(default=60, ge=30, le=1000),
+    n_surrogates: int = Query(default=60, ge=30, le=2000),
 ):
     return await _run_h1(phenomenon, insee_window, wiki_window, n_surrogates)
 
 
 @router.get("/h1/aggregate", response_model=H1AggregateResponse)
-async def test_h1_aggregate(n_surrogates: int = Query(default=30, ge=30, le=500)):
+async def test_h1_aggregate(n_surrogates: int = Query(default=30, ge=30, le=2000)):
     """Lance H1 sur tous les phenomenes curates et resume le nombre qui vont dans le sens de H1.
 
     §5.7 : au moins 5 episodes independants avant toute conclusion ferme. Meme avec

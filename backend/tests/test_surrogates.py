@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from app.stats.surrogates import phase_randomized_surrogate, surrogate_test
 
@@ -37,3 +38,26 @@ def test_surrogate_test_on_flat_noise_is_not_significant():
 
     assert result["p_value"] > 0.05
     assert result["significant_at_0_05"] is False
+
+
+# -- p-value avec plancher (Davison & Hinkley 1997) : (1 + #{substituts >= observe}) / (1 + n),
+# -- jamais exactement 0 -- meme defaut que celui deja corrige pour la permutation de Moran.
+
+def test_surrogate_test_p_value_has_a_floor_and_is_never_zero():
+    import numpy as np
+    import pandas as pd
+    from app.stats.surrogates import surrogate_test
+
+    clear_trend = pd.Series(np.arange(150, dtype=float) ** 1.5 + np.random.default_rng(0).normal(scale=0.5, size=150))
+    r = surrogate_test(clear_trend, 20, "variance", n_surrogates=200, seed=1)
+    assert r["p_value"] is not None and r["p_value"] >= 1 / 201 - 1e-12
+
+
+def test_surrogate_trend_test_p_value_is_k_plus_one_over_n_plus_one():
+    import numpy as np
+    from app.stats.surrogates import surrogate_trend_test
+
+    r = surrogate_trend_test(np.arange(120, dtype=float), n_surrogates=300, seed=2)
+    k = round(r["p_value"] * (r["n_surrogates"] + 1)) - 1  # nombre de substituts >= observe
+    assert r["p_value"] == pytest.approx((1 + k) / (1 + r["n_surrogates"]), abs=1e-12)
+    assert r["p_value"] >= 1 / 301 - 1e-12

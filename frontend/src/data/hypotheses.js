@@ -27,7 +27,7 @@ export const HYPOTHESES = [
       "L'indice de Moran se comporte différemment sur le réseau réel (tailles et topologie hétérogènes) que sur une grille régulière de contrôle de même taille — un créneau identifié dans la littérature, où les études EWS spatiales sont presque toujours validées sur des grilles idéalisées (§5.5).",
     status: "testable",
     statusNote:
-      "Testé sur 5 variables territoriales réelles (chômage, défaillances d'entreprises, logements autorisés, créations d'entreprises, population), avec retrait de tendance par département avant tout test (§5.2) : réseau réel des 96 départements de métropole (contours IGN) contre une grille régulière de contrôle. 2 des 5 vont à l'encontre de H2 -- pas 5 épisodes indépendants au sens du §5.7, mais plus qu'une seule variable.",
+      "Testé sur 5 variables territoriales réelles (chômage, défaillances d'entreprises, logements autorisés, créations d'entreprises, population), avec retrait de tendance par département avant tout test (§5.2) : réseau réel des 96 départements de métropole (contours IGN) contre une grille régulière de contrôle. 1 des 5 va à l'encontre de H2 (une seconde est à la limite du seuil de 0,05 et n'est pas retenue) -- pas 5 épisodes indépendants au sens du §5.7, mais plus qu'une seule variable.",
     link: { to: "/resultats/h2", label: "Voir le résultat H2" },
   },
   {

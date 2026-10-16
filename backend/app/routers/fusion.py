@@ -23,6 +23,7 @@ from ..geo import knn_weight_matrix
 from ..schemas import FusionAggregateResponse, FusionShotResult, SignificanceOut, TrendTestOut
 from ..stats.moran import morans_i
 from ..stats.quench import detect_quench
+from ..stats.discrimination import fisher_discrimination_p
 from ..stats.surrogates import surrogate_test, surrogate_trend_test
 
 router = APIRouter(prefix="/api/hypotheses", tags=["hypotheses"])
@@ -69,11 +70,18 @@ def _verdict(disrupted: bool, precursor: bool, has_temporal: bool, has_spatial: 
     return "Tir disrupté : aucun signal précurseur (temporel ou spatial) significatif avant le quench sur ce tir."
 
 
-async def _analyze_shot(shot_id: int, n_surrogates: int) -> FusionShotResult:
+async def _campaign_label(shot_id: int, fallback: str | None) -> str | None:
+    """La campagne n'est qu'une etiquette d'affichage : si l'API de metadonnees MAST est
+    indisponible, on garde celle de la liste curatee plutot que d'abandonner tout le tir (les
+    signaux, eux, viennent de S3 -- l'API de metadonnees etait tombee alors que S3 repondait)."""
     try:
-        metadata = await fetch_shot_metadata(shot_id)
-    except MastDataUnavailable as exc:
-        raise HTTPException(status_code=502, detail=str(exc)) from exc
+        return (await fetch_shot_metadata(shot_id)).get("campaign") or fallback
+    except MastDataUnavailable:
+        return fallback
+
+
+async def _analyze_shot(shot_id: int, n_surrogates: int, campaign_fallback: str | None = None) -> FusionShotResult:
+    campaign = await _campaign_label(shot_id, campaign_fallback)
 
     try:
         time, current = _fetch_current_signal(shot_id)
@@ -122,7 +130,7 @@ async def _analyze_shot(shot_id: int, n_surrogates: int) -> FusionShotResult:
 
     return FusionShotResult(
         shot_id=shot_id,
-        campaign=metadata.get("campaign"),
+        campaign=campaign,
         disrupted=quench["disrupted"],
         t_quench=quench["t_quench"],
         t_peak=quench["t_peak"],
@@ -146,13 +154,13 @@ async def test_fusion_shot(
 
 
 @router.get("/fusion/aggregate", response_model=FusionAggregateResponse)
-async def test_fusion_aggregate(n_surrogates: int = Query(default=50, ge=50, le=500)):
+async def test_fusion_aggregate(n_surrogates: int = Query(default=200, ge=50, le=2000)):
     """Lance la batterie de tirs curatés -- miroir de /hypotheses/h1/aggregate."""
     shots_meta = _load_curated_shots()
     results: list[FusionShotResult] = []
     for entry in shots_meta:
         try:
-            results.append(await _analyze_shot(entry["shot_id"], n_surrogates))
+            results.append(await _analyze_shot(entry["shot_id"], n_surrogates, campaign_fallback=entry.get("campaign")))
         except HTTPException:
             continue
 
@@ -164,11 +172,13 @@ async def test_fusion_aggregate(n_surrogates: int = Query(default=50, ge=50, le=
     n_disrupted_with_precursor = sum(1 for r in results if r.disrupted and r.precursor_before_quench)
     n_stable_false_positive = sum(1 for r in results if not r.disrupted and r.precursor_before_quench)
 
+    discrimination_p = fisher_discrimination_p(n_disrupted_with_precursor, n_disrupted, n_stable_false_positive, n_stable)
+    p_txt = f" Test exact de Fisher (disruptés signalés plus souvent que stables) : p = {discrimination_p:.3f}." if discrimination_p is not None else ""
     verdict = (
         f"{n_disrupted_with_precursor}/{n_disrupted} tirs disruptés montrent un signal précurseur "
         f"(temporel ou spatial) avant le quench, sur {len(results)} tirs analysés. Mais {n_stable_false_positive}/"
         f"{n_stable} tirs stables (cas de contrôle) montrent aussi un signal jugé significatif -- un faux "
-        "positif à ne pas passer sous silence, pas seulement un résultat favorable à retenir."
+        f"positif à ne pas passer sous silence, pas seulement un résultat favorable à retenir.{p_txt}"
         if n_disrupted > 0
         else "Aucun tir disrupté dans la batterie curatée -- pas de comparaison possible."
     )
@@ -181,4 +191,5 @@ async def test_fusion_aggregate(n_surrogates: int = Query(default=50, ge=50, le=
         n_stable_false_positive=n_stable_false_positive,
         shots=results,
         verdict_simple=verdict,
+        discrimination_p_value=discrimination_p,
     )

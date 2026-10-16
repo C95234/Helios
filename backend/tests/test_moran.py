@@ -85,3 +85,95 @@ def test_permutation_test_p_value_never_exactly_zero():
     result = permutation_test(values, weights, n_permutations=500, seed=0)
     assert result["p_value"] > 0.0
     assert result["p_value"] == pytest.approx(1 / 501, abs=1e-9) or result["p_value"] >= 1 / 501
+
+
+# -- Defauts trouves par la revue de Thomas Bury sur ewstools (PR #482, 2e tour),
+# -- presents a l'identique dans cette implementation avant correction.
+
+from fractions import Fraction  # noqa: E402
+
+from app.lyapunov_precedence import morans_i_instant  # noqa: E402
+
+
+def _rook_weights(n):
+    weights = np.zeros((n * n, n * n))
+    for r in range(n):
+        for c in range(n):
+            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
+                rr, cc = r + dr, c + dc
+                if 0 <= rr < n and 0 <= cc < n:
+                    weights[r * n + c, rr * n + cc] = 1
+    return weights
+
+
+@pytest.mark.parametrize("value", [3.0, 0.1, 0.23, -0.7, 1e6 + 0.1])
+@pytest.mark.parametrize("side", [3, 10])
+def test_morans_i_constant_field_is_nan(value, side):
+    # Une constante non exactement representable (0.1, 0.23...) laisse une moyenne
+    # arrondie : chaque ecart est le meme petit nombre non nul, et un test exact
+    # `denominator == 0` renvoie I = 1.0 (un faux signal, pas un champ constant).
+    assert np.isnan(morans_i(np.full(side * side, value), _rook_weights(side)))
+
+
+@pytest.mark.parametrize("side", [3, 10])
+def test_morans_i_constant_field_is_nan_for_all_two_decimal_constants(side):
+    weights = _rook_weights(side)
+    for c in np.arange(1, 200) / 100:
+        assert np.isnan(morans_i(np.full(side * side, round(c, 2)), weights)), c
+
+
+def test_morans_i_tiny_but_real_variation_is_still_computed():
+    # Garde-fou contre une tolerance trop large : 1e-12 de variation relative est
+    # tres au-dessus de la resolution flottante (~1e-16).
+    values = 1000.0 * (1 + 1e-12 * np.random.default_rng(0).normal(size=100))
+    assert np.isfinite(morans_i(values, _rook_weights(10)))
+
+
+def test_morans_i_rejects_self_weights_and_nonfinite_weights():
+    values = np.random.default_rng(2).normal(size=9)
+    weights = _rook_weights(3)
+    with pytest.raises(ValueError, match="diagonale"):
+        morans_i(values, weights + np.eye(9))
+    bad = weights.copy()
+    bad[0, 1] = np.nan
+    with pytest.raises(ValueError, match="finies"):
+        morans_i(values, bad)
+
+
+def _exact_morans_i(values, weights):
+    n = len(values)
+    mean = Fraction(int(sum(values)), n)
+    dev = [Fraction(int(v)) - mean for v in values]
+    num = sum(dev[i] * dev[j] for i, j in zip(*np.nonzero(weights)))
+    return Fraction(n, int(weights.sum())) * num / sum(d * d for d in dev)
+
+
+@pytest.mark.parametrize("field_seed", [0, 11, 13])
+def test_permutation_test_counts_exact_ties(field_seed):
+    # Champ binaire : beaucoup de permutations ont EXACTEMENT le meme I que l'observe mais
+    # sortent un cran flottant plus bas -- un `>=` exact les perdait et sous-estimait la
+    # p-value (~0.01 ici). Reference : memes permutations, en arithmetique rationnelle.
+    weights = _rook_weights(10)
+    field = np.random.default_rng(field_seed).integers(0, 2, 100).astype(float)
+    observed = _exact_morans_i(field, weights)
+    rng = np.random.default_rng(1)
+    n_ge = sum(_exact_morans_i(rng.permutation(field), weights) >= observed for _ in range(100))
+    expected = float(Fraction(1 + n_ge, 101))
+    assert permutation_test(field, weights, n_permutations=100, seed=1)["p_value"] == expected
+
+
+def test_permutation_test_accepts_a_shared_generator():
+    # Un Generator passe tel quel : deux appels successifs tirent des permutations differentes.
+    values = np.random.default_rng(0).normal(size=9)
+    weights = _rook_weights(3)
+    rng = np.random.default_rng(5)
+    a = permutation_test(values, weights, n_permutations=30, seed=rng)
+    b = permutation_test(values, weights, n_permutations=30, seed=rng)
+    assert (a["null_mean"], a["null_std"]) != (b["null_mean"], b["null_std"])
+
+
+def test_morans_i_instant_constant_field_is_nan_not_zero():
+    # Copie de morans_i utilisee par la simulation : un champ constant est INDEFINI
+    # (nan), pas "autocorrelation nulle" (0.0).
+    assert np.isnan(morans_i_instant(np.full(9, 0.23), _rook_weights(3)))
+    assert np.isnan(morans_i_instant(np.full(9, 3.0), _rook_weights(3)))

@@ -71,13 +71,15 @@ TRAIN_SEED0_BASE = 10_000  # memes graines que le run principal (§1), pour rejo
 
 # Verdict H1 deja publie (nSocSig/nSoc, outcome) -- frontend/src/data/results/h1.json,
 # recopie ici pour comparaison sans dependre du frontend depuis un script backend.
+# Comptes de results/h1.json tels que recalcules le 2026-10-16 avec 1000 surrogats et des graines fixes
+# (Journal §15) -- ils etaient calcules avec 60 surrogats auparavant.
 H1_PUBLISHED = {
     "gilets_jaunes_2018": {"n_soc_sig": 3, "n_soc": 3, "outcome": "against"},
     "confinement_2020": {"n_soc_sig": 0, "n_soc": 3, "outcome": "against"},
-    "chomage_recent": {"n_soc_sig": 1, "n_soc": 3, "outcome": "against"},
-    "attentats_2015": {"n_soc_sig": 2, "n_soc": 3, "outcome": "favorable"},
+    "chomage_recent": {"n_soc_sig": 2, "n_soc": 3, "outcome": "against"},
+    "attentats_2015": {"n_soc_sig": 3, "n_soc": 3, "outcome": "favorable"},
     "reforme_retraites_2023": {"n_soc_sig": 2, "n_soc": 3, "outcome": "against"},
-    "attentat_nice_2016": {"n_soc_sig": 2, "n_soc": 3, "outcome": "against"},
+    "attentat_nice_2016": {"n_soc_sig": 0, "n_soc": 3, "outcome": "against"},
 }
 
 

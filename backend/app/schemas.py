@@ -87,6 +87,9 @@ class TrendTestOut(BaseModel):
     n_surrogates: int
     n_points: int
     significant_at_0_05: bool
+    # Erreur-type Monte-Carlo de la p-value, et "a la limite du seuil" (|p - 0.05| <= 2 erreurs-types)
+    p_value_se: float | None = None
+    borderline: bool = False
 
 
 class MoranSeriesOut(BaseModel):
@@ -283,6 +286,8 @@ class FusionAggregateResponse(BaseModel):
     n_stable_false_positive: int
     shots: list[FusionShotResult]
     verdict_simple: str
+    # Test exact de Fisher unilateral : les tirs disruptes sont-ils signales plus souvent que les stables ?
+    discrimination_p_value: float | None = None
     quench_disclaimer: str = (
         "La verite terrain de disruption est derivee des donnees MAST elles-memes (chute brutale du courant "
         "plasma, critere simple documente) plutot que d'un jeu de donnees externe -- DisruptionBench "

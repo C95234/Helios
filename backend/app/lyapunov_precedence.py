@@ -78,8 +78,10 @@ def morans_i_instant(x: np.ndarray, W: np.ndarray) -> float:
     dev = x - x.mean()
     s0 = W.sum()
     den = np.sum(dev ** 2)
-    if den == 0 or s0 == 0:
-        return 0.0
+    # Champ constant (a la resolution flottante pres) ou poids nuls : indefini (nan), pas
+    # "autocorrelation nulle" (0.0) -- meme regle que stats/moran.py.
+    if s0 == 0 or np.ptp(x) <= 8 * np.finfo(float).eps * np.max(np.abs(x)):
+        return float("nan")
     num = np.sum(W * np.outer(dev, dev))
     return (n / s0) * (num / den)
 

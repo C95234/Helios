@@ -1,11 +1,13 @@
 {
-  "refreshedAt": "2026-09-04",
+  "refreshedAt": "2026-10-16",
   "nShots": 20,
   "nDisrupted": 10,
   "nStable": 10,
   "nDisruptedWithPrecursor": 8,
-  "nStableFalsePositive": 3,
-  "verdict": "favorable",
+  "nStableFalsePositive": 5,
+  "discriminationP": 0.1749,
+  "nSurrogates": 1000,
+  "verdict": "neutral",
   "shots": [
     {
       "shotId": 28461,
@@ -123,7 +125,7 @@
       "disrupted": false,
       "tQuench": null,
       "peakCurrentKa": 18.5,
-      "varianceSig": true,
+      "varianceSig": false,
       "ac1Sig": false,
       "moranSig": true,
       "precursor": true
@@ -136,8 +138,8 @@
       "peakCurrentKa": 45.2,
       "varianceSig": false,
       "ac1Sig": false,
-      "moranSig": false,
-      "precursor": false
+      "moranSig": true,
+      "precursor": true
     },
     {
       "shotId": 28484,
@@ -212,9 +214,9 @@
       "tQuench": null,
       "peakCurrentKa": 12.9,
       "varianceSig": false,
-      "ac1Sig": false,
+      "ac1Sig": true,
       "moranSig": false,
-      "precursor": false
+      "precursor": true
     },
     {
       "shotId": 19043,

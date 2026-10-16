@@ -73,8 +73,9 @@ export default function Bilan() {
           </div>
         </div>
         <p className="text-muted">
-          Détection sur données de tokamak (MAST), même moteur de calcul que H1/H2 -- résultat encourageant mais
-          pas net (taux de faux positifs notable). Toujours présenté à part : <Link to="/resultats/fusion">Résultats -- Fusion</Link>.
+          Détection sur données de tokamak (MAST), même moteur de calcul que H1/H2 -- les tirs disruptés ne sont pas
+          signalés significativement plus souvent que les tirs stables (test exact de Fisher : p = {FUSION_RESULT.discriminationP}),
+          donc non concluant. Toujours présenté à part : <Link to="/resultats/fusion">Résultats -- Fusion</Link>.
         </p>
       </section>
 

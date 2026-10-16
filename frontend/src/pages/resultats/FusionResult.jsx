@@ -102,7 +102,7 @@ export default function FusionResult() {
       domain={{ name: "Fusion nucléaire", to: "/resultats#fusion" }}
       verdict={FUSION_RESULT.verdict}
       episodesLabel={`${FUSION_RESULT.nShots} tirs analysés (${FUSION_RESULT.nDisrupted} disruptés, ${FUSION_RESULT.nStable} stables)`}
-      summary="Avant qu'un plasma de fusion ne perde son confinement, y a-t-il des signes avant-coureurs mesurables ? Sur 10 tirs disruptés d'un tokamak réel (MAST), 8 montrent un signal précurseur avant le quench -- mais 3 des 10 tirs stables (témoins) montrent aussi un signal jugé significatif, un faux positif à ne pas passer sous silence. Même moteur statistique que le domaine Société (variance, autocorrélation, indice de Moran, code inchangé) -- une preuve que la méthode généralise, pas un emprunt."
+      summary={`Avant qu'un plasma de fusion ne perde son confinement, y a-t-il des signes avant-coureurs mesurables ? Sur ${FUSION_RESULT.nDisrupted} tirs disruptés d'un tokamak réel (MAST), ${FUSION_RESULT.nDisruptedWithPrecursor} montrent un signal précurseur avant le quench -- mais ${FUSION_RESULT.nStableFalsePositive} des ${FUSION_RESULT.nStable} tirs stables (témoins) montrent aussi un signal jugé significatif. L'écart entre les deux groupes n'est pas statistiquement significatif (test exact de Fisher unilatéral : p = ${FUSION_RESULT.discriminationP}). Avec seulement 50 données de substitution par test, le nombre de faux positifs variait de 2 à 4 sur 10 selon la graine aléatoire ; il est maintenant calculé avec ${FUSION_RESULT.nSurrogates}. Même moteur statistique que le domaine Société (variance, autocorrélation, indice de Moran, code inchangé) -- une preuve que la méthode généralise, pas un emprunt.`}
       postulateSimple="Une disruption de plasma (perte brutale de confinement) est-elle précédée d'un signal détectable, comme les indicateurs statistiques qui détectent une fébrilité avant une rupture sociale ?"
       postulateExpert="Le courant plasma et le réseau des sondes magnétiques d'un tokamak réel (MAST) montrent-ils une fébrilité statistique avant le quench ? Réplication du pipeline construit pour le domaine Société (variance/AC1 glissantes + test par données de substitution, indice de Moran + test par données de substitution) sans aucune branche de calcul spécifique -- même moteur, deux domaines de données (§7ter)."
       resultText={
@@ -116,6 +116,10 @@ export default function FusionResult() {
             <div>
               <dt>Faux positifs (tirs stables)</dt>
               <dd>{FUSION_RESULT.nStableFalsePositive}/{FUSION_RESULT.nStable}</dd>
+            </div>
+            <div>
+              <dt>Disruptés signalés plus souvent que stables ? (test exact de Fisher)</dt>
+              <dd>p = {FUSION_RESULT.discriminationP}</dd>
             </div>
           </dl>
           <div className="table-scroll">
@@ -154,7 +158,8 @@ export default function FusionResult() {
       methodLink={{ to: "/methode/cours-statistiques", label: "Voir le cours de statistiques (méthodes communes à H1/H2)" }}
       limits={[
         "Vérité terrain de disruption dérivée des données MAST elles-mêmes (chute brutale du courant plasma, critère simple) plutôt que d'un jeu de données externe -- DisruptionBench (DIII-D/EAST/Alcator C-Mod) exige des identifiants institutionnels non disponibles, malgré ce qu'indique le cahier des charges. Pas un détecteur de disruption validé cliniquement.",
-        "Le taux de faux positifs (30 %) est plus élevé que le seuil nominal de 5 % par indicateur pris isolément -- attendu, puisqu'un tir est compté « précurseur » dès qu'UN SEUL des trois indicateurs (variance, AC1, Moran) est significatif : combiner plusieurs tests sans correction gonfle mécaniquement le taux de faux positifs (comparaisons multiples, voir Garde-fous).",
+        `Le taux de faux positifs (${Math.round((100 * FUSION_RESULT.nStableFalsePositive) / FUSION_RESULT.nStable)} %) est plus élevé que le seuil nominal de 5 % par indicateur pris isolément -- attendu, puisqu'un tir est compté « précurseur » dès qu'UN SEUL des trois indicateurs (variance, AC1, Moran) est significatif : combiner plusieurs tests sans correction gonfle mécaniquement le taux de faux positifs (comparaisons multiples, voir Garde-fous).`,
+        "Contrôle de reproductibilité (Journal §15) : les tests par données de substitution n'utilisaient que 50 surrogats (l'AC1 glissant, trop lent, l'imposait). Rejoués avec 6 jeux de graines différents à ce réglage, les tirs disruptés signalés vont de 7 à 8 sur 10 et les faux positifs de 2 à 4 sur 10 (moyenne 3,2), 5 tirs changeant de statut selon la graine. Le résultat publié auparavant, 8 contre 3 (p de Fisher = 0,035), était un tirage favorable : 8 contre 4 donne p = 0,085, 8 contre 5 donne p = 0,175. Recalculé avec 1000 surrogats et des graines fixes (8 contre 5), l'écart n'est pas significatif et le verdict passe de favorable à non concluant.",
         "Batterie de 20 tirs curatée à la main (10 disruptés, 10 stables) -- plus solide qu'un cas isolé, mais toujours pas les grands échantillons aléatoires d'un essai clinique.",
         "L'analyse temporelle du courant se limite aux ~400 derniers points avant la coupure (pas tout le tir) -- le courant plasma est échantillonné à ~2 kHz, et calculer l'autocorrélation glissante sur des milliers de points à chaque tirage de substitution serait ingérable ; les points les plus proches du quench sont les plus pertinents pour un signal précurseur de toute façon.",
         "Détection uniquement : ce module ne simule, ne conçoit ni ne propose aucun système de contrôle réel de plasma. Toute mention du RCA (H4) reste une note conceptuelle hors périmètre, jamais une conception fonctionnelle applicable à un vrai tokamak.",

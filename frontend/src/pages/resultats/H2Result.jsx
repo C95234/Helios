@@ -37,6 +37,17 @@ function aggregateOutcome(nFavorable, nAgainst, n) {
   return "neutral";
 }
 
+/** tau de Kendall, p-value et, si la p-value est a moins de 2 erreurs-types Monte-Carlo de 0,05,
+ * une mention "a la limite" : le cote du seuil ou elle tombe depend alors du tirage aleatoire. */
+function TrendCell({ tau, p, borderline }) {
+  return (
+    <>
+      {tau?.toFixed(3)}
+      {p !== undefined && p !== null && <span className="text-muted"> (p = {p.toFixed(3)}{borderline ? ", à la limite du seuil" : ""})</span>}
+    </>
+  );
+}
+
 function AggregateVariableRow({ v }) {
   return (
     <tr>
@@ -44,8 +55,8 @@ function AggregateVariableRow({ v }) {
       <td>
         {v.n_periods ?? v.nPeriods} ({(v.period_start ?? v.periodStart)?.slice(0, 4)}–{(v.period_end ?? v.periodEnd)?.slice(0, 4)})
       </td>
-      <td>{(v.real_trend?.observed_tau ?? v.realTau)?.toFixed(3)}</td>
-      <td>{(v.grid_trend?.observed_tau ?? v.gridTau)?.toFixed(3)}</td>
+      <td><TrendCell tau={v.real_trend?.observed_tau ?? v.realTau} p={v.real_trend?.p_value ?? v.realP} borderline={v.real_trend?.borderline ?? v.realBorderline} /></td>
+      <td><TrendCell tau={v.grid_trend?.observed_tau ?? v.gridTau} p={v.grid_trend?.p_value ?? v.gridP} borderline={v.grid_trend?.borderline ?? v.gridBorderline} /></td>
       <td>
         <VerdictBadge outcome={v.outcome} />
       </td>
@@ -167,6 +178,7 @@ function buildH2Markdown(result) {
 }
 
 const H2_DATA = HYPOTHESES.find((h) => h.code === "H2");
+const H2_BORDERLINE = H2_AGGREGATE.variables.filter((v) => v.realBorderline || v.gridBorderline);
 
 export default function H2Result() {
   const [result, setResult] = useState(null);
@@ -224,7 +236,7 @@ export default function H2Result() {
       domain={{ name: "Société", to: "/resultats#societe" }}
       verdict={H2_AGGREGATE.verdict}
       episodesLabel={`${H2_AGGREGATE.nVariablesTested} variables réelles testées`}
-      summary={`L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Testé sur 5 variables territoriales réelles (pas seulement le chômage), après retrait de tendance par département (§5.2 -- voir la mise en garde ci-dessous) : ${H2_AGGREGATE.nAgainst} vont à l'encontre de H2 (la grille de contrôle montre une tendance significative, pas le réseau réel), ${H2_AGGREGATE.nNeutral} restent non concluantes, aucune ne va dans le sens de H2.`}
+      summary={`L'indice de Moran se comporte-t-il différemment sur le vrai réseau des 96 départements de métropole que sur une grille régulière artificielle de même taille ? Testé sur 5 variables territoriales réelles (pas seulement le chômage), après retrait de tendance par département (§5.2 -- voir la mise en garde ci-dessous) : ${H2_AGGREGATE.nAgainst} ${H2_AGGREGATE.nAgainst > 1 ? "vont" : "va"} à l'encontre de H2 (la grille de contrôle montre une tendance significative, pas le réseau réel), ${H2_AGGREGATE.nNeutral} ${H2_AGGREGATE.nNeutral > 1 ? "restent non concluantes" : "reste non concluante"}${H2_BORDERLINE.length ? ` (dont ${H2_BORDERLINE.length} à la limite du seuil de 0,05, non retenue comme significative)` : ""}, aucune ne va dans le sens de H2.`}
       postulateSimple={H2_DATA.simple}
       postulateExpert={H2_DATA.expert}
       resultText={
@@ -302,7 +314,8 @@ export default function H2Result() {
         "5 variables réelles, pas 5 épisodes indépendants au sens du §5.7 : ce sont 5 mesures différentes sur le même territoire et à peu près la même période, pas 5 systèmes territoriaux distincts -- un indice plus robuste qu'une seule variable, mais pas l'équivalent de 5 réplications indépendantes.",
         "Fréquences et couvertures différentes selon la variable (chômage et logements en cumul 12 mois, créations d'entreprises en cumul 12 mois faute de variante CVS au niveau département, population en annuel sur 52 points seulement) -- pas directement comparables entre elles en rigueur statistique.",
         "La grille de contrôle replace les mêmes valeurs dans un ordre arbitraire, pas selon une géographie fictive alternative construite exprès.",
-        "Correction appliquée suite à une revue externe (contribution ewstools, §1ter.1) : la tendance de l'indice de Moran est désormais testée sur les résidus après retrait d'une tendance lente par département (LOWESS), pas sur le champ brut -- un motif spatial dont l'amplitude se renforce dans le temps ferait sinon monter l'indice sans aucun vrai ralentissement critique. Cette correction a fait disparaître le signal \"défavorable\" que montraient 3 des 5 variables avant retrait de tendance (2 le montrent encore après correction).",
+        "Correction appliquée suite à une revue externe (contribution ewstools, §1ter.1) : la tendance de l'indice de Moran est désormais testée sur les résidus après retrait d'une tendance lente par département (LOWESS), pas sur le champ brut -- un motif spatial dont l'amplitude se renforce dans le temps ferait sinon monter l'indice sans aucun vrai ralentissement critique. Cette correction a fait disparaître le signal \"défavorable\" que montraient 3 des 5 variables avant retrait de tendance (2 le montraient encore après correction -- voir le contrôle de reproductibilité ci-dessous).",
+        "Contrôle de reproductibilité (Journal §15) : la graine aléatoire des tests dépendait d'un hash() de Python, différent à chaque exécution, et 500 surrogats ne suffisaient pas à trancher une p-value proche de 0,05. Recalculé avec des graines fixes et 5000 surrogats, \"logements autorisés\" (p de la grille ≈ 0,055, soit à moins de 2 erreurs-types Monte-Carlo du seuil) n'est plus compté comme défavorable : 1 variable sur 5 reste défavorable (défaillances d'entreprises, p ≈ 0,018). Le verdict global, non concluant, ne change pas.",
       ]}
       journalLink={{ to: "/journal", label: "Voir le Journal de recherche" }}
     >

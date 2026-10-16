@@ -66,9 +66,14 @@ def _h1_outcome(r) -> str:
     return "neutral"
 
 
+# 60 jusqu'ici. Audit de reproductibilite (Journal §15) : a ce reglage, 2 phenomenes sur 6 changent de
+# verdict dans une minorite de graines ; a 1000 les 6 verdicts sont stables et identiques aux publies.
+H1_N_SURROGATES = 1000
+
+
 async def refresh_h1() -> None:
     print("H1...")
-    agg = await test_h1_aggregate(n_surrogates=60)
+    agg = await test_h1_aggregate(n_surrogates=H1_N_SURROGATES)
     if not agg.results:
         raise RuntimeError("Aucun phenomene H1 exploitable -- run abandonne pour H1.")
     phenomena = [
@@ -107,13 +112,18 @@ def _h2_aggregate_verdict(agg) -> str:
     return "neutral"
 
 
+# 5000 surrogats : erreur-type Monte-Carlo ~0.003 pres de p = 0.05 (500 -> ~0.01, qui laissait
+# un verdict "grille significative" tomber au hasard du tirage, Journal §15).
+H2_N_SURROGATES = 5000
+
+
 async def refresh_h2() -> None:
     print("H2...")
     # Les valeurs par defaut des routers sont des objets fastapi.Query --
     # resolus automatiquement lors d'une vraie requete HTTP, mais PAS quand
     # la fonction est appelee directement en Python : il faut les repasser
     # explicitement, sinon le code plante en les traitant comme des entiers.
-    r = await test_h2(n_surrogates=500, n_permutations_snapshot=300)
+    r = await test_h2(n_surrogates=H2_N_SURROGATES, n_permutations_snapshot=300)
     real_values = [v for v in r.real_network.moran_series.values if v is not None]
     grid_values = [v for v in r.control_grid.moran_series.values if v is not None]
     n_real_above_grid = sum(
@@ -156,7 +166,7 @@ async def refresh_h2() -> None:
         "grid": r.control_grid.moran_series.values,
     }
 
-    agg = await test_h2_aggregate(n_surrogates=500)
+    agg = await test_h2_aggregate(n_surrogates=H2_N_SURROGATES)
     aggregate = {
         "nVariablesTested": agg.n_variables_tested,
         "nFavorable": agg.n_favorable,
@@ -173,11 +183,13 @@ async def refresh_h2() -> None:
                 "periodStart": v.period_start,
                 "periodEnd": v.period_end,
                 "realTau": round(v.real_trend.observed_tau, 3) if v.real_trend.observed_tau is not None else None,
-                "realP": round(v.real_trend.p_value, 3) if v.real_trend.p_value is not None else None,
+                "realP": round(v.real_trend.p_value, 4) if v.real_trend.p_value is not None else None,
                 "realSig": v.real_trend.significant_at_0_05,
+                "realBorderline": v.real_trend.borderline,
                 "gridTau": round(v.grid_trend.observed_tau, 3) if v.grid_trend.observed_tau is not None else None,
-                "gridP": round(v.grid_trend.p_value, 3) if v.grid_trend.p_value is not None else None,
+                "gridP": round(v.grid_trend.p_value, 4) if v.grid_trend.p_value is not None else None,
                 "gridSig": v.grid_trend.significant_at_0_05,
+                "gridBorderline": v.grid_trend.borderline,
                 "outcome": v.outcome,
             }
             for v in agg.results
@@ -238,23 +250,32 @@ async def refresh_h5() -> None:
     _write_if_ok("h5", payload)
 
 
+# 50 jusqu'ici (limite du temps de calcul de l'AC1) : erreur-type Monte-Carlo ~0.03 pres de p = 0.05,
+# soit 3 a 6 faux positifs sur 10 tirs stables selon la graine. L'AC1 vectorise permet 1000.
+FUSION_N_SURROGATES = 1000
+
+
 def _fusion_verdict(agg) -> str:
     """Meme seuils que aggregateVerdict() dans FusionResult.jsx -- dupliquee
     ici faute d'un endroit commun entre le script Python et le frontend JS."""
     if agg.n_disrupted == 0:
         return "neutral"
     hit_rate = agg.n_disrupted_with_precursor / agg.n_disrupted
-    false_positive_rate = (agg.n_stable_false_positive / agg.n_stable) if agg.n_stable > 0 else 0.0
     if hit_rate == 0:
         return "against"
-    if hit_rate >= 0.5 and false_positive_rate < 0.5:
+    # "Favorable" exige que les tirs disruptes soient signales significativement plus souvent
+    # que les tirs stables (test exact de Fisher unilateral), pas seulement un taux de faux
+    # positifs < 50% : 8/10 contre 3/10 (p = 0.035) devient 8/10 contre 4/10 (p = 0.085) pour
+    # un seul tir de difference, soit la variation d'un tirage Monte-Carlo a l'autre (Journal §15).
+    p = agg.discrimination_p_value
+    if hit_rate >= 0.5 and p is not None and p < 0.05:
         return "favorable"
     return "neutral"
 
 
 async def refresh_fusion() -> None:
     print("Fusion (sur la batterie deja curatee)...")
-    agg = await test_fusion_aggregate(n_surrogates=50)
+    agg = await test_fusion_aggregate(n_surrogates=FUSION_N_SURROGATES)
     shots = [
         {
             "shotId": s.shot_id,
@@ -275,6 +296,8 @@ async def refresh_fusion() -> None:
         "nStable": agg.n_stable,
         "nDisruptedWithPrecursor": agg.n_disrupted_with_precursor,
         "nStableFalsePositive": agg.n_stable_false_positive,
+        "discriminationP": round(agg.discrimination_p_value, 4) if agg.discrimination_p_value is not None else None,
+        "nSurrogates": FUSION_N_SURROGATES,
         "verdict": _fusion_verdict(agg),
         "shots": shots,
     }

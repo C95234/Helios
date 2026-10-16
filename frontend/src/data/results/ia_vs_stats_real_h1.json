@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-09-24",
+  "refreshedAt": "2026-10-16",
   "nSeeds": 10,
   "windowLen": 60,
   "stride": 1,
@@ -50,7 +50,7 @@
       "max_probability": 0.993,
       "cnn_detects_anything": true,
       "h1_published": {
-        "n_soc_sig": 1,
+        "n_soc_sig": 2,
         "n_soc": 3,
         "outcome": "against"
       }
@@ -67,7 +67,7 @@
       "max_probability": 0.9932,
       "cnn_detects_anything": true,
       "h1_published": {
-        "n_soc_sig": 2,
+        "n_soc_sig": 3,
         "n_soc": 3,
         "outcome": "favorable"
       }
@@ -101,11 +101,11 @@
       "max_probability": 0.9932,
       "cnn_detects_anything": true,
       "h1_published": {
-        "n_soc_sig": 2,
+        "n_soc_sig": 0,
         "n_soc": 3,
         "outcome": "against"
       }
     }
   ],
-  "elapsedSeconds": 16.9
+  "elapsedSeconds": 22.7
 }

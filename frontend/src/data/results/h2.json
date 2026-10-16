@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-09-24",
+  "refreshedAt": "2026-10-16",
   "result": {
     "periodStart": "2000-01-01",
     "periodEnd": "2026-04-01",
@@ -8,18 +8,18 @@
     "nEdgesRealNetwork": 237,
     "realNetwork": {
       "trendTau": -0.253,
-      "trendP": 0.866,
+      "trendP": 0.899,
       "trendSig": false,
       "latestI": 0.363,
-      "latestP": 0.0033,
+      "latestP": 0.003,
       "latestSig": true
     },
     "controlGrid": {
       "trendTau": -0.032,
-      "trendP": 0.6,
+      "trendP": 0.577,
       "trendSig": false,
       "latestI": 0.031,
-      "latestP": 0.3389,
+      "latestP": 0.339,
       "latestSig": false
     },
     "realMean": 0.37,
@@ -358,10 +358,10 @@
   "aggregate": {
     "nVariablesTested": 5,
     "nFavorable": 0,
-    "nAgainst": 2,
-    "nNeutral": 3,
+    "nAgainst": 1,
+    "nNeutral": 4,
     "verdict": "neutral",
-    "verdictSimple": "Sur 5 variables réelles testées, 0 favorables, 2 défavorables, 3 non concluantes -- pas de majorité claire dans un sens ou l'autre.",
+    "verdictSimple": "Sur 5 variables réelles testées, 0 favorables, 1 défavorables, 4 non concluantes (dont 1 à la limite du seuil de 0,05, non retenue(s) comme significative(s)) -- pas de majorité claire dans un sens ou l'autre.",
     "errors": [],
     "variables": [
       {
@@ -371,11 +371,13 @@
         "periodStart": "2000-01-01",
         "periodEnd": "2026-04-01",
         "realTau": -0.253,
-        "realP": 0.903,
+        "realP": 0.8996,
         "realSig": false,
+        "realBorderline": false,
         "gridTau": -0.032,
-        "gridP": 0.577,
+        "gridP": 0.5782,
         "gridSig": false,
+        "gridBorderline": false,
         "outcome": "neutral"
       },
       {
@@ -385,39 +387,45 @@
         "periodStart": "2000-01-01",
         "periodEnd": "2026-07-01",
         "realTau": 0.063,
-        "realP": 0.193,
+        "realP": 0.1576,
         "realSig": false,
+        "realBorderline": false,
         "gridTau": 0.268,
-        "gridP": 0.023,
+        "gridP": 0.0178,
         "gridSig": true,
+        "gridBorderline": false,
         "outcome": "against"
       },
       {
         "key": "construction",
         "label": "Logements autorisés (cumul 12 mois)",
-        "nPeriods": 308,
+        "nPeriods": 309,
         "periodStart": "2000-12-01",
-        "periodEnd": "2026-07-01",
-        "realTau": 0.027,
-        "realP": 0.453,
+        "periodEnd": "2026-08-01",
+        "realTau": 0.024,
+        "realP": 0.397,
         "realSig": false,
-        "gridTau": 0.243,
-        "gridP": 0.037,
-        "gridSig": true,
-        "outcome": "against"
+        "realBorderline": false,
+        "gridTau": 0.233,
+        "gridP": 0.0552,
+        "gridSig": false,
+        "gridBorderline": true,
+        "outcome": "neutral"
       },
       {
         "key": "creations",
         "label": "Créations d'entreprises (cumul 12 mois)",
-        "nPeriods": 165,
+        "nPeriods": 166,
         "periodStart": "2012-12-01",
-        "periodEnd": "2026-08-01",
-        "realTau": 0.019,
-        "realP": 0.407,
+        "periodEnd": "2026-09-01",
+        "realTau": 0.032,
+        "realP": 0.4096,
         "realSig": false,
-        "gridTau": 0.158,
-        "gridP": 0.117,
+        "realBorderline": false,
+        "gridTau": 0.154,
+        "gridP": 0.1332,
         "gridSig": false,
+        "gridBorderline": false,
         "outcome": "neutral"
       },
       {
@@ -427,11 +435,13 @@
         "periodStart": "1975-01-01",
         "periodEnd": "2026-01-01",
         "realTau": -0.335,
-        "realP": 0.87,
+        "realP": 0.8822,
         "realSig": false,
+        "realBorderline": false,
         "gridTau": -0.237,
-        "gridP": 0.963,
+        "gridP": 0.9768,
         "gridSig": false,
+        "gridBorderline": false,
         "outcome": "neutral"
       }
     ]
