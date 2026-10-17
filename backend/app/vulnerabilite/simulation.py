@@ -116,3 +116,112 @@ def simuler_societe_chocs_communs(
         X[t, vivant] = y[vivant]
         moyenne_recente = 0.9 * moyenne_recente + 0.1 * y
     return X
+
+
+def simuler_multicanal(
+    a: float,
+    mu: float,
+    c: float,
+    n_unites: int,
+    n_pas: int,
+    rng: np.random.Generator,
+    observation,
+    bruit=None,
+    y0: float = 3.0,
+    m_haut: float | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Dynamique à contagion complexe observée par des canaux amincis (scripts `t7`, `t7b`, `t9`).
+
+    Renvoie (Y, O) : Y de forme (n_pas, n_unites), O de forme (n_canaux, n_pas, n_unites).
+    Si `m_haut` est donné, une unité qui atteint ce seuil n'est plus observée à partir du pas de franchissement
+    (inclus), comme dans les scripts ; sinon toutes les valeurs sont conservées.
+    À chaque pas : tirage de la dynamique, puis tirage des canaux dans l'ordre (ordre du flux aléatoire).
+    """
+    bruit = bruit or Poisson()
+    y = np.full(n_unites, float(y0))
+    Y = np.full((n_pas, n_unites), np.nan)
+    O = np.full((observation.n_canaux, n_pas, n_unites), np.nan)
+    vivant = np.ones(n_unites, bool)
+    precedente = observation.observation_initiale(n_unites) if observation.canal_sous_boucle is not None else None
+    for t in range(n_pas):
+        y = bruit.simuler(np.clip(reponse_moyenne(y, a, mu, c), 0, 1e6), rng)
+        obs = observation.observer(y, rng, precedente)
+        if observation.canal_sous_boucle is not None:
+            precedente = obs[observation.canal_sous_boucle]
+        if m_haut is not None:
+            vivant &= ~(y >= m_haut)
+        Y[t, vivant] = y[vivant]
+        for k in range(observation.n_canaux):
+            O[k, t, vivant] = obs[k][vivant]
+    return Y, O
+
+
+def simuler_gaussien_capteurs(
+    reponse,
+    sigma: float,
+    x0: float,
+    m_haut: float,
+    n_unites: int,
+    n_pas: int,
+    rng: np.random.Generator,
+    observation,
+) -> np.ndarray:
+    """Dynamique continue x_{t+1} = F(x_t) + σ·ε observée par des capteurs affines (script `g3`).
+
+    Renvoie O de forme (n_capteurs, n_pas, n_unites) ; une unité qui atteint `m_haut` n'est plus observée à partir
+    du pas de franchissement (inclus). À chaque pas : bruit de la dynamique, puis bruits de mesure capteur par capteur.
+    """
+    x = np.full(n_unites, float(x0))
+    O = np.full((observation.n_canaux, n_pas, n_unites), np.nan)
+    vivant = np.ones(n_unites, bool)
+    with np.errstate(over="ignore", invalid="ignore"):
+        for t in range(n_pas):
+            x = np.minimum(reponse(x) + sigma * rng.standard_normal(n_unites), 1e8)  # plafond : évite le débordement des unités éteintes
+            vivant &= x < m_haut
+            obs = observation.observer(x, rng)
+            for k in range(observation.n_canaux):
+                O[k, t, vivant] = obs[k][vivant]
+    return O
+
+
+def temps_avant_embrasement_gaussien(reponse, sigma: float, x0: float, seuil: float, n: int = 1500, t_max: int = 200_000, seed: int = 0) -> np.ndarray:
+    """Temps du premier passage de x au-dessus de `seuil` pour x_{t+1} = F(x_t) + σ·ε, depuis `x0` ; NaN si censuré
+    (script `g2`)."""
+    rng = np.random.default_rng(seed)
+    x = np.full(n, float(x0))
+    T = np.full(n, np.nan)
+    vivant = np.ones(n, bool)
+    for t in range(1, t_max + 1):
+        x[vivant] = reponse(x[vivant]) + sigma * rng.standard_normal(vivant.sum())
+        touche = vivant & (x >= seuil)
+        T[touche] = t
+        vivant &= ~touche
+        if not vivant.any():
+            break
+    return T
+
+
+def simuler_reaction(
+    a: float,
+    kappa: float,
+    rho: float,
+    mu: float,
+    n_unites: int,
+    n_pas: int,
+    rng: np.random.Generator,
+    burn: int = 200,
+) -> tuple[np.ndarray, float]:
+    """Société qui réagit (note, section 4 ; script `t8`) : y_{t+1} ~ Poisson(μ + (a − κ·z_t)·y_t),
+    z_{t+1} = (1 − ρ)·z_t + ρ·y_t. Démarre à l'équilibre y* ; `burn` pas initiaux sont écartés.
+    Renvoie (X de forme (n_pas, n_unites), y*)."""
+    y_etoile = (-(1 - a) + np.sqrt((1 - a) ** 2 + 4 * kappa * mu)) / (2 * kappa) if kappa > 0 else mu / (1 - a)
+    y = np.full(n_unites, y_etoile)
+    z = np.full(n_unites, y_etoile)
+    sortie = []
+    for t in range(n_pas + burn):
+        lam = np.clip(mu + (a - kappa * z) * y, 0, 1e6)
+        z = (1 - rho) * z + rho * y
+        y = rng.poisson(lam).astype(float)
+        if t >= burn:
+            sortie.append(y.copy())
+    return np.array(sortie), float(y_etoile)
