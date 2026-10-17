@@ -69,9 +69,21 @@ def barriere_additive(c: float, s_etoile: float) -> float:
     return c * s_etoile**3 / 6.0
 
 
-def phi_poisson(R: float, c: float, m_bas: float) -> float:
-    """Φ en forme close pour un bruit de Poisson : (1−a)·s* − 2μ·ln(m₊/m₋) (proposition 3 (i))."""
-    a, mu, s_etoile, m_haut = params_depuis_inflammabilite(R, c, m_bas)
+def phi_poisson(R: float, c: float, m_bas: float, controle_a: bool = True) -> float:
+    """Φ en forme close pour un bruit de Poisson : (1−a)·s* − 2μ·ln(m₊/m₋) (proposition 3 (i)).
+
+    `controle_a=False` autorise a < 0 : c'est ce qu'exige l'estimation, où (R̂, ĉ, m̂₋) sont des
+    estimations bruitées et où la note calcule quand même Φ̂ par la même formule (scripts `core.phi`).
+    """
+    if controle_a:
+        a, mu, s_etoile, m_haut = params_depuis_inflammabilite(R, c, m_bas)
+    else:
+        if not (c > 0 and R < 1 and m_bas > 0):
+            raise ValueError("Φ n'est défini que pour c > 0, R < 1 et m₋ > 0.")
+        s_etoile = (1.0 - R) / c
+        a = R - 2.0 * c * m_bas
+        mu = c * m_bas * (m_bas + s_etoile)
+        m_haut = m_bas + s_etoile
     return (1.0 - a) * s_etoile - 2.0 * mu * np.log(m_haut / m_bas)
 
 
