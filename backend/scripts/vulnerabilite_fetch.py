@@ -27,7 +27,16 @@ FICHIERS = [
     ("5e74ecf52eb7514f2d3b8845", "metadonnee-urgenceshos-sosmedecins-covid19-quot-dep.csv", "métadonnées des champs"),
     ("5e74ecf52eb7514f2d3b8845", "code-tranches-dage.csv", "codes des classes d'âge"),
     ("5ee9df5003284f565d561278", "table-indicateurs-open-data-dep-serie.csv", "indicateurs de suivi par département (référence de R pour C1)"),
+    # Ajouts du 17 octobre 2026 (décision de Clément : calendrier autorisé ; référence eaux usées retenue pour C1)
+    ("5889d03ea3a72974cbf0d5b0", "fr-en-calendrier-scolaire.csv", "calendrier scolaire (vacances par zone) : contrôles de calendrier"),
+    ("5b3cc551c751df4822526c1c", "Jours fériés en métropole - CSV", "jours fériés en métropole : contrôles de calendrier"),
+    ("651a82516edc589b4f6a0354", "sumeau-indicateurs-2026-01-21-14h00.csv", "SUM'Eau : indicateurs SARS-CoV-2 dans les eaux usées (référence indépendante de C1)"),
+    ("651a82516edc589b4f6a0354", "sumeau-stations-2025-01-29-18h00.csv", "SUM'Eau : liste des stations"),
 ]
+
+
+#: titres de ressources qui ne sont pas des noms de fichiers utilisables
+NOM_LOCAL = {"Jours fériés en métropole - CSV": "jours_feries_metropole.csv"}
 
 
 def sha256(chemin: Path) -> str:
@@ -45,12 +54,12 @@ def main() -> None:
     connus = {f["nom"]: f for f in manifeste["fichiers"]}
     with httpx.Client(timeout=120, follow_redirects=True) as client:
         for jeu, titre, role in FICHIERS:
-            cible = BRUT / titre
+            cible = BRUT / NOM_LOCAL.get(titre, titre)
             if cible.exists():
-                if titre in connus and sha256(cible) == connus[titre]["sha256"]:
+                if cible.name in connus and sha256(cible) == connus[cible.name]["sha256"]:
                     print(f"= {titre} : déjà présent, empreinte conforme au manifeste.")
                     continue
-                raise SystemExit(f"{titre} existe mais ne correspond pas au manifeste : on ne l'écrase pas. Vérifier à la main.")
+                raise SystemExit(f"{cible.name} existe mais ne correspond pas au manifeste : on ne l'écrase pas. Vérifier à la main.")
             meta = client.get(f"https://www.data.gouv.fr/api/1/datasets/{jeu}/").raise_for_status().json()
             ressources = [r for r in meta["resources"] if r["title"] == titre]
             if len(ressources) != 1:
@@ -63,13 +72,14 @@ def main() -> None:
                 with partiel.open("wb") as f:
                     for bloc in reponse.iter_bytes(1 << 20):
                         f.write(bloc)
+                recu_sur_le_fil = reponse.num_bytes_downloaded  # octets transférés (compressés si Content-Encoding)
             taille = partiel.stat().st_size
-            if attendu and taille != attendu:
+            if attendu and recu_sur_le_fil != attendu:
                 partiel.unlink()
-                raise SystemExit(f"{titre} : taille reçue {taille} ≠ annoncée {attendu}. Téléchargement abandonné.")
+                raise SystemExit(f"{titre} : {recu_sur_le_fil} octets reçus, {attendu} annoncés. Téléchargement abandonné.")
             partiel.rename(cible)
             entree = {
-                "nom": titre, "jeu_data_gouv": jeu, "role": role, "url": url,
+                "nom": cible.name, "titre_ressource": titre, "jeu_data_gouv": jeu, "role": role, "url": url,
                 "telecharge_le": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 "taille_octets": taille, "sha256": sha256(cible),
                 "titre_du_jeu": meta["title"], "licence": meta.get("license"),

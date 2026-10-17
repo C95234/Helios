@@ -47,6 +47,58 @@
       "titre_du_jeu": "Indicateurs de suivi de l’épidémie de COVID-19",
       "licence": "lov2",
       "derniere_modification_source": "2022-08-30T18:45:47.581000+00:00"
+    },
+    {
+      "nom": "fr-en-calendrier-scolaire.csv",
+      "titre_ressource": "fr-en-calendrier-scolaire.csv",
+      "jeu_data_gouv": "5889d03ea3a72974cbf0d5b0",
+      "role": "calendrier scolaire (vacances par zone) : contrôles de calendrier",
+      "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/exports/csv?use_labels=true",
+      "telecharge_le": "2026-10-17T12:43:34+00:00",
+      "taille_octets": 274107,
+      "sha256": "8ace06a3949f049664db6037c81816901e43a4e0ec1a598df1a8612fd9f7e237",
+      "titre_du_jeu": "Le calendrier scolaire",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-10-01T09:45:11.998000+00:00"
+    },
+    {
+      "nom": "jours_feries_metropole.csv",
+      "titre_ressource": "Jours fériés en métropole - CSV",
+      "jeu_data_gouv": "5b3cc551c751df4822526c1c",
+      "role": "jours fériés en métropole : contrôles de calendrier",
+      "url": "https://etalab.github.io/jours-feries-france-data/csv/jours_feries_metropole.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 11159,
+      "sha256": "a55a0fa3d8825de3cc76e50c37ed14ae918cc7189205583b552fc0292e52ed29",
+      "titre_du_jeu": "Jours fériés en France",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-01-02T14:32:45+00:00"
+    },
+    {
+      "nom": "sumeau-indicateurs-2026-01-21-14h00.csv",
+      "titre_ressource": "sumeau-indicateurs-2026-01-21-14h00.csv",
+      "jeu_data_gouv": "651a82516edc589b4f6a0354",
+      "role": "SUM'Eau : indicateurs SARS-CoV-2 dans les eaux usées (référence indépendante de C1)",
+      "url": "https://static.data.gouv.fr/resources/surveillance-du-sars-cov-2-dans-les-eaux-usees-sumeau/20260121-132916/sumeau-indicateurs.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 124547,
+      "sha256": "333ca838cfb20a858418c7b62425b2c005a0b22e2e66d5ee435bc26703d3bae4",
+      "titre_du_jeu": "Surveillance du Sars-Cov-2 dans les eaux usées (SUM'Eau)",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-01-21T13:29:16.520000+00:00"
+    },
+    {
+      "nom": "sumeau-stations-2025-01-29-18h00.csv",
+      "titre_ressource": "sumeau-stations-2025-01-29-18h00.csv",
+      "jeu_data_gouv": "651a82516edc589b4f6a0354",
+      "role": "SUM'Eau : liste des stations",
+      "url": "https://static.data.gouv.fr/resources/surveillance-du-sars-cov-2-dans-les-eaux-usees-sumeau/20250129-170007/sumeau-stations-2025-01-29-18h00.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 4521,
+      "sha256": "8874768585cef4dcf918b189ba359af8a7514da02aa40bea8ac9e834cabdcb63",
+      "titre_du_jeu": "Surveillance du Sars-Cov-2 dans les eaux usées (SUM'Eau)",
+      "licence": "lov2",
+      "derniere_modification_source": "2025-01-29T18:00:07.572000+00:00"
     }
   ]
 }
