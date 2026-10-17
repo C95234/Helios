@@ -115,3 +115,10 @@ Commits petits, un par sous-étape ; rien de fusionné sur `main`, rien de pouss
 6. **Page publique (phase 5).** Confirmer que « pas de paragraphes d'avertissement » n'exclut pas la rubrique « Limites » déjà présente sur toutes les pages de résultat d'Hélios. À reprendre en phase 5.
 7. **Téléchargements.** Je te fournis un script que tu lances toi-même, ou tu m'autorises à lancer les trois téléchargements (≈ 30 Mo) sur cette machine ? Les fichiers resteraient hors git, avec manifeste SHA-256.
 8. **Le PDF.** Si tu as une version du PDF que je peux lire (ou si le `.tex` du zip n'est pas la source exacte), dis-le-moi avant la phase 1.
+
+## 10. Décisions de Clément (17 octobre 2026)
+
+- Q1 emplacement `backend/app/vulnerabilite/` : **validé**.
+- Q3 unité d indépendance = la vague nationale : **validé** (à écrire dans le pré-enregistrement, avec bootstrap par blocs de temps).
+- Q2 (SymPy séparé), Q5 (période), Q6 (page publique), Q8 (PDF) : pas de réponse explicite ; SymPy mis dans `backend/requirements-dev.txt` (réversible).
+- Q4 (effets fixes de l analyse principale de C1) et Q7 (téléchargements) : **ouvertes**. Elles ne bloquent pas la phase 1 ; elles bloquent les phases 2 et 3.

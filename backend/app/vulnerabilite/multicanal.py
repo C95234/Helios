@@ -38,14 +38,27 @@ def pente_naive(sortie: np.ndarray, entree: np.ndarray) -> float:
     return float(np.linalg.lstsq(A, y[ok], rcond=None)[0][1])
 
 
-def pente_croisee(sortie: np.ndarray, instrument: np.ndarray) -> float:
+def _retirer_moyenne_par_instant(v: np.ndarray) -> np.ndarray:
+    """Soustrait à chaque instant (ligne) la moyenne transversale des unités observées."""
+    return v - np.nanmean(v, axis=1, keepdims=True)
+
+
+def pente_croisee(sortie: np.ndarray, instrument: np.ndarray, effets_temporels: bool = False) -> float:
     """R̂ = Cov(o^l_{t+1}, o^k_t) / Cov(o^l_t, o^k_t) : régression à variable instrumentale (proposition 7),
-    le canal `instrument` (k) instrumentant le canal `sortie` (l). Cas linéaire (c = 0)."""
-    x = sortie[:-1].ravel()
-    z = instrument[:-1].ravel()
-    y = sortie[1:].ravel()
+    le canal `instrument` (k) instrumentant le canal `sortie` (l). Cas linéaire (c = 0).
+
+    `effets_temporels=True` : covariances calculées après retrait, à chaque instant, de la moyenne transversale
+    (la proposition 7 exige μ constant ou des effets fixes temporels).
+    """
+    x, z, y = sortie[:-1], instrument[:-1], sortie[1:]
     ok = ~np.isnan(x) & ~np.isnan(z) & ~np.isnan(y)
-    return float(np.cov(y[ok], z[ok])[0, 1] / np.cov(x[ok], z[ok])[0, 1])
+    if effets_temporels:
+        ok &= ok.sum(axis=1, keepdims=True) >= 3
+        x, z, y = (_retirer_moyenne_par_instant(np.where(ok, v, np.nan)) for v in (x, z, y))
+    x, z, y = x[ok], z[ok], y[ok]
+    if x.size < 3:
+        raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    return float(np.cov(y, z)[0, 1] / np.cov(x, z)[0, 1])
 
 
 @dataclass(frozen=True)
@@ -89,17 +102,39 @@ def taux_detection(o_a: np.ndarray, o_b: np.ndarray) -> float:
     return float(1.0 - (a.var() - np.cov(a, b)[0, 1] * a.mean() / b.mean()) / a.mean())
 
 
-def derive_instrumentee(o_sortie: np.ndarray, o_instrument: np.ndarray) -> tuple[float, float, float]:
+def derive_instrumentee(
+    o_sortie: np.ndarray,
+    o_instrument: np.ndarray,
+    effets_temporels: bool = False,
+) -> tuple[float, float, float]:
     """(β₀, β₁, β₂) de o_{t+1} = β₀ + β₁·o_t + β₂·o_t(o_t − 1), par variables instrumentales : régresseurs
     (1, o_t, o_t(o_t − 1)), instruments (1, z_t, z_t(z_t − 1)) avec z = autre canal (moments factoriels,
-    proposition 8). Lève une erreur si le système est singulier."""
-    x = o_sortie[:-1].ravel()
-    z = o_instrument[:-1].ravel()
-    y = o_sortie[1:].ravel()
+    proposition 8). Lève une erreur si le système est singulier.
+
+    `effets_temporels=True` : retire à chaque instant la moyenne transversale de chaque variable (y_{t+1}, x_t,
+    x_t(x_t−1), z_t, z_t(z_t−1)) ; la constante n'est alors pas identifiée (β₀ = NaN). Retire les chocs communs,
+    mais aussi une vague réellement nationale.
+    """
+    x = o_sortie[:-1]
+    z = o_instrument[:-1]
+    y = o_sortie[1:]
     ok = ~np.isnan(x) & ~np.isnan(z) & ~np.isnan(y)
-    x, z, y = x[ok], z[ok], y[ok]
-    if x.size < 3:
+    if ok.sum() < 3:
         raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    if effets_temporels:
+        colonnes = []
+        for v in (y, x, x * (x - 1), z, z * (z - 1)):
+            w = np.where(ok, v, np.nan)
+            colonnes.append(_retirer_moyenne_par_instant(w)[ok & (ok.sum(axis=1, keepdims=True) >= 3)])
+        yd, xd, x2d, zd, z2d = colonnes
+        X = np.stack([xd, x2d], axis=1)
+        Z = np.stack([zd, z2d], axis=1)
+        try:
+            b = np.linalg.solve(Z.T @ X, Z.T @ yd)
+        except np.linalg.LinAlgError as e:
+            raise ValueError("Instruments colinéaires : estimation impossible.") from e
+        return float("nan"), float(b[0]), float(b[1])
+    x, z, y = x[ok], z[ok], y[ok]
     X = np.stack([np.ones_like(x), x, x * (x - 1)], axis=1)
     Z = np.stack([np.ones_like(z), z, z * (z - 1)], axis=1)
     try:
@@ -123,7 +158,7 @@ class EstimationMulticanal:
     dispersion: float = float("nan")
 
 
-def estimer_multicanal(O: np.ndarray, sortie: int, instrument: int, calibrage: int) -> EstimationMulticanal:
+def estimer_multicanal(O: np.ndarray, sortie: int, instrument: int, calibrage: int, effets_temporels: bool = False) -> EstimationMulticanal:
     """Φ̂ en unités vraies à partir de canaux sous-déclarés (proposition 8).
 
     `sortie` : canal dont on ajuste la dérive ; `instrument` : canal qui l'instrumente ; `calibrage` : canal qui sert
@@ -131,7 +166,7 @@ def estimer_multicanal(O: np.ndarray, sortie: int, instrument: int, calibrage: i
     surveillance, θ̂ est faussé et l'on obtient une fausse alerte ; avec trois canaux dont deux indépendants,
     instrumenter par le canal surveillé reste robuste (voir les tests).
     """
-    b0, b1, b2 = derive_instrumentee(O[sortie], O[instrument])
+    b0, b1, b2 = derive_instrumentee(O[sortie], O[instrument], effets_temporels)
     theta = taux_detection(O[sortie], O[calibrage])
     c = b2 * theta
     a = b1 - c

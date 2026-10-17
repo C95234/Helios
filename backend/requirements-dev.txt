@@ -1,0 +1,3 @@
+-r requirements.txt
+# Tests du module « vulnérabilité » uniquement (identités symboliques) : pas nécessaire en production.
+sympy==1.14.0
