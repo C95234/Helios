@@ -29,11 +29,24 @@ def _masque(*tableaux: np.ndarray) -> np.ndarray:
     return ok
 
 
-def pente_naive(sortie: np.ndarray, entree: np.ndarray) -> float:
-    """Pente MCO de o_{t+1} sur o_t (estimateur « naïf » d'un seul canal), avec constante."""
-    x = entree[:-1].ravel()
-    y = sortie[1:].ravel()
+def _retirer_moyenne_par_unite(v: np.ndarray) -> np.ndarray:
+    """Soustrait à chaque unité (colonne) sa moyenne sur les instants observés (transformation intra-unité)."""
+    return v - np.nanmean(v, axis=0, keepdims=True)
+
+
+def pente_naive(sortie: np.ndarray, entree: np.ndarray, effets_unite: bool = False) -> float:
+    """Pente MCO de o_{t+1} sur o_t (estimateur « naïf » d'un seul canal), avec constante.
+
+    `effets_unite=True` : transformation intra-unité (une constante par unité). Indispensable quand les unités
+    diffèrent par leur taille ou leur niveau (départements) : sans elle, la pente regroupée mesure surtout la
+    persistance des niveaux entre unités, pas la dynamique.
+    """
+    x, y = entree[:-1], sortie[1:]
     ok = ~np.isnan(x) & ~np.isnan(y)
+    if effets_unite:
+        x, y = (_retirer_moyenne_par_unite(np.where(ok, v, np.nan)) for v in (x, y))
+        x, y = x[ok], y[ok]
+        return float(np.sum(x * y) / np.sum(x * x))
     A = np.stack([np.ones(ok.sum()), x[ok]], axis=1)
     return float(np.linalg.lstsq(A, y[ok], rcond=None)[0][1])
 
@@ -43,18 +56,21 @@ def _retirer_moyenne_par_instant(v: np.ndarray) -> np.ndarray:
     return v - np.nanmean(v, axis=1, keepdims=True)
 
 
-def pente_croisee(sortie: np.ndarray, instrument: np.ndarray, effets_temporels: bool = False) -> float:
+def pente_croisee(sortie: np.ndarray, instrument: np.ndarray, effets_temporels: bool = False, effets_unite: bool = False) -> float:
     """R̂ = Cov(o^l_{t+1}, o^k_t) / Cov(o^l_t, o^k_t) : régression à variable instrumentale (proposition 7),
     le canal `instrument` (k) instrumentant le canal `sortie` (l). Cas linéaire (c = 0).
 
     `effets_temporels=True` : covariances calculées après retrait, à chaque instant, de la moyenne transversale
-    (la proposition 7 exige μ constant ou des effets fixes temporels).
+    (la proposition 7 exige μ constant ou des effets fixes temporels). `effets_unite=True` : une constante par unité
+    (unités de tailles différentes) ; combinable avec `effets_temporels`.
     """
     x, z, y = sortie[:-1], instrument[:-1], sortie[1:]
     ok = ~np.isnan(x) & ~np.isnan(z) & ~np.isnan(y)
     if effets_temporels:
         ok &= ok.sum(axis=1, keepdims=True) >= 3
         x, z, y = (_retirer_moyenne_par_instant(np.where(ok, v, np.nan)) for v in (x, z, y))
+    if effets_unite:
+        x, z, y = (_retirer_moyenne_par_unite(np.where(ok, v, np.nan)) for v in (x, z, y))
     x, z, y = x[ok], z[ok], y[ok]
     if x.size < 3:
         raise ValueError("Moins de 3 observations complètes : estimation impossible.")
