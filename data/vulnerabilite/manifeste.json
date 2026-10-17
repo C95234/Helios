@@ -1,0 +1,52 @@
+{
+  "fichiers": [
+    {
+      "nom": "sursaud-covid-quot-dep-2025-01-01-18h00.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "comptes quotidiens urgences et SOS Médecins, par département",
+      "url": "https://static.data.gouv.fr/resources/donnees-des-urgences-hospitalieres-et-de-sos-medecins-relatives-a-lepidemie-de-covid-19/20250101-170008/sursaud-covid-quot-dep-2025-01-01-18h00.csv",
+      "telecharge_le": "2026-10-17T07:11:28+00:00",
+      "taille_octets": 20587252,
+      "sha256": "46e94484b6d9b85b28696c4173cdbdf2bc46cd4a5e66ae6503b912383c129dba",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2025-01-01T18:00:09.843000+00:00"
+    },
+    {
+      "nom": "metadonnee-urgenceshos-sosmedecins-covid19-quot-dep.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "métadonnées des champs",
+      "url": "https://static.data.gouv.fr/resources/donnees-relatives-a-lepidemie-du-covid-19/20200323-194934/metadonnee-urgenceshos-sosmedecin-covid19-quot.csv",
+      "telecharge_le": "2026-10-17T07:11:28+00:00",
+      "taille_octets": 2694,
+      "sha256": "82edc6e24e33d361545a6a551a42d267c1f3b36c5be2ee19a37de48dd67a6bc4",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2020-03-27T18:46:47.519000+00:00"
+    },
+    {
+      "nom": "code-tranches-dage.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "codes des classes d'âge",
+      "url": "https://static.data.gouv.fr/resources/donnees-relatives-a-lepidemie-du-covid-19/20200320-181924/code-tranches-dage.csv",
+      "telecharge_le": "2026-10-17T07:11:29+00:00",
+      "taille_octets": 110,
+      "sha256": "dfee55042f063a0f68c197f29303456eee033b979cae1e22942e13e71aba81f9",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2020-03-23T18:47:52.441000+00:00"
+    },
+    {
+      "nom": "table-indicateurs-open-data-dep-serie.csv",
+      "jeu_data_gouv": "5ee9df5003284f565d561278",
+      "role": "indicateurs de suivi par département (référence de R pour C1)",
+      "url": "https://static.data.gouv.fr/resources/indicateurs-de-suivi-de-lepidemie-de-covid-19/20220830-184546/table-indicateurs-open-data-dep-serie.csv",
+      "telecharge_le": "2026-10-17T07:11:29+00:00",
+      "taille_octets": 9602359,
+      "sha256": "a8f9a8eb86f6b35898bf0b0abf2afc2ef346e426eebcc899534630d09b817eda",
+      "titre_du_jeu": "Indicateurs de suivi de l’épidémie de COVID-19",
+      "licence": "lov2",
+      "derniere_modification_source": "2022-08-30T18:45:47.581000+00:00"
+    }
+  ]
+}
