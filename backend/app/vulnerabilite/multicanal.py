@@ -153,14 +153,40 @@ def diagnostic_asymetrie(o_l: np.ndarray, o_k: np.ndarray, seuil: float = 0.10) 
 def taux_detection(o_a: np.ndarray, o_b: np.ndarray) -> float:
     """θ^a = 1 − [Var(o^a) − Cov(o^a, o^b)·E o^a / E o^b] / E o^a (proposition 8, canaux sans boucle).
 
-    Valable quelle que soit la loi de y. Port exact du script : variance à ddof = 0, covariance à ddof = 1
-    (écart négligeable à effectifs usuels).
+    Valable quelle que soit la loi de y, pour des unités IDENTIQUES (même taux de détection partout). Les tableaux sont aplatis :
+    si le taux de détection diffère d'une unité à l'autre, l'estimateur regroupé n'est plus valide et peut sortir très largement de ]0 ; 1[
+    (simulation : vers −25 avec des taux uniformes entre 0,2 et 0,8) ; utiliser alors `taux_detection_intra_unite`.
+    Variance et covariance sont toutes deux à ddof = 1 (le script de la note mélange ddof 0 et 1, négligeable à 20 000 points mais
+    biaisé à 105 points).
     """
     a = o_a.ravel()
     b = o_b.ravel()
     ok = ~np.isnan(a) & ~np.isnan(b)
     a, b = a[ok], b[ok]
-    return float(1.0 - (a.var() - np.cov(a, b)[0, 1] * a.mean() / b.mean()) / a.mean())
+    c = np.cov(a, b)
+    return float(1.0 - (c[0, 0] - c[0, 1] * a.mean() / b.mean()) / a.mean())
+
+
+def taux_detection_intra_unite(o_a: np.ndarray, o_b: np.ndarray, n_min: int = 10) -> float:
+    """θ̄^a intra-unité : 1 − Σ_i [Var_i(o^a) − Cov_i(o^a, o^b)·E_i o^a / E_i o^b] / Σ_i E_i o^a, moments calculés DANS chaque unité (colonne),
+    puis sommés. Valable si le taux de détection est propre à chaque unité mais constant dans le temps ; c'est une moyenne pondérée par le
+    niveau des taux de détection des unités. Les unités à moins de `n_min` paires complètes sont écartées.
+    Simulation (37 unités × 105 pas) : sans biais pour un taux commun, dans ]0 ; 1[ pour des taux propres à chaque unité, hors de ]0 ; 1[ (≈ 1,3)
+    si le taux dérive dans le temps."""
+    num = den = 0.0
+    n_unites = 0
+    for i in range(o_a.shape[1]):
+        x, z = o_a[:, i], o_b[:, i]
+        ok = ~np.isnan(x) & ~np.isnan(z)
+        if ok.sum() < n_min or x[ok].mean() <= 0 or z[ok].mean() <= 0:
+            continue
+        c = np.cov(x[ok], z[ok])
+        num += c[0, 0] - c[0, 1] * x[ok].mean() / z[ok].mean()
+        den += x[ok].mean()
+        n_unites += 1
+    if n_unites == 0:
+        raise ValueError("Aucune unité avec assez de paires complètes.")
+    return float(1.0 - num / den)
 
 
 def derive_instrumentee(

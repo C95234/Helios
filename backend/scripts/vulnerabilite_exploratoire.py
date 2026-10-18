@@ -38,6 +38,33 @@ def main() -> None:
     except ValueError as erreur:
         sortie["dispersion_phi"] = str(erreur)
 
+    # 1 bis. taux de détection intra-unité (tolère un taux propre à chaque département, constant dans le temps) : période entière, moitiés, tiers
+    def intra(a, b, lo, hi):
+        return mc.taux_detection_intra_unite(a[lo:hi], b[lo:hi])
+
+    T = d.urgences.shape[0]
+    sortie["theta_intra_unite"] = {
+        "periode_entiere": {"urgences": intra(d.urgences, d.sos, 0, T), "sos": intra(d.sos, d.urgences, 0, T)},
+        "moities": [{"semaines": [lo, hi], "urgences": intra(d.urgences, d.sos, lo, hi), "sos": intra(d.sos, d.urgences, lo, hi)} for lo, hi in ((0, 52), (52, T))],
+        "tiers": [{"semaines": [lo, hi], "urgences": intra(d.urgences, d.sos, lo, hi), "sos": intra(d.sos, d.urgences, lo, hi)} for lo, hi in ((0, 35), (35, 70), (70, T))],
+        "simulation_de_reference": {
+            "taux_commun": "urgences 0,42 [0,21 ; 0,57] (vrai 0,40)", "taux_propre_a_chaque_departement": "regroupé −24, intra-unité 0,57 [0,32 ; 0,83]",
+            "taux_en_derive_dans_le_temps": "regroupé 1,31, intra-unité 1,32 [0,96 ; 1,72], 92 % hors de ]0 ; 1[",
+        },
+    }
+    par_dep = []
+    for j in range(d.urgences.shape[1]):
+        a, b = d.urgences[:, j:j + 1], d.sos[:, j:j + 1]
+        try:
+            par_dep.append(mc.taux_detection(a, b))
+        except ValueError:
+            par_dep.append(float("nan"))
+    par_dep = np.array(par_dep)
+    sortie["theta_urgences_par_departement_regroupe_dans_chaque_dept"] = {
+        "part_dans_0_1": float(np.mean((par_dep > 0) & (par_dep < 1))), "quartiles": np.nanpercentile(par_dep, [25, 50, 75]).tolist(),
+        "remarque": "individuellement trop imprécis pour être interprétés (simulation : 28 à 67 % dans ]0 ; 1[ même si le modèle est exact)",
+    }
+
     # 2. R sur la période entière et par fenêtre : niveaux et bruit
     r_tot = {
         "croise_urgences_sortie": mc.pente_croisee(d.urgences, d.sos, effets_unite=True),

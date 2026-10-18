@@ -1,11 +1,75 @@
 {
   "statut": "EXPLORATOIRE : non pré-enregistré",
   "theta": {
-    "urgences": -7.4978936192509735,
-    "sos": -43.19959699426479,
+    "urgences": -7.506028414340019,
+    "sos": -43.21966094233002,
     "remarque": "regroupés sur des départements de tailles très différentes ; ordre de grandeur seulement"
   },
-  "dispersion_phi": -0.27304875676006496,
+  "dispersion_phi": -0.2727528351936986,
+  "theta_intra_unite": {
+    "periode_entiere": {
+      "urgences": -1.0041018866009348,
+      "sos": -11.590275189397389
+    },
+    "moities": [
+      {
+        "semaines": [
+          0,
+          52
+        ],
+        "urgences": -0.007648334510776733,
+        "sos": -14.516251458961927
+      },
+      {
+        "semaines": [
+          52,
+          105
+        ],
+        "urgences": -1.8073834098486037,
+        "sos": -5.372977646837184
+      }
+    ],
+    "tiers": [
+      {
+        "semaines": [
+          0,
+          35
+        ],
+        "urgences": -2.990925904459868,
+        "sos": -5.892814003662927
+      },
+      {
+        "semaines": [
+          35,
+          70
+        ],
+        "urgences": -0.5773546382651882,
+        "sos": -12.411099047360297
+      },
+      {
+        "semaines": [
+          70,
+          105
+        ],
+        "urgences": -0.6001019454144576,
+        "sos": -4.744396530292721
+      }
+    ],
+    "simulation_de_reference": {
+      "taux_commun": "urgences 0,42 [0,21 ; 0,57] (vrai 0,40)",
+      "taux_propre_a_chaque_departement": "regroupé −24, intra-unité 0,57 [0,32 ; 0,83]",
+      "taux_en_derive_dans_le_temps": "regroupé 1,31, intra-unité 1,32 [0,96 ; 1,72], 92 % hors de ]0 ; 1["
+    }
+  },
+  "theta_urgences_par_departement_regroupe_dans_chaque_dept": {
+    "part_dans_0_1": 0.13513513513513514,
+    "quartiles": [
+      -0.8814568487512962,
+      -0.06200969223462005,
+      1.3113927879927005
+    ],
+    "remarque": "individuellement trop imprécis pour être interprétés (simulation : 28 à 67 % dans ]0 ; 1[ même si le modèle est exact)"
+  },
   "R_periode_entiere_effets_unite": {
     "croise_urgences_sortie": 0.9735654923905603,
     "croise_sos_sortie": 0.9138836768093115,
@@ -49,11 +113,11 @@
     "ecart_type": 0.11339498251394596
   },
   "multicanal_periode_entiere_regroupe": {
-    "R": 1.03884264452473,
-    "c": 0.009340251014068539,
-    "m_bas": -3.4233552743467506,
+    "R": 1.0388325108749428,
+    "c": 0.009350384663855809,
+    "m_bas": -3.4196451506786056,
     "phi": 0.0,
-    "theta": -7.4978936192509735,
+    "theta": -7.506028414340019,
     "drapeaux": [
       "theta_hors_intervalle",
       "pas_d_etat_calme"
