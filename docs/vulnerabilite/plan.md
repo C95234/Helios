@@ -130,3 +130,5 @@ Commits petits, un par sous-étape ; rien de fusionné sur `main`, rien de pouss
 - Calendrier scolaire et jours fériés : téléchargement autorisé par Clément, fait.
 
 - 18 octobre 2026 : Clément **valide** le pré-enregistrement (commit étiqueté `preenregistrement-v1`) et **ne demande pas** l historique 2020-2022 à SPF pour l instant.
+
+- 18 octobre 2026 : évaluation exécutée (phase 4). Verdict : **échec** (C1 prime non réussi, C3 non propre). Rapport : `rapport_epidemies.md`. Rien n affiché sur le site.
