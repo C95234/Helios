@@ -128,3 +128,5 @@ Commits petits, un par sous-étape ; rien de fusionné sur `main`, rien de pouss
 
 - Q4/C1, décision de Clément le 17 octobre 2026 : choisir entre (a) obtenir 2020-2022 auprès de SPF et (b) une autre référence indépendante, selon la faisabilité. **Choix de Claude : (b), eaux usées SUM Eau (indicateur national, 12 stations, continu sur les 105 semaines)**, parce que (a) n est pas accessible sans échange direct avec SPF (aucune version officielle ancienne ; brouillon de demande dans `demande_spf.md`) et (b) est disponible tout de suite. Conséquences : C1 devient C1 prime (concordance de rang avec la croissance des eaux usées, niveau national) ; C2 devient descriptif (2 événements exploitables, 2 témoins). Voir `preenregistrement.md` (brouillon).
 - Calendrier scolaire et jours fériés : téléchargement autorisé par Clément, fait.
+
+- 18 octobre 2026 : Clément **valide** le pré-enregistrement (commit étiqueté `preenregistrement-v1`) et **ne demande pas** l historique 2020-2022 à SPF pour l instant.

@@ -1,8 +1,9 @@
 # Pré-enregistrement : banc « épidémies » du module vulnérabilité
 
-**STATUT : BROUILLON, non validé.** Ce document devient le pré-enregistrement quand Clément l'a validé ; il est alors commité avec sa date
+**STATUT : VALIDÉ par Clément le 18 octobre 2026** (message dans la conversation : « je valide »). Ce document est commité avec sa date
 (étiquette git `preenregistrement-v1`) et ne change plus. Toute analyse ajoutée ensuite est étiquetée « exploratoire ».
-Rédigé le 17 octobre 2026. Aucune évaluation (R, c, Φ, AUC, corrélation avec la référence) n'a été calculée sur les données réelles.
+Rédigé le 17 octobre 2026. Au moment de la validation, aucune évaluation (R, c, Φ, AUC, corrélation avec la référence) n'avait été calculée sur les données réelles.
+Décision annexe de Clément (18 octobre 2026) : pas de demande à Santé publique France pour l'instant ; à reconsidérer si l'absence de 2020-2022 se révèle réellement handicapante.
 
 ## 0. Ce qui a été regardé avant d'écrire ce document (transparence)
 
