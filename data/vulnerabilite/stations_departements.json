@@ -1,0 +1,280 @@
+{
+ "source": "geo.api.gouv.fr/communes?lat&lon (coordonnées du fichier SUM'Eau)",
+ "stations": {
+  "AMIENS": {
+   "departement": "80",
+   "commune_api": "Amiens",
+   "commune_fichier": "AMIENS"
+  },
+  "ANGERS LA BAUMETTE": {
+   "departement": "49",
+   "commune_api": "Angers",
+   "commune_fichier": "ANGERS"
+  },
+  "ANGLET (PONT DE L'AVEUGLE No2)": {
+   "departement": "64",
+   "commune_api": "Anglet",
+   "commune_fichier": "BIARRITZ"
+  },
+  "AQUAVARA": {
+   "departement": "18",
+   "commune_api": "Bourges",
+   "commune_fichier": "BOURGES"
+  },
+  "AUXERRE - APPOIGNY": {
+   "departement": "89",
+   "commune_api": "Appoigny",
+   "commune_fichier": "AUXERRE"
+  },
+  "BASTIA-SUD": {
+   "departement": "2B",
+   "commune_api": "Bastia",
+   "commune_fichier": "BASTIA"
+  },
+  "BESANCON - PORT-DOUVOT": {
+   "departement": "25",
+   "commune_api": "Besançon",
+   "commune_fichier": "BESANCON"
+  },
+  "BONNEUIL-EN-FRANCE": {
+   "departement": "95",
+   "commune_api": "Bonneuil-en-France",
+   "commune_fichier": "SARCELLES"
+  },
+  "BORDEAUX (LOUIS FARGUE 2)": {
+   "departement": "33",
+   "commune_api": "Bordeaux",
+   "commune_fichier": "BORDEAUX"
+  },
+  "CANNES": {
+   "departement": "06",
+   "commune_api": "Mandelieu-la-Napoule",
+   "commune_fichier": "CANNES"
+  },
+  "CAP SICIE - AMPHITRIA": {
+   "departement": "83",
+   "commune_api": "La Seyne-sur-Mer",
+   "commune_fichier": "TOULON"
+  },
+  "CARCASSONNE NOUVELLE": {
+   "departement": "11",
+   "commune_api": "Carcassonne",
+   "commune_fichier": "CARCASSONNE"
+  },
+  "CARRE DE REUNION": {
+   "departement": "78",
+   "commune_api": "Bailly",
+   "commune_fichier": "VERSAILLES"
+  },
+  "CHALON SUR SAONE-PORT BAROIS": {
+   "departement": "71",
+   "commune_api": "Chalon-sur-Saône",
+   "commune_fichier": "CHALON-SUR-SAONE"
+  },
+  "CLERMONT-FERRAND": {
+   "departement": "63",
+   "commune_api": "Clermont-Ferrand",
+   "commune_fichier": "CLERMONT-FERRAND"
+  },
+  "CRAN-GEVRIER - SILOE": {
+   "departement": "74",
+   "commune_api": "Annecy",
+   "commune_fichier": "ANNECY"
+  },
+  "DIJON": {
+   "departement": "21",
+   "commune_api": "Dijon",
+   "commune_fichier": "DIJON"
+  },
+  "EVRY CENTRE-CAECE": {
+   "departement": "91",
+   "commune_api": "Évry-Courcouronnes",
+   "commune_fichier": "EVRY-COURCOURONNES"
+  },
+  "GRANDE-SYNTHE": {
+   "departement": "59",
+   "commune_api": "Grande-Synthe",
+   "commune_fichier": "GRANDE-SYNTHE"
+  },
+  "GRENOBLE / AQUAPOLE": {
+   "departement": "38",
+   "commune_api": "Fontanil-Cornillon",
+   "commune_fichier": "GRENOBLE"
+  },
+  "LA BAULE-ESCOUBLAC-GUERANDE LIVERY": {
+   "departement": "44",
+   "commune_api": "Guérande",
+   "commune_fichier": "GUERANDE"
+  },
+  "LA ROCHELLE": {
+   "departement": "17",
+   "commune_api": "La Rochelle",
+   "commune_fichier": "LA ROCHELLE"
+  },
+  "LAGNY-SUR-MARNE ST THIBAULT-DES-VIGNES": {
+   "departement": "77",
+   "commune_api": "Saint-Thibault-des-Vignes",
+   "commune_fichier": "LAGNY-SUR-MARNE"
+  },
+  "LE HAVRE": {
+   "departement": "76",
+   "commune_api": "Le Havre",
+   "commune_fichier": "HAVRE"
+  },
+  "LENS LOISON SOUS LENS": {
+   "departement": "62",
+   "commune_api": "Loison-sous-Lens",
+   "commune_fichier": "LENS"
+  },
+  "LESCAR": {
+   "departement": "64",
+   "commune_api": "Lescar",
+   "commune_fichier": "PAU"
+  },
+  "LILLE-MARQUETTE-LEZ-LILLE": {
+   "departement": "59",
+   "commune_api": "Marquette-lez-Lille",
+   "commune_fichier": "LILLE"
+  },
+  "LIMOGES": {
+   "departement": "87",
+   "commune_api": "Limoges",
+   "commune_fichier": "LIMOGES"
+  },
+  "LMM_LE MANS - LA CHAUVINIERE": {
+   "departement": "72",
+   "commune_api": "Le Mans",
+   "commune_fichier": "LE MANS"
+  },
+  "LYON - SAINT FONS": {
+   "departement": "69",
+   "commune_api": "Saint-Fons",
+   "commune_fichier": "LYON"
+  },
+  "MAERA (EX CEREIREDE)": {
+   "departement": "34",
+   "commune_api": "Lattes",
+   "commune_fichier": "MONTPELLIER"
+  },
+  "MARSEILLE": {
+   "departement": "13",
+   "commune_api": "Marseille",
+   "commune_fichier": "MARSEILLE"
+  },
+  "MAXEVILLE": {
+   "departement": "54",
+   "commune_api": "Maxéville",
+   "commune_fichier": "NANCY"
+  },
+  "METZ": {
+   "departement": "57",
+   "commune_api": "La Maxe",
+   "commune_fichier": "METZ"
+  },
+  "MONDEVILLE": {
+   "departement": "14",
+   "commune_api": "Mondeville",
+   "commune_fichier": "CAEN"
+  },
+  "NANTES 1-TOUGAS": {
+   "departement": "44",
+   "commune_api": "Saint-Herblain",
+   "commune_fichier": "NANTES"
+  },
+  "NICE-HALIOTIS": {
+   "departement": "06",
+   "commune_api": "Nice",
+   "commune_fichier": "NICE"
+  },
+  "NIMES": {
+   "departement": "30",
+   "commune_api": "Nîmes",
+   "commune_fichier": "NIMES"
+  },
+  "ORLEANS LA CHAPELLE-SAINT-MESMIN": {
+   "departement": "45",
+   "commune_api": "La Chapelle-Saint-Mesmin",
+   "commune_fichier": "ORLEANS"
+  },
+  "PARIS MARNE AVAL": {
+   "departement": "93",
+   "commune_api": "Noisy-le-Grand",
+   "commune_fichier": "PARIS"
+  },
+  "PARIS SEINE-AMONT": {
+   "departement": "94",
+   "commune_api": "Valenton",
+   "commune_fichier": "PARIS"
+  },
+  "PARIS SEINE-CENTRE": {
+   "departement": "92",
+   "commune_api": "Colombes",
+   "commune_fichier": "PARIS"
+  },
+  "POITIERS LA FOLIE": {
+   "departement": "86",
+   "commune_api": "Poitiers",
+   "commune_fichier": "POITIERS"
+  },
+  "REIMS": {
+   "departement": "51",
+   "commune_api": "Saint-Thierry",
+   "commune_fichier": "REIMS"
+  },
+  "RENNES": {
+   "departement": "35",
+   "commune_api": "Rennes",
+   "commune_fichier": "RENNES"
+  },
+  "ROUBAIX-WATTRELOS": {
+   "departement": "59",
+   "commune_api": "Wattrelos",
+   "commune_fichier": "ROUBAIX"
+  },
+  "ROUEN": {
+   "departement": "76",
+   "commune_api": "Le Grand-Quevilly",
+   "commune_fichier": "ROUEN"
+  },
+  "SAINT-BRIEUC LE LEGUE": {
+   "departement": "22",
+   "commune_api": "Saint-Brieuc",
+   "commune_fichier": "SAINT-BRIEUC"
+  },
+  "SAINT-ETIENNE - FURANIA": {
+   "departement": "42",
+   "commune_api": "Villars",
+   "commune_fichier": "SAINT-ETIENNE"
+  },
+  "SAUSHEIM": {
+   "departement": "68",
+   "commune_api": "Sausheim",
+   "commune_fichier": "MULHOUSE"
+  },
+  "STEU DE: BREST (ZONE-PORTUAIRE)": {
+   "departement": "29",
+   "commune_api": "Brest",
+   "commune_fichier": "BREST"
+  },
+  "STRASBOURG - LA WANTZENAU": {
+   "departement": "67",
+   "commune_api": "Strasbourg",
+   "commune_fichier": "STRASBOURG"
+  },
+  "TOULOUSE GINESTOUS": {
+   "departement": "31",
+   "commune_api": "Toulouse",
+   "commune_fichier": "TOULOUSE"
+  },
+  "TOURS- LA RICHE LA GRANGE DAVID": {
+   "departement": "37",
+   "commune_api": "La Riche",
+   "commune_fichier": "TOURS"
+  },
+  "VALENCIENNES": {
+   "departement": "59",
+   "commune_api": "Valenciennes",
+   "commune_fichier": "VALENCIENNES"
+  }
+ }
+}

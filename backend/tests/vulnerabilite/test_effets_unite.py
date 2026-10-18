@@ -44,3 +44,36 @@ def test_effets_d_unite_donnent_la_meme_pente_naive_que_les_moindres_carres_avec
     beta = np.linalg.lstsq(A, y.reshape(-1), rcond=None)[0][0]
     # y.reshape(-1) parcourt (t, i) ; A aussi : colonne de dummies d'unité pour chaque i
     assert mc.pente_naive(O, O, effets_unite=True) == pytest.approx(beta, rel=1e-9)
+
+
+def _unites_avec_calendrier(R=0.6, N=37, T=104, graine=0, theta=(0.4, 0.6), effet=1.5):
+    """Flux μ_i·(1 + effet·cal_t) : une semaine de « vacances » sur six multiplie le flux, commun à toutes les unités."""
+    rng = np.random.default_rng(graine)
+    cal = (np.arange(T) % 6 == 0).astype(float) * (rng.random(T) < 0.8)
+    mu = np.geomspace(1.2, 60.0, N)
+    y = mu / (1 - R)
+    O = np.zeros((2, T, N))
+    for t in range(T):
+        y = rng.poisson(mu * (1 + effet * cal[t]) + R * y).astype(float)
+        for k in range(2):
+            O[k, t] = rng.binomial(y.astype(int), theta[k])
+    return O, np.repeat(cal[:, None, None], N, axis=1)
+
+
+def test_les_controles_de_calendrier_corrigent_un_choc_exogene_commun():
+    sans, avec = [], []
+    for g in range(12):
+        O, C = _unites_avec_calendrier(graine=g)
+        sans.append(mc.pente_croisee(O[0], O[1], effets_unite=True))
+        avec.append(mc.pente_croisee(O[0], O[1], effets_unite=True, controles=C))
+    assert abs(np.median(avec) - 0.6) < abs(np.median(sans) - 0.6)
+    assert np.median(avec) == pytest.approx(0.6, abs=0.06)
+
+
+def test_controles_avec_valeurs_non_finies_sont_ecartes_sans_erreur():
+    O, C = _unites_avec_calendrier(graine=1)
+    C = C.copy()
+    C[:, :3, :] = np.nan  # trois unités sans calendrier (outre-mer)
+    r = mc.pente_croisee(O[0], O[1], effets_unite=True, controles=C)
+    assert np.isfinite(r) and 0.3 < r < 0.9
+    assert np.isfinite(mc.pente_naive(O[0], O[0], effets_unite=True, controles=C))

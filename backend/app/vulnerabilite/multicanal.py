@@ -13,6 +13,7 @@ Les tableaux de données ont la forme (n_canaux, n_pas, n_unites) ; les NaN (apr
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 
 import numpy as np
@@ -31,24 +32,9 @@ def _masque(*tableaux: np.ndarray) -> np.ndarray:
 
 def _retirer_moyenne_par_unite(v: np.ndarray) -> np.ndarray:
     """Soustrait à chaque unité (colonne) sa moyenne sur les instants observés (transformation intra-unité)."""
-    return v - np.nanmean(v, axis=0, keepdims=True)
-
-
-def pente_naive(sortie: np.ndarray, entree: np.ndarray, effets_unite: bool = False) -> float:
-    """Pente MCO de o_{t+1} sur o_t (estimateur « naïf » d'un seul canal), avec constante.
-
-    `effets_unite=True` : transformation intra-unité (une constante par unité). Indispensable quand les unités
-    diffèrent par leur taille ou leur niveau (départements) : sans elle, la pente regroupée mesure surtout la
-    persistance des niveaux entre unités, pas la dynamique.
-    """
-    x, y = entree[:-1], sortie[1:]
-    ok = ~np.isnan(x) & ~np.isnan(y)
-    if effets_unite:
-        x, y = (_retirer_moyenne_par_unite(np.where(ok, v, np.nan)) for v in (x, y))
-        x, y = x[ok], y[ok]
-        return float(np.sum(x * y) / np.sum(x * x))
-    A = np.stack([np.ones(ok.sum()), x[ok]], axis=1)
-    return float(np.linalg.lstsq(A, y[ok], rcond=None)[0][1])
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)  # colonne entièrement manquante : reste NaN
+        return v - np.nanmean(v, axis=0, keepdims=True)
 
 
 def _retirer_moyenne_par_instant(v: np.ndarray) -> np.ndarray:
@@ -56,22 +42,81 @@ def _retirer_moyenne_par_instant(v: np.ndarray) -> np.ndarray:
     return v - np.nanmean(v, axis=1, keepdims=True)
 
 
-def pente_croisee(sortie: np.ndarray, instrument: np.ndarray, effets_temporels: bool = False, effets_unite: bool = False) -> float:
+def _preparer_pentes(variables, controles, effets_temporels: bool, effets_unite: bool, niveaux=None):
+    """Applique aux variables (tableaux (T−1, N) de même forme) les transformations demandées, puis retire par
+    moindres carrés l'effet des `controles` (tableau (T, N, P) aligné sur l'instant de la série ; seule la tranche
+    d'instants 1… est utilisée : le contrôle est celui de la période de la variable expliquée y_{t+1}).
+    Si `niveaux` (vecteur par unité) est donné, chaque contrôle est multiplié par le niveau de l'unité : l'effet d'un
+    jour férié ou de vacances sur des comptes est proportionnel au niveau (effet en pourcentage), pas un décalage commun.
+    Renvoie les variables aplaties sur les observations complètes."""
+    ok = np.ones(variables[0].shape, bool)
+    for v in variables:
+        ok &= ~np.isnan(v)
+    C = None
+    if controles is not None:
+        C = np.asarray(controles, dtype=float)[1:]
+        if niveaux is not None:
+            C = C * np.asarray(niveaux, dtype=float)[None, :, None]
+        ok &= np.all(np.isfinite(C), axis=2)
+    if effets_temporels:
+        ok &= ok.sum(axis=1, keepdims=True) >= 3
+
+    def transformer(v):
+        w = np.where(ok, v, np.nan)
+        if effets_temporels:
+            w = _retirer_moyenne_par_instant(w)
+        if effets_unite:
+            w = _retirer_moyenne_par_unite(w)
+        return w
+
+    sortie = [transformer(v)[ok] for v in variables]
+    if C is not None:
+        Cm = np.stack([transformer(C[:, :, k])[ok] for k in range(C.shape[2])], axis=1)
+        sortie = [v - Cm @ np.linalg.lstsq(Cm, v, rcond=None)[0] for v in sortie]
+    return sortie
+
+
+def pente_naive(sortie: np.ndarray, entree: np.ndarray, effets_unite: bool = False, effets_temporels: bool = False, controles=None,
+                controles_proportionnels: bool = True) -> float:
+    """Pente MCO de o_{t+1} sur o_t (estimateur « naïf » d'un seul canal), avec constante.
+
+    `effets_unite=True` : transformation intra-unité (une constante par unité). Indispensable quand les unités
+    diffèrent par leur taille ou leur niveau (départements) : sans elle, la pente regroupée mesure surtout la
+    persistance des niveaux entre unités, pas la dynamique. `effets_temporels=True` : une constante par instant.
+    `controles` : tableau (T, N, P) de variables exogènes (par exemple un calendrier) retirées de y_{t+1} et de o_t ;
+    `controles_proportionnels=True` (défaut) les multiplie par le niveau moyen observé de chaque unité (effet en pourcentage).
+    """
+    if not (effets_unite or effets_temporels or controles is not None):
+        x, y = entree[:-1], sortie[1:]
+        ok = ~np.isnan(x) & ~np.isnan(y)
+        A = np.stack([np.ones(ok.sum()), x[ok]], axis=1)
+        return float(np.linalg.lstsq(A, y[ok], rcond=None)[0][1])
+    x, y = _preparer_pentes([entree[:-1], sortie[1:]], controles, effets_temporels, effets_unite,
+                            np.nanmean(sortie, axis=0) if controles_proportionnels else None)
+    if x.size < 3:
+        raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    return float(np.sum(x * y) / np.sum(x * x))
+
+
+def pente_croisee(
+    sortie: np.ndarray,
+    instrument: np.ndarray,
+    effets_temporels: bool = False,
+    effets_unite: bool = False,
+    controles=None,
+    controles_proportionnels: bool = True,
+) -> float:
     """R̂ = Cov(o^l_{t+1}, o^k_t) / Cov(o^l_t, o^k_t) : régression à variable instrumentale (proposition 7),
     le canal `instrument` (k) instrumentant le canal `sortie` (l). Cas linéaire (c = 0).
 
     `effets_temporels=True` : covariances calculées après retrait, à chaque instant, de la moyenne transversale
     (la proposition 7 exige μ constant ou des effets fixes temporels). `effets_unite=True` : une constante par unité
-    (unités de tailles différentes) ; combinable avec `effets_temporels`.
+    (unités de tailles différentes) ; combinable avec `effets_temporels`. `controles` : variables exogènes (T, N, P),
+    retirées de y_{t+1}, o_t et de l'instrument (elles jouent à la fois le rôle de régresseurs et d'instruments) ;
+    `controles_proportionnels=True` (défaut) les multiplie par le niveau moyen observé de chaque unité (effet en pourcentage).
     """
-    x, z, y = sortie[:-1], instrument[:-1], sortie[1:]
-    ok = ~np.isnan(x) & ~np.isnan(z) & ~np.isnan(y)
-    if effets_temporels:
-        ok &= ok.sum(axis=1, keepdims=True) >= 3
-        x, z, y = (_retirer_moyenne_par_instant(np.where(ok, v, np.nan)) for v in (x, z, y))
-    if effets_unite:
-        x, z, y = (_retirer_moyenne_par_unite(np.where(ok, v, np.nan)) for v in (x, z, y))
-    x, z, y = x[ok], z[ok], y[ok]
+    x, z, y = _preparer_pentes([sortie[:-1], instrument[:-1], sortie[1:]], controles, effets_temporels, effets_unite,
+                               np.nanmean(sortie, axis=0) if controles_proportionnels else None)
     if x.size < 3:
         raise ValueError("Moins de 3 observations complètes : estimation impossible.")
     return float(np.cov(y, z)[0, 1] / np.cov(x, z)[0, 1])
