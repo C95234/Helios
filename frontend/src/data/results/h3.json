@@ -1,6 +1,13 @@
 {
-  "refreshedAt": "2026-10-28",
+  "refreshedAt": "2026-09-24",
   "phenomena": [
+    {
+      "label": "Mouvement social 2018 (« gilets jaunes »)",
+      "tau": 0.966,
+      "moran": 0.286,
+      "pJoint": 0.02,
+      "sig": true
+    },
     {
       "label": "Tension sanitaire 2020 (premier confinement)",
       "tau": 0.143,
@@ -10,24 +17,23 @@
     },
     {
       "label": "Climat social recent (fenetre glissante la plus recente)",
-      "tau": 0.149,
+      "tau": 0.062,
       "moran": 0.316,
-      "pJoint": 0.372,
+      "pJoint": 0.442,
+      "sig": false
+    },
+    {
+      "label": "Mouvement social contre la réforme des retraites 2023",
+      "tau": 0.733,
+      "moran": 0.371,
+      "pJoint": 0.091,
       "sig": false
     }
   ],
   "unavailable": [
     {
-      "label": "Mouvement social 2018 (« gilets jaunes »)",
-      "reason": "Connecteur INSEE (série nationale) indisponible : "
-    },
-    {
       "label": "Attentats du 13 novembre 2015",
       "reason": "Pas assez de points pour calculer les deux composantes (temporelle et spatiale) sur cette période."
-    },
-    {
-      "label": "Mouvement social contre la réforme des retraites 2023",
-      "reason": "Connecteur INSEE (série nationale) indisponible : "
     },
     {
       "label": "Attentat de Nice, juillet 2016",
@@ -35,9 +41,9 @@
     }
   ],
   "summary": {
-    "favorable": 0,
-    "neutral": 2,
-    "unavailable": 4,
-    "nCalculable": 2
+    "favorable": 1,
+    "neutral": 3,
+    "unavailable": 2,
+    "nCalculable": 4
   }
 }
