@@ -34,8 +34,12 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Rafraîchir H1/H2/H3/H5/Fusion
+        id: refresh
         working-directory: backend
         run: python -m scripts.refresh_results
+        # le script sort en erreur si un résultat a été refusé (source en échec) ; on commite quand même ce qui a réussi,
+        # puis la dernière étape marque le run en échec pour que ce soit visible (e-mail GitHub).
+        continue-on-error: true
 
       - name: Committer si les resultats ont change
         run: |
@@ -48,3 +52,9 @@ jobs:
             git commit -m "Rafraîchissement automatique des résultats (H1/H2/H3/H5/Fusion)"
             git push
           fi
+
+      - name: Signaler un rafraîchissement partiel
+        if: steps.refresh.outcome == 'failure'
+        run: |
+          echo "Au moins un résultat n'a pas été rafraîchi (source en échec ou résultat dégradé refusé). Voir l'étape « Rafraîchir »."
+          exit 1

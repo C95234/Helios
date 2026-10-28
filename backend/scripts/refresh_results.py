@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -45,9 +46,59 @@ RESULTS_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "src"
 TODAY = date.today().isoformat()
 
 
+class ResultatDegrade(RuntimeError):
+    """Le nouveau resultat est plus pauvre que celui deja publie (source en echec pendant le calcul)."""
+
+
+def _degradation(name: str, ancien: dict | None, nouveau: dict) -> str | None:
+    """Raison pour laquelle `nouveau` est un resultat DEGRADE par rapport a `ancien`, ou None s'il est acceptable.
+
+    Cas reel (28 octobre 2026) : le connecteur Insee etait indisponible pour une partie des series ; H2 ne testait plus que
+    3 variables sur 5, H3 2 phenomenes sur 4, H5 94 departements sur 96 -- sans aucune exception, donc sans que l'ancienne garde
+    (try/except) n'intervienne, et le resultat amputé a ete publie. On compare donc au fichier actuel : jamais moins de couverture,
+    jamais de nouvelle mention « indisponible ». Pour accepter une baisse legitime : REFRESH_FORCE=1.
+    """
+    if not ancien:
+        return None
+    t_ancien, t_nouveau = json.dumps(ancien, ensure_ascii=False), json.dumps(nouveau, ensure_ascii=False)
+    n_ancien, n_nouveau = t_ancien.count("indisponible"), t_nouveau.count("indisponible")
+    if n_nouveau > n_ancien:
+        return f"{n_nouveau} mention(s) « indisponible » (source en echec) contre {n_ancien} dans le fichier actuel"
+
+    def moins(chemin_a, chemin_n, libelle):
+        def lire(d, chemin):
+            for cle in chemin:
+                d = d.get(cle) if isinstance(d, dict) else None
+            return d
+
+        a, n = lire(ancien, chemin_a), lire(nouveau, chemin_n)
+        if isinstance(a, (int, float)) and isinstance(n, (int, float)) and n < a:
+            return f"{libelle} : {n} contre {a} dans le fichier actuel"
+        return None
+
+    controles = {
+        "h2": [(("aggregate", "nVariablesTested"), "variables testees"), (("result", "nUnits"), "unites spatiales")],
+        "h3": [(("summary", "nCalculable"), "phenomenes calculables")],
+        "h5": [(("nDepartments",), "departements"), (("nQuarters",), "trimestres")],
+    }.get(name, [])
+    for chemin, libelle in controles:
+        raison = moins(chemin, chemin, libelle)
+        if raison:
+            return raison
+    return None
+
+
 def _write_if_ok(name: str, payload: dict) -> None:
     path = RESULTS_DIR / f"{name}.json"
     payload = {"refreshedAt": TODAY, **payload}
+    if path.exists() and os.environ.get("REFRESH_FORCE") != "1":
+        try:
+            ancien = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError:
+            ancien = None
+        raison = _degradation(name, ancien, payload)
+        if raison:
+            raise ResultatDegrade(f"resultat degrade, non ecrit -- {raison}")
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"  {name}.json ecrit.")
 
@@ -329,6 +380,8 @@ async def main() -> None:
 
     if failures:
         print(f"\nTermine avec {len(failures)} echec(s) : {', '.join(failures)} (JSON existants conserves pour ceux-la).")
+        print(f"::warning::Rafraichissement partiel : {', '.join(failures)} non mis a jour (voir le journal).")
+        sys.exit(1)  # le workflow commite quand meme ce qui a reussi, puis s'affiche en echec (voir refresh-results.yml)
     else:
         print("\nTermine, tout rafraichi avec succes.")
 
