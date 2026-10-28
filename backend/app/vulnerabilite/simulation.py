@@ -225,3 +225,48 @@ def simuler_reaction(
         if t >= burn:
             sortie.append(y.copy())
     return np.array(sortie), float(y_etoile)
+
+
+def barriere_double_puits(h: float, sigma: float, x_etat: float) -> float:
+    """V* vrai = 2·ΔU/σ² pour dx = (x − x³ + h)dt + σ dW, depuis le puits occupé en x_etat jusqu'à la selle. ΔU = barrière du potentiel U = −x²/2 + x⁴/4 − h·x.
+    NaN si |h| ≥ 2/(3√3) (un seul puits)."""
+    racines = np.sort(np.roots([-1.0, 0.0, 1.0, h]).real[np.abs(np.roots([-1.0, 0.0, 1.0, h]).imag) < 1e-9])
+    if len(racines) != 3:
+        return float("nan")
+    U = lambda x: -x * x / 2 + x**4 / 4 - h * x  # noqa: E731
+    r1, r2, r3 = racines
+    puits = r1 if x_etat < r2 else r3
+    return float(2.0 * (U(r2) - U(puits)) / sigma**2)
+
+
+def simuler_double_puits(
+    sigma: float,
+    n_points: int,
+    rng: np.random.Generator,
+    n_unites: int = 1,
+    amplitude_h: float = 0.15,
+    periode_h: float = 120.0,
+    pas_obs: float = 0.2,
+    sous_pas: int = 20,
+    gains=(1.0, 0.7),
+    decalages=(0.0, 0.3),
+    bruit_mesure: float = 0.25,
+):
+    """Double puits dx = (x − x³ + h(t))dt + σ dW, h(t) = amplitude·sin(2πt/période + phase aléatoire) (condition aux limites lente), observé tous les `pas_obs`
+    (= 20 ans) par deux capteurs affines à bruit de mesure indépendant (écart-type `bruit_mesure` × gain, en unités du signal).
+    Renvoie (x, O, h) avec x et h de forme (n_points, n_unites) et O de forme (n_capteurs, n_points, n_unites)."""
+    dt = pas_obs / sous_pas
+    phase = rng.uniform(0, 2 * np.pi, n_unites)
+    x = np.empty((n_points, n_unites))
+    h = np.empty((n_points, n_unites))
+    courant = np.where(rng.random(n_unites) < 0.5, -1.0, 1.0)
+    t = 0.0
+    for i in range(n_points):
+        for _ in range(sous_pas):
+            hh = amplitude_h * np.sin(2 * np.pi * t / periode_h + phase)
+            courant = courant + (courant - courant**3 + hh) * dt + sigma * np.sqrt(dt) * rng.standard_normal(n_unites)
+            t += dt
+        x[i] = courant
+        h[i] = hh
+    O = np.stack([g * x + b + g * bruit_mesure * rng.standard_normal(x.shape) for g, b in zip(gains, decalages)])
+    return x, O, h
