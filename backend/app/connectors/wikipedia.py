@@ -25,7 +25,9 @@ from .base import Connector
 
 BASE_URL = "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article"
 TERMS_OF_USE_URL = "https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_API_Usage_Guidelines"
-USER_AGENT = "Helios-Research-Tool/0.1 (projet de recherche sur les signaux precurseurs ; contact via github)"
+# La politique de Wikimedia exige un contact identifiable (URL ou e-mail) : « contact via github » n'identifiait rien et le 28 octobre 2026
+# les serveurs GitHub recevaient un 403 « Please respect our robot policy » sur les 6 phenomenes de H1.
+USER_AGENT = "Helios-Research-Tool/0.1 (https://github.com/C95234/Helios ; projet de recherche sur les signaux precurseurs) python-httpx"
 
 # Articles francophones curates comme proxy de "signal social" pour des
 # phenomenes reels -- pas de decouverte automatique dans le MVP.

@@ -1,24 +1,24 @@
 {
-  "refreshedAt": "2026-09-04",
-  "alpha": 5.9081,
-  "xmin": 1.6,
-  "ksStatistic": 0.1533,
-  "nTail": 41,
-  "nTotal": 8323,
+  "refreshedAt": "2026-10-28",
+  "alpha": 4.1515,
+  "xmin": 1.0,
+  "ksStatistic": 0.1404,
+  "nTail": 171,
+  "nTotal": 8421,
   "nDepartments": 96,
-  "nQuarters": 105,
+  "nQuarters": 106,
   "periodStart": "2000-01-01",
-  "periodEnd": "2026-01-01",
-  "pPlausibility": 0.01,
+  "periodEnd": "2026-04-01",
+  "pPlausibility": 0.0,
   "nSynthetic": 200,
   "lognormal": {
-    "r": -2.0677,
-    "pValue": 0.2405712833321778,
+    "r": -5.6942,
+    "pValue": 0.04454636656690271,
     "favorsPowerLaw": false
   },
   "exponential": {
-    "r": -1.4936,
-    "pValue": 0.036452354110120384,
+    "r": -6.3643,
+    "pValue": 0.00840004894089845,
     "favorsPowerLaw": false
   },
   "verdict": "against"

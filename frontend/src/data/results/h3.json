@@ -4,28 +4,28 @@
     {
       "label": "Mouvement social 2018 (« gilets jaunes »)",
       "tau": 0.966,
-      "moran": 0.286,
+      "moran": 0.283,
       "pJoint": 0.02,
       "sig": true
     },
     {
       "label": "Tension sanitaire 2020 (premier confinement)",
       "tau": 0.143,
-      "moran": 0.178,
-      "pJoint": 0.687,
+      "moran": 0.205,
+      "pJoint": 0.646,
       "sig": false
     },
     {
       "label": "Climat social recent (fenetre glissante la plus recente)",
       "tau": 0.149,
-      "moran": 0.316,
+      "moran": 0.312,
       "pJoint": 0.372,
       "sig": false
     },
     {
       "label": "Mouvement social contre la réforme des retraites 2023",
       "tau": 0.733,
-      "moran": 0.371,
+      "moran": 0.366,
       "pJoint": 0.091,
       "sig": false
     }

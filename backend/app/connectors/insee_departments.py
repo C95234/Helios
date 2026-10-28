@@ -54,8 +54,10 @@ class InseeDepartmentSeriesConnector(Connector):
         rows = []
         for series_el in root.iter("Series"):
             ref_area = series_el.get("REF_AREA", "")
-            if not (len(ref_area) == 3 and ref_area.startswith("D") and ref_area[1:].isdigit()):
-                continue  # ne garde que les departements metropolitains (Dxx), pas les regions/DOM
+            # departements metropolitains : Dxx (01 a 95) ET la Corse D2A / D2B (« 2A » n'est pas numerique : le filtre « isdigit » seul
+            # excluait les deux departements corses, d'ou 94 departements au lieu de 96 pour H2, H3 et H5)
+            if not (len(ref_area) == 3 and ref_area.startswith("D") and (ref_area[1:].isdigit() or ref_area[1:] in ("2A", "2B"))):
+                continue  # pas les regions ni les DOM (D971...)
             if any(series_el.get(k) != v for k, v in self.required_attrs.items()):
                 continue  # isole la seule variante voulue parmi celles du dataflow
             code = ref_area[1:]  # "D33" -> "33"
