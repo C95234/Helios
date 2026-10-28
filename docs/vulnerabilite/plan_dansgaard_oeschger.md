@@ -1,6 +1,6 @@
 # Second banc : événements de Dansgaard-Oeschger (carottes de glace du Groenland). Plan de phase 0
 
-**STATUT : proposition, en attente de validation de Clément.** Rien n'a été téléchargé. Aucune donnée réelle n'a été regardée. Une étude de faisabilité par simulation a été faite (§4).
+**STATUT (28 octobre 2026) : BANC ARRÊTÉ à la fin de la phase 1c (voir §8).** Rien n'a été téléchargé. Aucune donnée réelle n'a été regardée.
 
 ## 1. Pourquoi ce banc, et quelle question
 
@@ -61,3 +61,30 @@ Probabilité de succès estimée : modeste. Le bruit de mesure entre carottes es
 1. Lancer la phase 1c (estimateur adapté et simulation, sans donnée réelle), avec arrêt si le critère du §5 n'est pas atteint ?
 2. Second capteur : une autre carotte (GRIP ou GISP2, bruit propre à chaque site) ou le calcium de NGRIP (même carotte, mesure différente) ? Je recommande une autre carotte si elle est disponible à 20 ans.
 3. Autorises-tu le téléchargement des fichiers de données publics (NOAA ou Niels Bohr Institute, quelques centaines de Ko) seulement si le critère de la phase 1c est atteint ?
+
+
+## 8. Résultat de la phase 1c (28 octobre 2026) : le critère n'est pas atteint, le banc est arrêté
+
+Critère figé avant l'estimateur (`phase_1c_criteres.md`, étiquette `phase1c-criteres-v1`) ; estimateur et script figés avant exécution (étiquette `phase1c-code-v1`). Simulations seulement, aucune donnée réelle. 30 séries par combinaison.
+
+| σ | Fenêtre (points) | Bascules par série | Séries avec ρ ≥ 0,5 | ρ médian | V\* fini | Rapport médian V\* estimé / vrai | ρ AC1 | ρ variance | Réussi |
+|---|---|---|---|---|---|---|---|---|---|
+| 0.55 | 100 | 21.1 | 7% | 0.15 | 38% | 1.38 | +0.13 | +0.14 | non |
+| 0.55 | 200 | 21.7 | 0% | -0.03 | 61% | 1.22 | +0.08 | +0.09 | non |
+| 0.55 | 400 | 23.0 | 0% | -0.12 | 81% | 1.05 | +0.06 | +0.09 | non |
+| 0.65 | 100 | 39.4 | 3% | 0.16 | 46% | 1.56 | +0.05 | +0.09 | non |
+| 0.65 | 200 | 40.0 | 3% | -0.14 | 57% | 1.14 | +0.04 | +0.01 | non |
+| 0.65 | 400 | 35.5 | 0% | -0.13 | 79% | 1.04 | +0.03 | +0.00 | non |
+
+**Aucune des six combinaisons ne réussit. Selon la règle écrite à l'avance, on s'arrête : aucune donnée réelle n'est téléchargée.**
+
+Deux constats distincts :
+
+1. **L'estimateur à dérive cubique fonctionne comme estimateur de la barrière, mais pas comme prédicteur du temps d'attente.** Avec des fenêtres de 400 points, V\* est fini dans près de 80 % des fenêtres et son rapport médian à la valeur vraie est de 1,04 à 1,05 (contre 0,02 pour 1,2 attendu avec l'estimateur quadratique de la faisabilité). En revanche, sa corrélation avec ln du temps d'attente est nulle ou négative (médiane de −0,12 à −0,14), et celle de l'autocorrélation et de la variance aussi (≤ +0,14).
+2. **Le critère de corrélation était inatteignable par construction.** Le temps d'attente d'une bascule induite par le bruit est une variable aléatoire à forte dispersion (ln T garde un écart-type d'environ 1,3 même quand la barrière est connue exactement). Calculée avec la barrière **exacte** (V\* vrai, script `vulnerabilite_phase_1c_plafond.py`),
+   la corrélation de rang avec ln du temps d'attente n'est que de +0,20 à +0,35 (médiane) selon la combinaison, et seulement 0 à 23 % des séries atteignent 0,5 (le critère en exigeait 90 %). Aucun estimateur, même parfait, ne pouvait réussir. C'est un défaut de ma calibration du critère, découvert après coup.
+
+**Pourquoi on s'arrête quand même, et ne corrige pas le critère pour relancer.** Un critère révisé après avoir vu les résultats perdrait sa valeur de garde-fou. Surtout, le constat 2 s'applique aux données réelles : avec environ 20 événements, une corrélation attendue de l'ordre de 0,3 pour un oracle a un écart-type d'estimation voisin de 0,2 ; elle serait indiscernable de zéro.
+Le banc ne pourrait donc pas trancher, quel que soit l'estimateur.
+
+Si Clément veut malgré tout poursuivre, il faudrait un nouveau critère, calibré sur ce plafond (par exemple : corrélation de l'estimateur d'au moins la moitié de celle de la barrière exacte, avec un nombre d'événements suffisant), écrit et figé avant toute nouvelle simulation, en reconnaissant qu'il est posé après avoir vu ces résultats. Je ne le recommande pas.

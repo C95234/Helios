@@ -136,3 +136,5 @@ Commits petits, un par sous-étape ; rien de fusionné sur `main`, rien de pouss
 - 18 octobre 2026 : Clément accepte les points « taux de détection par département » (étudié : non recommandé, voir `rapport_epidemies.md` §6 bis) et « second banc Dansgaard-Oeschger » (plan et faisabilité : `plan_dansgaard_oeschger.md`, en attente de sa décision sur la phase 1c).
 
 - 28 octobre 2026 : Clément lance la phase 1c du banc Dansgaard-Oeschger, choisit GRIP comme second capteur, autorise le téléchargement des fichiers publics seulement si le critère de `phase_1c_criteres.md` est atteint, et laisse la branche locale (ni fusion ni poussée).
+
+- 28 octobre 2026 : phase 1c exécutée (critère figé avant le code). Résultat : critère non atteint pour les six combinaisons ; banc Dansgaard-Oeschger arrêté, aucune donnée réelle téléchargée. Le critère de corrélation était de plus inatteignable même avec la barrière exacte. Voir `plan_dansgaard_oeschger.md` §8.
