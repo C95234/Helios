@@ -56,7 +56,7 @@ async def test_h3(
         raw = await _insee.fetch(idbank=NATIONAL_IDBANK, start_period="2000-01")
         national_df = _insee.normalize(raw)
     except Exception as exc:
-        raise HTTPException(status_code=502, detail=f"Connecteur INSEE (série nationale) indisponible : {exc}") from exc
+        raise HTTPException(status_code=502, detail=f"Connecteur INSEE (série nationale) indisponible : {type(exc).__name__} {exc}") from exc
 
     national_series = national_df.set_index("date")["valeur"]
     quarterly_dates = spatial["dates"]

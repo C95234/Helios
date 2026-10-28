@@ -53,7 +53,7 @@ async def get_department_wide(
         raw = await connector.fetch(start_period=start_period)
         df = connector.normalize(raw)
     except Exception as exc:
-        raise SpatialDataUnavailable(f"Connecteur INSEE ({connector.name}) indisponible : {exc}") from exc
+        raise SpatialDataUnavailable(f"Connecteur INSEE ({connector.name}) indisponible : {type(exc).__name__} {exc}") from exc
 
     if df.empty:
         raise SpatialDataUnavailable(f"Aucune donnée départementale reçue de l'Insee ({connector.name}).")
