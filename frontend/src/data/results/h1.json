@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-10-16",
+  "refreshedAt": "2026-10-28",
   "phenomena": [
     {
       "label": "Mouvement social 2018 (« gilets jaunes »)",
@@ -21,20 +21,20 @@
     },
     {
       "label": "Climat social recent (fenetre glissante la plus recente)",
-      "nOffSig": 6,
+      "nOffSig": 5,
       "nOff": 39,
       "nSocSig": 2,
       "nSoc": 3,
-      "decalageJours": -189,
-      "outcome": "against"
+      "decalageJours": 117,
+      "outcome": "favorable"
     },
     {
       "label": "Attentats du 13 novembre 2015",
-      "nOffSig": 0,
+      "nOffSig": 1,
       "nOff": 38,
       "nSocSig": 3,
       "nSoc": 3,
-      "decalageJours": null,
+      "decalageJours": 1,
       "outcome": "favorable"
     },
     {
@@ -57,8 +57,8 @@
     }
   ],
   "summary": {
-    "favorable": 1,
-    "against": 5,
+    "favorable": 2,
+    "against": 4,
     "neutral": 0,
     "nPhenomena": 6
   }
