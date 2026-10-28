@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-10-16",
+  "refreshedAt": "2026-10-28",
   "result": {
     "periodStart": "2000-01-01",
     "periodEnd": "2026-04-01",
@@ -361,7 +361,7 @@
     "nAgainst": 1,
     "nNeutral": 4,
     "verdict": "neutral",
-    "verdictSimple": "Sur 5 variables réelles testées, 0 favorables, 1 défavorables, 4 non concluantes (dont 1 à la limite du seuil de 0,05, non retenue(s) comme significative(s)) -- pas de majorité claire dans un sens ou l'autre.",
+    "verdictSimple": "Sur 5 variables réelles testées, 0 favorables, 1 défavorables, 4 non concluantes -- pas de majorité claire dans un sens ou l'autre.",
     "errors": [],
     "variables": [
       {
@@ -375,7 +375,7 @@
         "realSig": false,
         "realBorderline": false,
         "gridTau": -0.032,
-        "gridP": 0.5782,
+        "gridP": 0.5783,
         "gridSig": false,
         "gridBorderline": false,
         "outcome": "neutral"
@@ -386,12 +386,12 @@
         "nPeriods": 319,
         "periodStart": "2000-01-01",
         "periodEnd": "2026-07-01",
-        "realTau": 0.063,
-        "realP": 0.1576,
+        "realTau": 0.056,
+        "realP": 0.237,
         "realSig": false,
         "realBorderline": false,
-        "gridTau": 0.268,
-        "gridP": 0.0178,
+        "gridTau": 0.232,
+        "gridP": 0.0396,
         "gridSig": true,
         "gridBorderline": false,
         "outcome": "against"
@@ -399,17 +399,17 @@
       {
         "key": "construction",
         "label": "Logements autorisés (cumul 12 mois)",
-        "nPeriods": 309,
+        "nPeriods": 310,
         "periodStart": "2000-12-01",
-        "periodEnd": "2026-08-01",
-        "realTau": 0.024,
-        "realP": 0.397,
+        "periodEnd": "2026-09-01",
+        "realTau": 0.027,
+        "realP": 0.4149,
         "realSig": false,
         "realBorderline": false,
-        "gridTau": 0.233,
-        "gridP": 0.0552,
+        "gridTau": 0.213,
+        "gridP": 0.072,
         "gridSig": false,
-        "gridBorderline": true,
+        "gridBorderline": false,
         "outcome": "neutral"
       },
       {
@@ -419,11 +419,11 @@
         "periodStart": "2012-12-01",
         "periodEnd": "2026-09-01",
         "realTau": 0.032,
-        "realP": 0.4096,
+        "realP": 0.4097,
         "realSig": false,
         "realBorderline": false,
         "gridTau": 0.154,
-        "gridP": 0.1332,
+        "gridP": 0.1334,
         "gridSig": false,
         "gridBorderline": false,
         "outcome": "neutral"

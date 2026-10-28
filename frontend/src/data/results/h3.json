@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-09-24",
+  "refreshedAt": "2026-10-28",
   "phenomena": [
     {
       "label": "Mouvement social 2018 (« gilets jaunes »)",
@@ -17,9 +17,9 @@
     },
     {
       "label": "Climat social recent (fenetre glissante la plus recente)",
-      "tau": 0.062,
+      "tau": 0.149,
       "moran": 0.316,
-      "pJoint": 0.442,
+      "pJoint": 0.372,
       "sig": false
     },
     {
