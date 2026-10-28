@@ -80,3 +80,9 @@ def test_fichier_existant_illisible_n_empeche_pas_l_ecriture(tmp_path, monkeypat
     (tmp_path / "h5.json").write_text("{pas du json", encoding="utf-8")
     rr._write_if_ok("h5", h5(96))
     assert json.loads((tmp_path / "h5.json").read_text(encoding="utf-8"))["nDepartments"] == 96
+
+
+def test_h1_moins_de_phenomenes_testes_est_refuse():
+    ancien = {"summary": {"nPhenomena": 6}}
+    assert "phenomenes testes" in rr._degradation("h1", ancien, {"summary": {"nPhenomena": 4}})
+    assert rr._degradation("h1", ancien, {"summary": {"nPhenomena": 6}}) is None

@@ -78,6 +78,7 @@ def _degradation(name: str, ancien: dict | None, nouveau: dict) -> str | None:
 
     controles = {
         "h2": [(("aggregate", "nVariablesTested"), "variables testees"), (("result", "nUnits"), "unites spatiales")],
+        "h1": [(("summary", "nPhenomena"), "phenomenes testes")],
         "h3": [(("summary", "nCalculable"), "phenomenes calculables")],
         "h5": [(("nDepartments",), "departements"), (("nQuarters",), "trimestres")],
     }.get(name, [])
@@ -125,8 +126,10 @@ H1_N_SURROGATES = 1000
 async def refresh_h1() -> None:
     print("H1...")
     agg = await test_h1_aggregate(n_surrogates=H1_N_SURROGATES)
+    for erreur in agg.errors:  # les erreurs par phenomene etaient collectees mais jamais affichees (echec muet)
+        print(f"  H1 : {erreur}")
     if not agg.results:
-        raise RuntimeError("Aucun phenomene H1 exploitable -- run abandonne pour H1.")
+        raise RuntimeError(f"Aucun phenomene H1 exploitable -- run abandonne pour H1 ({len(agg.errors)} erreur(s) ci-dessus).")
     phenomena = [
         {
             "label": r.phenomenon_label,
