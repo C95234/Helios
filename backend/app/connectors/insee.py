@@ -15,6 +15,7 @@ import httpx
 import pandas as pd
 
 from .base import Connector
+from ..http_utils import get_with_retry
 
 BASE_URL = "https://bdm.insee.fr/series/sdmx/data/SERIES_BDM"
 TERMS_OF_USE_URL = "https://www.insee.fr/fr/information/2862759"
@@ -59,9 +60,8 @@ class InseeBdmConnector(Connector):
         if start_period:
             params["startPeriod"] = start_period
         url = f"{BASE_URL}/{idbank}"
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
+        async with httpx.AsyncClient(timeout=httpx.Timeout(30.0, connect=10.0)) as client:
+            response = await get_with_retry(client, url, params=params)
             return response.text
 
     def normalize(self, raw: str) -> pd.DataFrame:

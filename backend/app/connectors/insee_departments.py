@@ -22,6 +22,7 @@ import pandas as pd
 
 from .base import Connector
 from .insee import TERMS_OF_USE_URL, _parse_time_period
+from ..http_utils import get_with_retry
 
 BASE_URL = "https://bdm.insee.fr/series/sdmx/data"
 
@@ -44,9 +45,8 @@ class InseeDepartmentSeriesConnector(Connector):
         if last_n_observations:
             params["lastNObservations"] = last_n_observations
         url = f"{BASE_URL}/{self.dataflow_id}"
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
+        async with httpx.AsyncClient(timeout=httpx.Timeout(60.0, connect=10.0)) as client:
+            response = await get_with_retry(client, url, params=params)
             return response.text
 
     def normalize(self, raw: str) -> pd.DataFrame:
