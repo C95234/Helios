@@ -1,0 +1,104 @@
+{
+  "fichiers": [
+    {
+      "nom": "sursaud-covid-quot-dep-2025-01-01-18h00.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "comptes quotidiens urgences et SOS Médecins, par département",
+      "url": "https://static.data.gouv.fr/resources/donnees-des-urgences-hospitalieres-et-de-sos-medecins-relatives-a-lepidemie-de-covid-19/20250101-170008/sursaud-covid-quot-dep-2025-01-01-18h00.csv",
+      "telecharge_le": "2026-10-17T07:11:28+00:00",
+      "taille_octets": 20587252,
+      "sha256": "46e94484b6d9b85b28696c4173cdbdf2bc46cd4a5e66ae6503b912383c129dba",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2025-01-01T18:00:09.843000+00:00"
+    },
+    {
+      "nom": "metadonnee-urgenceshos-sosmedecins-covid19-quot-dep.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "métadonnées des champs",
+      "url": "https://static.data.gouv.fr/resources/donnees-relatives-a-lepidemie-du-covid-19/20200323-194934/metadonnee-urgenceshos-sosmedecin-covid19-quot.csv",
+      "telecharge_le": "2026-10-17T07:11:28+00:00",
+      "taille_octets": 2694,
+      "sha256": "82edc6e24e33d361545a6a551a42d267c1f3b36c5be2ee19a37de48dd67a6bc4",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2020-03-27T18:46:47.519000+00:00"
+    },
+    {
+      "nom": "code-tranches-dage.csv",
+      "jeu_data_gouv": "5e74ecf52eb7514f2d3b8845",
+      "role": "codes des classes d'âge",
+      "url": "https://static.data.gouv.fr/resources/donnees-relatives-a-lepidemie-du-covid-19/20200320-181924/code-tranches-dage.csv",
+      "telecharge_le": "2026-10-17T07:11:29+00:00",
+      "taille_octets": 110,
+      "sha256": "dfee55042f063a0f68c197f29303456eee033b979cae1e22942e13e71aba81f9",
+      "titre_du_jeu": "Données des urgences hospitalières et de SOS médecins relatives à l'épidémie de COVID-19 ",
+      "licence": "lov2",
+      "derniere_modification_source": "2020-03-23T18:47:52.441000+00:00"
+    },
+    {
+      "nom": "table-indicateurs-open-data-dep-serie.csv",
+      "jeu_data_gouv": "5ee9df5003284f565d561278",
+      "role": "indicateurs de suivi par département (référence de R pour C1)",
+      "url": "https://static.data.gouv.fr/resources/indicateurs-de-suivi-de-lepidemie-de-covid-19/20220830-184546/table-indicateurs-open-data-dep-serie.csv",
+      "telecharge_le": "2026-10-17T07:11:29+00:00",
+      "taille_octets": 9602359,
+      "sha256": "a8f9a8eb86f6b35898bf0b0abf2afc2ef346e426eebcc899534630d09b817eda",
+      "titre_du_jeu": "Indicateurs de suivi de l’épidémie de COVID-19",
+      "licence": "lov2",
+      "derniere_modification_source": "2022-08-30T18:45:47.581000+00:00"
+    },
+    {
+      "nom": "fr-en-calendrier-scolaire.csv",
+      "titre_ressource": "fr-en-calendrier-scolaire.csv",
+      "jeu_data_gouv": "5889d03ea3a72974cbf0d5b0",
+      "role": "calendrier scolaire (vacances par zone) : contrôles de calendrier",
+      "url": "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets/fr-en-calendrier-scolaire/exports/csv?use_labels=true",
+      "telecharge_le": "2026-10-17T12:43:34+00:00",
+      "taille_octets": 274107,
+      "sha256": "8ace06a3949f049664db6037c81816901e43a4e0ec1a598df1a8612fd9f7e237",
+      "titre_du_jeu": "Le calendrier scolaire",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-10-01T09:45:11.998000+00:00"
+    },
+    {
+      "nom": "jours_feries_metropole.csv",
+      "titre_ressource": "Jours fériés en métropole - CSV",
+      "jeu_data_gouv": "5b3cc551c751df4822526c1c",
+      "role": "jours fériés en métropole : contrôles de calendrier",
+      "url": "https://etalab.github.io/jours-feries-france-data/csv/jours_feries_metropole.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 11159,
+      "sha256": "a55a0fa3d8825de3cc76e50c37ed14ae918cc7189205583b552fc0292e52ed29",
+      "titre_du_jeu": "Jours fériés en France",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-01-02T14:32:45+00:00"
+    },
+    {
+      "nom": "sumeau-indicateurs-2026-01-21-14h00.csv",
+      "titre_ressource": "sumeau-indicateurs-2026-01-21-14h00.csv",
+      "jeu_data_gouv": "651a82516edc589b4f6a0354",
+      "role": "SUM'Eau : indicateurs SARS-CoV-2 dans les eaux usées (référence indépendante de C1)",
+      "url": "https://static.data.gouv.fr/resources/surveillance-du-sars-cov-2-dans-les-eaux-usees-sumeau/20260121-132916/sumeau-indicateurs.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 124547,
+      "sha256": "333ca838cfb20a858418c7b62425b2c005a0b22e2e66d5ee435bc26703d3bae4",
+      "titre_du_jeu": "Surveillance du Sars-Cov-2 dans les eaux usées (SUM'Eau)",
+      "licence": "lov2",
+      "derniere_modification_source": "2026-01-21T13:29:16.520000+00:00"
+    },
+    {
+      "nom": "sumeau-stations-2025-01-29-18h00.csv",
+      "titre_ressource": "sumeau-stations-2025-01-29-18h00.csv",
+      "jeu_data_gouv": "651a82516edc589b4f6a0354",
+      "role": "SUM'Eau : liste des stations",
+      "url": "https://static.data.gouv.fr/resources/surveillance-du-sars-cov-2-dans-les-eaux-usees-sumeau/20250129-170007/sumeau-stations-2025-01-29-18h00.csv",
+      "telecharge_le": "2026-10-17T12:43:47+00:00",
+      "taille_octets": 4521,
+      "sha256": "8874768585cef4dcf918b189ba359af8a7514da02aa40bea8ac9e834cabdcb63",
+      "titre_du_jeu": "Surveillance du Sars-Cov-2 dans les eaux usées (SUM'Eau)",
+      "licence": "lov2",
+      "derniere_modification_source": "2025-01-29T18:00:07.572000+00:00"
+    }
+  ]
+}

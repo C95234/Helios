@@ -13,3 +13,6 @@ frontend/.env.local
 
 # Editeurs / OS
 .DS_Store
+
+# Données brutes du module vulnérabilité (téléchargées par l utilisateur, jamais commitées ; manifeste SHA-256 commité)
+data/vulnerabilite/raw/

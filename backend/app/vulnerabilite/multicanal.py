@@ -1,0 +1,359 @@
+"""Estimation à partir de canaux d'observation sous-déclarés et éventuellement sous boucle de surveillance
+(note, section 3 et propositions 6 à 10).
+
+Résultats démontrés dans la note (hypothèse 2 : amincissement binomial, canaux indépendants conditionnellement
+à y, l'observation ne modifie pas la dynamique) :
+- un seul canal fait paraître la population plus sûre qu'elle ne l'est (prop. 6) ;
+- estimateur croisé de R par variable instrumentale (prop. 7) ; une asymétrie entre les deux estimateurs croisés
+  désigne le canal sous boucle de surveillance (corollaire) ;
+- taux de détection θ identifié sans le connaître (prop. 8) ; dérive quadratique par moments factoriels ;
+- dispersion φ identifiée par canaux croisés (prop. 10).
+
+Les tableaux de données ont la forme (n_canaux, n_pas, n_unites) ; les NaN (après coupure) sont ignorés.
+"""
+from __future__ import annotations
+
+import warnings
+from dataclasses import dataclass
+
+import numpy as np
+
+from .estimation import _phi_ou_cas_limite
+from .modele import zeros_de_derive
+from .vstar import vstar_gaussien
+
+
+def _masque(*tableaux: np.ndarray) -> np.ndarray:
+    ok = np.ones(tableaux[0].shape, bool)
+    for t in tableaux:
+        ok &= ~np.isnan(t)
+    return ok
+
+
+def _retirer_moyenne_par_unite(v: np.ndarray) -> np.ndarray:
+    """Soustrait à chaque unité (colonne) sa moyenne sur les instants observés (transformation intra-unité)."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)  # colonne entièrement manquante : reste NaN
+        return v - np.nanmean(v, axis=0, keepdims=True)
+
+
+def _retirer_moyenne_par_instant(v: np.ndarray) -> np.ndarray:
+    """Soustrait à chaque instant (ligne) la moyenne transversale des unités observées."""
+    return v - np.nanmean(v, axis=1, keepdims=True)
+
+
+def _preparer_pentes(variables, controles, effets_temporels: bool, effets_unite: bool, niveaux=None):
+    """Applique aux variables (tableaux (T−1, N) de même forme) les transformations demandées, puis retire par
+    moindres carrés l'effet des `controles` (tableau (T, N, P) aligné sur l'instant de la série ; seule la tranche
+    d'instants 1… est utilisée : le contrôle est celui de la période de la variable expliquée y_{t+1}).
+    Si `niveaux` (vecteur par unité) est donné, chaque contrôle est multiplié par le niveau de l'unité : l'effet d'un
+    jour férié ou de vacances sur des comptes est proportionnel au niveau (effet en pourcentage), pas un décalage commun.
+    Renvoie les variables aplaties sur les observations complètes."""
+    ok = np.ones(variables[0].shape, bool)
+    for v in variables:
+        ok &= ~np.isnan(v)
+    C = None
+    if controles is not None:
+        C = np.asarray(controles, dtype=float)[1:]
+        if niveaux is not None:
+            C = C * np.asarray(niveaux, dtype=float)[None, :, None]
+        ok &= np.all(np.isfinite(C), axis=2)
+    if effets_temporels:
+        ok &= ok.sum(axis=1, keepdims=True) >= 3
+
+    def transformer(v):
+        w = np.where(ok, v, np.nan)
+        if effets_temporels:
+            w = _retirer_moyenne_par_instant(w)
+        if effets_unite:
+            w = _retirer_moyenne_par_unite(w)
+        return w
+
+    sortie = [transformer(v)[ok] for v in variables]
+    if C is not None:
+        Cm = np.stack([transformer(C[:, :, k])[ok] for k in range(C.shape[2])], axis=1)
+        sortie = [v - Cm @ np.linalg.lstsq(Cm, v, rcond=None)[0] for v in sortie]
+    return sortie
+
+
+def pente_naive(sortie: np.ndarray, entree: np.ndarray, effets_unite: bool = False, effets_temporels: bool = False, controles=None,
+                controles_proportionnels: bool = True) -> float:
+    """Pente MCO de o_{t+1} sur o_t (estimateur « naïf » d'un seul canal), avec constante.
+
+    `effets_unite=True` : transformation intra-unité (une constante par unité). Indispensable quand les unités
+    diffèrent par leur taille ou leur niveau (départements) : sans elle, la pente regroupée mesure surtout la
+    persistance des niveaux entre unités, pas la dynamique. `effets_temporels=True` : une constante par instant.
+    `controles` : tableau (T, N, P) de variables exogènes (par exemple un calendrier) retirées de y_{t+1} et de o_t ;
+    `controles_proportionnels=True` (défaut) les multiplie par le niveau moyen observé de chaque unité (effet en pourcentage).
+    """
+    if not (effets_unite or effets_temporels or controles is not None):
+        x, y = entree[:-1], sortie[1:]
+        ok = ~np.isnan(x) & ~np.isnan(y)
+        A = np.stack([np.ones(ok.sum()), x[ok]], axis=1)
+        return float(np.linalg.lstsq(A, y[ok], rcond=None)[0][1])
+    x, y = _preparer_pentes([entree[:-1], sortie[1:]], controles, effets_temporels, effets_unite,
+                            np.nanmean(sortie, axis=0) if controles_proportionnels else None)
+    if x.size < 3:
+        raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    return float(np.sum(x * y) / np.sum(x * x))
+
+
+def pente_croisee(
+    sortie: np.ndarray,
+    instrument: np.ndarray,
+    effets_temporels: bool = False,
+    effets_unite: bool = False,
+    controles=None,
+    controles_proportionnels: bool = True,
+) -> float:
+    """R̂ = Cov(o^l_{t+1}, o^k_t) / Cov(o^l_t, o^k_t) : régression à variable instrumentale (proposition 7),
+    le canal `instrument` (k) instrumentant le canal `sortie` (l). Cas linéaire (c = 0).
+
+    `effets_temporels=True` : covariances calculées après retrait, à chaque instant, de la moyenne transversale
+    (la proposition 7 exige μ constant ou des effets fixes temporels). `effets_unite=True` : une constante par unité
+    (unités de tailles différentes) ; combinable avec `effets_temporels`. `controles` : variables exogènes (T, N, P),
+    retirées de y_{t+1}, o_t et de l'instrument (elles jouent à la fois le rôle de régresseurs et d'instruments) ;
+    `controles_proportionnels=True` (défaut) les multiplie par le niveau moyen observé de chaque unité (effet en pourcentage).
+    """
+    x, z, y = _preparer_pentes([sortie[:-1], instrument[:-1], sortie[1:]], controles, effets_temporels, effets_unite,
+                               np.nanmean(sortie, axis=0) if controles_proportionnels else None)
+    if x.size < 3:
+        raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    return float(np.cov(y, z)[0, 1] / np.cov(x, z)[0, 1])
+
+
+@dataclass(frozen=True)
+class DiagnosticAsymetrie:
+    """Les deux estimateurs croisés coïncident si aucun canal n'a de boucle ; sinon l'écart désigne le canal
+    dont l'estimateur « en sortie » est gonflé."""
+
+    r_l_depuis_k: float  # sortie l, instrument k
+    r_k_depuis_l: float  # sortie k, instrument l
+    ecart: float
+    canal_suspect: int | None  # indice (0 = l, 1 = k) du canal sous boucle, None si écart sous le seuil
+    seuil: float
+
+
+def diagnostic_asymetrie(o_l: np.ndarray, o_k: np.ndarray, seuil: float = 0.10) -> DiagnosticAsymetrie:
+    """Diagnostic de boucle de surveillance (corollaire de la prop. 7).
+
+    `seuil` : écart absolu de R̂ au-delà duquel on déclare une asymétrie. Valeur PROVISOIRE (la note ne fixe
+    pas de seuil) : à figer dans le pré-enregistrement avant toute évaluation sur données réelles.
+    """
+    r_lk = pente_croisee(o_l, o_k)
+    r_kl = pente_croisee(o_k, o_l)
+    ecart = r_kl - r_lk
+    suspect = None
+    if abs(ecart) > seuil:
+        # un estimateur dont le canal « en sortie » est sous boucle est gonflé
+        suspect = 1 if ecart > 0 else 0
+    return DiagnosticAsymetrie(r_lk, r_kl, float(ecart), suspect, seuil)
+
+
+def taux_detection(o_a: np.ndarray, o_b: np.ndarray) -> float:
+    """θ^a = 1 − [Var(o^a) − Cov(o^a, o^b)·E o^a / E o^b] / E o^a (proposition 8, canaux sans boucle).
+
+    Valable quelle que soit la loi de y, pour des unités IDENTIQUES (même taux de détection partout). Les tableaux sont aplatis :
+    si le taux de détection diffère d'une unité à l'autre, l'estimateur regroupé n'est plus valide et peut sortir très largement de ]0 ; 1[
+    (simulation : vers −25 avec des taux uniformes entre 0,2 et 0,8) ; utiliser alors `taux_detection_intra_unite`.
+    Variance et covariance sont toutes deux à ddof = 1 (le script de la note mélange ddof 0 et 1, négligeable à 20 000 points mais
+    biaisé à 105 points).
+    """
+    a = o_a.ravel()
+    b = o_b.ravel()
+    ok = ~np.isnan(a) & ~np.isnan(b)
+    a, b = a[ok], b[ok]
+    c = np.cov(a, b)
+    return float(1.0 - (c[0, 0] - c[0, 1] * a.mean() / b.mean()) / a.mean())
+
+
+def taux_detection_intra_unite(o_a: np.ndarray, o_b: np.ndarray, n_min: int = 10) -> float:
+    """θ̄^a intra-unité : 1 − Σ_i [Var_i(o^a) − Cov_i(o^a, o^b)·E_i o^a / E_i o^b] / Σ_i E_i o^a, moments calculés DANS chaque unité (colonne),
+    puis sommés. Valable si le taux de détection est propre à chaque unité mais constant dans le temps ; c'est une moyenne pondérée par le
+    niveau des taux de détection des unités. Les unités à moins de `n_min` paires complètes sont écartées.
+    Simulation (37 unités × 105 pas) : sans biais pour un taux commun, dans ]0 ; 1[ pour des taux propres à chaque unité, hors de ]0 ; 1[ (≈ 1,3)
+    si le taux dérive dans le temps."""
+    num = den = 0.0
+    n_unites = 0
+    for i in range(o_a.shape[1]):
+        x, z = o_a[:, i], o_b[:, i]
+        ok = ~np.isnan(x) & ~np.isnan(z)
+        if ok.sum() < n_min or x[ok].mean() <= 0 or z[ok].mean() <= 0:
+            continue
+        c = np.cov(x[ok], z[ok])
+        num += c[0, 0] - c[0, 1] * x[ok].mean() / z[ok].mean()
+        den += x[ok].mean()
+        n_unites += 1
+    if n_unites == 0:
+        raise ValueError("Aucune unité avec assez de paires complètes.")
+    return float(1.0 - num / den)
+
+
+def derive_instrumentee(
+    o_sortie: np.ndarray,
+    o_instrument: np.ndarray,
+    effets_temporels: bool = False,
+) -> tuple[float, float, float]:
+    """(β₀, β₁, β₂) de o_{t+1} = β₀ + β₁·o_t + β₂·o_t(o_t − 1), par variables instrumentales : régresseurs
+    (1, o_t, o_t(o_t − 1)), instruments (1, z_t, z_t(z_t − 1)) avec z = autre canal (moments factoriels,
+    proposition 8). Lève une erreur si le système est singulier.
+
+    `effets_temporels=True` : retire à chaque instant la moyenne transversale de chaque variable (y_{t+1}, x_t,
+    x_t(x_t−1), z_t, z_t(z_t−1)) ; la constante n'est alors pas identifiée (β₀ = NaN). Retire les chocs communs,
+    mais aussi une vague réellement nationale.
+    """
+    x = o_sortie[:-1]
+    z = o_instrument[:-1]
+    y = o_sortie[1:]
+    ok = ~np.isnan(x) & ~np.isnan(z) & ~np.isnan(y)
+    if ok.sum() < 3:
+        raise ValueError("Moins de 3 observations complètes : estimation impossible.")
+    if effets_temporels:
+        colonnes = []
+        for v in (y, x, x * (x - 1), z, z * (z - 1)):
+            w = np.where(ok, v, np.nan)
+            colonnes.append(_retirer_moyenne_par_instant(w)[ok & (ok.sum(axis=1, keepdims=True) >= 3)])
+        yd, xd, x2d, zd, z2d = colonnes
+        X = np.stack([xd, x2d], axis=1)
+        Z = np.stack([zd, z2d], axis=1)
+        try:
+            b = np.linalg.solve(Z.T @ X, Z.T @ yd)
+        except np.linalg.LinAlgError as e:
+            raise ValueError("Instruments colinéaires : estimation impossible.") from e
+        return float("nan"), float(b[0]), float(b[1])
+    x, z, y = x[ok], z[ok], y[ok]
+    X = np.stack([np.ones_like(x), x, x * (x - 1)], axis=1)
+    Z = np.stack([np.ones_like(z), z, z * (z - 1)], axis=1)
+    try:
+        b = np.linalg.solve(Z.T @ X, Z.T @ y)
+    except np.linalg.LinAlgError as e:
+        raise ValueError("Instruments colinéaires : estimation impossible.") from e
+    return float(b[0]), float(b[1]), float(b[2])
+
+
+@dataclass(frozen=True)
+class EstimationMulticanal:
+    """Paramètres en unités VRAIES (non observées) : μ, a, c, R, m₋ et Φ, sans connaître aucun taux de détection."""
+
+    mu: float
+    a: float
+    c: float
+    R: float
+    m_bas: float
+    theta: float
+    phi: float
+    dispersion: float = float("nan")
+
+
+def estimer_multicanal(O: np.ndarray, sortie: int, instrument: int, calibrage: int, effets_temporels: bool = False) -> EstimationMulticanal:
+    """Φ̂ en unités vraies à partir de canaux sous-déclarés (proposition 8).
+
+    `sortie` : canal dont on ajuste la dérive ; `instrument` : canal qui l'instrumente ; `calibrage` : canal qui sert
+    à identifier le taux de détection de `sortie`. La note montre que si le canal de calibrage est sous boucle de
+    surveillance, θ̂ est faussé et l'on obtient une fausse alerte ; avec trois canaux dont deux indépendants,
+    instrumenter par le canal surveillé reste robuste (voir les tests).
+    """
+    b0, b1, b2 = derive_instrumentee(O[sortie], O[instrument], effets_temporels)
+    theta = taux_detection(O[sortie], O[calibrage])
+    c = b2 * theta
+    a = b1 - c
+    m_bas = float(np.nanmean(O[sortie]) / theta)
+    R = a + 2.0 * c * m_bas
+    return EstimationMulticanal(b0 / theta, a, c, R, m_bas, theta, _phi_ou_cas_limite(R, c, m_bas))
+
+
+def estimer_deux_canaux_avec_dispersion(O: np.ndarray, sortie: int = 1, autre: int = 0) -> EstimationMulticanal:
+    """Φ̂ et φ̂ à partir de deux canaux sans boucle (propositions 8 et 10).
+
+    φ = [Cov(o^k_{t+1}, o^l_{t+1}) − Cov(o^k_{t+1}, G_t)] / (θ^k θ^l E y_{t+1}) avec G_t la dérive instrumentée.
+    Le bruit de mesure disparaît : seul le bruit de la dynamique est mesuré. Φ̂ est alors Φ_Poisson / φ̂ (prop. 3 iv).
+    """
+    l, k = sortie, autre
+    b0, b1, b2 = derive_instrumentee(O[l], O[k])
+    theta_l = taux_detection(O[l], O[k])
+    theta_k = theta_l * np.nanmean(O[k]) / np.nanmean(O[l])
+    c = b2 * theta_l
+    a = b1 - c
+    m_bas = float(np.nanmean(O[l]) / theta_l)
+    R = a + 2.0 * c * m_bas
+    G = b0 + b1 * O[l][:-1] + b2 * O[l][:-1] * (O[l][:-1] - 1)
+    o_k1, o_l1 = O[k][1:], O[l][1:]
+    m = _masque(G, o_k1, o_l1)
+    A, B, Gm = o_k1[m], o_l1[m], G[m]
+    numerateur = np.cov(A, B)[0, 1] - np.cov(A, Gm)[0, 1]
+    dispersion = float(numerateur / (theta_k * theta_l * np.nanmean(o_l1) / theta_l))
+    base = _phi_ou_cas_limite(R, c, m_bas)
+    phi = base / dispersion if (c > 0 and R < 1 and dispersion > 0) else (0.0 if R >= 1 else float("inf"))
+    return EstimationMulticanal(b0 / theta_l, a, c, R, m_bas, float(theta_l), float(phi), dispersion)
+
+
+# ---------------------------------------------------------------------------------------------------------
+# Signaux continus : capteurs affines (proposition 14, scripts `g3`)
+# ---------------------------------------------------------------------------------------------------------
+
+
+def _quadratique_ols(ol: np.ndarray):
+    u = ol[:-1].ravel()
+    v = ol[1:].ravel()
+    ok = ~np.isnan(u) & ~np.isnan(v)
+    return u[ok], v[ok]
+
+
+def estimer_vstar_un_capteur(ol: np.ndarray) -> float:
+    """V* « naïf » à partir d'un seul capteur : ajustement quadratique par MCO, bruit = écart-type des résidus.
+
+    Le bruit de mesure est pris pour du bruit de dynamique : la note montre une surestimation de 5 à 15 fois
+    (donc des temps d'attente surestimés de plusieurs ordres de grandeur). Renvoie +∞ si aucun seuil n'est détecté.
+    """
+    u, v = _quadratique_ols(ol)
+    X = np.stack([np.ones_like(u), u, u * u], axis=1)
+    b = np.linalg.lstsq(X, v, rcond=None)[0]
+    sigma = float(np.std(v - X @ b))
+    F = lambda z: b[0] + b[1] * z + b[2] * z * z  # noqa: E731
+    racines = zeros_de_derive(F, np.nanmin(ol) - 5 * abs(np.nanstd(ol)), np.nanmax(ol) + 20 * np.nanstd(ol))
+    if len(racines) < 2:
+        return float("inf")
+    return vstar_gaussien(F, sigma, racines[0], racines[1])
+
+
+def estimer_vstar_deux_capteurs(O: np.ndarray, l: int = 0, k: int = 1) -> float:
+    """V* dans les unités du capteur `l`, à partir de deux capteurs affines indépendants (proposition 14), sans
+    connaître ni gains, ni décalages, ni bruits de mesure :
+
+    1. dérive quadratique par variables instrumentales (régresseurs 1, o_t, o_t² ; instruments 1, z_t, z_t²) ;
+    2. rapport des gains g_k/g_l = Cov(o^k_{t+1}, o^l_{t−1}) / Cov(o^l_{t+1}, o^l_{t−1}) ;
+    3. bruit de mesure η_l²·g_l² = Var(o^l) − Cov(o^l, o^k)·g_l/g_k, qui corrige la constante de la dérive ;
+    4. bruit dynamique g_l²σ² = [Cov(o^k_{t+1}, o^l_{t+1}) − Cov(o^k_{t+1}, G_t)]·g_l/g_k.
+
+    Renvoie NaN si l'estimation échoue (moins de 2 points fixes, bruit dynamique estimé ≤ 0).
+    """
+    ol, ok_ = O[l], O[k]
+    u = ol[:-1].ravel()
+    z = ok_[:-1].ravel()
+    v = ol[1:].ravel()
+    m = ~np.isnan(u) & ~np.isnan(z) & ~np.isnan(v)
+    u, z, v = u[m], z[m], v[m]
+    X = np.stack([np.ones_like(u), u, u * u], axis=1)
+    Z = np.stack([np.ones_like(z), z, z * z], axis=1)
+    try:
+        b = np.linalg.solve(Z.T @ X, Z.T @ v)
+    except np.linalg.LinAlgError:
+        return float("nan")
+    A, B, C = ok_[2:].ravel(), ol[2:].ravel(), ol[:-2].ravel()
+    mm = ~np.isnan(A) & ~np.isnan(B) & ~np.isnan(C)
+    rapport = np.cov(A[mm], C[mm])[0, 1] / np.cov(B[mm], C[mm])[0, 1]
+    P, Q = ol.ravel(), ok_.ravel()
+    mm2 = ~np.isnan(P) & ~np.isnan(Q)
+    eta2 = P[mm2].var() - np.cov(P[mm2], Q[mm2])[0, 1] / rapport
+    b0 = b[0] + b[2] * eta2
+    G = b[0] + b[1] * ol[:-1] + b[2] * ol[:-1] ** 2
+    K1, L1 = ok_[1:], ol[1:]
+    mm3 = ~np.isnan(G) & ~np.isnan(K1) & ~np.isnan(L1)
+    s2 = (np.cov(K1[mm3], L1[mm3])[0, 1] - np.cov(K1[mm3], G[mm3])[0, 1]) / rapport
+    F = lambda w: b0 + b[1] * w + b[2] * w * w  # noqa: E731
+    lo, hi = np.nanmin(ol), np.nanmax(ol)
+    etendue = hi - lo
+    racines = zeros_de_derive(F, lo - 3 * etendue, hi + 10 * etendue)
+    if len(racines) < 2 or not s2 > 0:
+        return float("nan")
+    return vstar_gaussien(F, float(np.sqrt(max(s2, 1e-12))), racines[0], racines[1])

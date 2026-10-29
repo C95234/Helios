@@ -1,0 +1,127 @@
+{
+  "statut": "EXPLORATOIRE : non pré-enregistré",
+  "theta": {
+    "urgences": -7.506028414340019,
+    "sos": -43.21966094233002,
+    "remarque": "regroupés sur des départements de tailles très différentes ; ordre de grandeur seulement"
+  },
+  "dispersion_phi": -0.2727528351936986,
+  "theta_intra_unite": {
+    "periode_entiere": {
+      "urgences": -1.0041018866009348,
+      "sos": -11.590275189397389
+    },
+    "moities": [
+      {
+        "semaines": [
+          0,
+          52
+        ],
+        "urgences": -0.007648334510776733,
+        "sos": -14.516251458961927
+      },
+      {
+        "semaines": [
+          52,
+          105
+        ],
+        "urgences": -1.8073834098486037,
+        "sos": -5.372977646837184
+      }
+    ],
+    "tiers": [
+      {
+        "semaines": [
+          0,
+          35
+        ],
+        "urgences": -2.990925904459868,
+        "sos": -5.892814003662927
+      },
+      {
+        "semaines": [
+          35,
+          70
+        ],
+        "urgences": -0.5773546382651882,
+        "sos": -12.411099047360297
+      },
+      {
+        "semaines": [
+          70,
+          105
+        ],
+        "urgences": -0.6001019454144576,
+        "sos": -4.744396530292721
+      }
+    ],
+    "simulation_de_reference": {
+      "taux_commun": "urgences 0,42 [0,21 ; 0,57] (vrai 0,40)",
+      "taux_propre_a_chaque_departement": "regroupé −24, intra-unité 0,57 [0,32 ; 0,83]",
+      "taux_en_derive_dans_le_temps": "regroupé 1,31, intra-unité 1,32 [0,96 ; 1,72], 92 % hors de ]0 ; 1["
+    }
+  },
+  "theta_urgences_par_departement_regroupe_dans_chaque_dept": {
+    "part_dans_0_1": 0.13513513513513514,
+    "quartiles": [
+      -0.8814568487512962,
+      -0.06200969223462005,
+      1.3113927879927005
+    ],
+    "remarque": "individuellement trop imprécis pour être interprétés (simulation : 28 à 67 % dans ]0 ; 1[ même si le modèle est exact)"
+  },
+  "R_periode_entiere_effets_unite": {
+    "croise_urgences_sortie": 0.9735654923905603,
+    "croise_sos_sortie": 0.9138836768093115,
+    "urgences_seules": 0.873484050066654,
+    "sos_seul": 0.8903008595406355
+  },
+  "asymetrie_des_croises": -0.059681815581248854,
+  "R_par_fenetre_12_semaines": {
+    "croise": {
+      "mediane": 0.8601026370136853,
+      "ecart_type": 0.20115123266076695,
+      "min": 0.4226484269648115,
+      "max": 1.764674478327703,
+      "n_nan": 0
+    },
+    "urgences": {
+      "mediane": 0.6961273380534632,
+      "ecart_type": 0.20601200774731918,
+      "min": 0.13560898812079578,
+      "max": 1.3352389721532876,
+      "n_nan": 0
+    },
+    "sos": {
+      "mediane": 0.7055638929620762,
+      "ecart_type": 0.20342628573150837,
+      "min": 0.09446579794381424,
+      "max": 1.5584616201946062,
+      "n_nan": 0
+    }
+  },
+  "correlations_de_rang_entre_estimateurs": {
+    "croise_urgences": 0.6111115124805838,
+    "croise_sos": 0.6612505870028538,
+    "urgences_sos": 0.6660333056388398
+  },
+  "rho_avec_g_si_deux_canaux_sont_combines": {
+    "somme_des_deux_canaux_naif": 0.41221688400823614
+  },
+  "g_croissance_eaux": {
+    "mediane": 0.01050678341946739,
+    "ecart_type": 0.11339498251394596
+  },
+  "multicanal_periode_entiere_regroupe": {
+    "R": 1.0388325108749428,
+    "c": 0.009350384663855809,
+    "m_bas": -3.4196451506786056,
+    "phi": 0.0,
+    "theta": -7.506028414340019,
+    "drapeaux": [
+      "theta_hors_intervalle",
+      "pas_d_etat_calme"
+    ],
+    "remarque": "c et Φ̂ dépendent de l'échelle des comptes : unités de tailles différentes, non interprétables (exploratoire)"
+  }
+}
