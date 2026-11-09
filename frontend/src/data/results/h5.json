@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-11-02",
+  "refreshedAt": "2026-11-09",
   "alpha": 4.1515,
   "xmin": 1.0,
   "ksStatistic": 0.1404,
@@ -13,12 +13,12 @@
   "nSynthetic": 200,
   "lognormal": {
     "r": -5.6942,
-    "pValue": 0.04454636656690271,
+    "pValue": 0.04454636656690294,
     "favorsPowerLaw": false
   },
   "exponential": {
     "r": -6.3643,
-    "pValue": 0.00840004894089845,
+    "pValue": 0.008400048940898727,
     "favorsPowerLaw": false
   },
   "verdict": "against"

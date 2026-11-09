@@ -1,5 +1,5 @@
 {
-  "refreshedAt": "2026-11-02",
+  "refreshedAt": "2026-11-09",
   "result": {
     "periodStart": "2000-01-01",
     "periodEnd": "2026-04-01",
@@ -383,15 +383,15 @@
       {
         "key": "defaillances",
         "label": "Défaillances d'entreprises (cumul 12 mois)",
-        "nPeriods": 319,
+        "nPeriods": 320,
         "periodStart": "2000-01-01",
-        "periodEnd": "2026-07-01",
-        "realTau": 0.057,
-        "realP": 0.2284,
+        "periodEnd": "2026-08-01",
+        "realTau": 0.059,
+        "realP": 0.1858,
         "realSig": false,
         "realBorderline": false,
-        "gridTau": 0.119,
-        "gridP": 0.157,
+        "gridTau": 0.133,
+        "gridP": 0.1492,
         "gridSig": false,
         "gridBorderline": false,
         "outcome": "neutral"
